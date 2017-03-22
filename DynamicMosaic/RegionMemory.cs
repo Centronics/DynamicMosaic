@@ -23,42 +23,6 @@ namespace DynamicMosaic
         /// <summary>
         ///     Инициализирует текущий экземпляр указанными картами.
         /// </summary>
-        /// <param name="processors">Карты, которые необходимо ассоциировать.</param>
-        public RegionMemory(params Processor[] processors)
-        {
-            if (processors == null)
-                throw new ArgumentNullException(nameof(processors),
-                    $"{nameof(RegionMemory)}: Сопоставляемая карта должна быть указана.");
-            if (processors.Length <= 0)
-                throw new ArgumentException(
-                    $"{nameof(RegionMemory)}: Количество сопоставляемых карт должно быть больше ноля.",
-                    nameof(processors));
-            _currentProcessors = new ProcessorContainer(processors);
-            Width = _currentProcessors.Width;
-            Height = _currentProcessors.Height;
-        }
-
-        /// <summary>
-        ///     Инициализирует текущий экземпляр указанными картами.
-        /// </summary>
-        /// <param name="processors">Карты, которые необходимо ассоциировать.</param>
-        public RegionMemory(IList<Processor> processors)
-        {
-            if (processors == null)
-                throw new ArgumentNullException(nameof(processors),
-                    $"{nameof(RegionMemory)}: Сопоставляемая карта должна быть указана.");
-            if (processors.Count <= 0)
-                throw new ArgumentException(
-                    $"{nameof(RegionMemory)}: Количество сопоставляемых карт должно быть больше ноля.",
-                    nameof(processors));
-            _currentProcessors = new ProcessorContainer(processors);
-            Width = _currentProcessors.Width;
-            Height = _currentProcessors.Height;
-        }
-
-        /// <summary>
-        ///     Инициализирует текущий экземпляр указанными картами.
-        /// </summary>
         /// <param name="pc">Карты, которые необходимо ассоциировать.</param>
         public RegionMemory(ProcessorContainer pc)
         {
@@ -86,6 +50,16 @@ namespace DynamicMosaic
         public int Height { get; }
 
         /// <summary>
+        /// Получает длину (<see cref="Width"/> * <see cref="Height"/>) связываемых карт.
+        /// </summary>
+        public int Length => Width * Height;
+
+        /// <summary>
+        /// Хранит значение, показывающее, требуется ли перед началом работы выполнить сортировку или нет.
+        /// </summary>
+        bool _sorted;
+
+        /// <summary>
         ///     Добавляет новые карты, которые необходимо ассоциировать с текущим объектом.
         ///     В случае необходимости создать слой для добавления карты, слой создаётся автоматически.
         /// </summary>
@@ -97,6 +71,7 @@ namespace DynamicMosaic
                     $"{nameof(AddAssociation)}: Ассоциируемые карты должны быть указаны.");
             if (pc.Count <= 0)
                 return;
+            _sorted = false;
             if (pc.Width == Width && pc.Height == Height)
             {
                 for (int k = 0; k < pc.Count; k++)
@@ -110,6 +85,40 @@ namespace DynamicMosaic
                 return;
             }
             rm.AddAssociation(pc);
+        }
+
+        /// <summary>
+        /// Предназначен для анализа указанной карты с применением карт указанного уровня.
+        /// </summary>
+        /// <param name="processor">Исследуемая карта.</param>
+        /// <param name="word">Искомое слово.</param>
+        /// <param name="startIndex">Индекс, начиная с которого будет сформирована строка названия карты.</param>
+        /// <returns>Возвращает значение true для в случае нахождения искомого слова, в противном случае - false.</returns>
+        public bool Recognize(Processor processor, string word, int startIndex)
+        {
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $"{nameof(Recognize)}: Анализируемая карта отсутствует.");
+            SortLayers();
+        }
+
+        /// <summary>
+        /// Сортирует все слои по возрастанию.
+        /// </summary>
+        void SortLayers()
+        {
+            if (_sorted)
+                return;
+            for (int k = 0; k < _nextLinkedRegion.Count; k++)
+            {
+                for (int j = k + 1; j < _nextLinkedRegion.Count; j++)
+                {
+                    if (_nextLinkedRegion[j].Length >= _nextLinkedRegion[k].Length) continue;
+                    RegionMemory regionMemory = _nextLinkedRegion[j];
+                    _nextLinkedRegion[j] = _nextLinkedRegion[k];
+                    _nextLinkedRegion[k] = regionMemory;
+                }
+            }
+            _sorted = true;
         }
 
         /// <summary>
