@@ -6,7 +6,45 @@ using DynamicParser;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Предназначен для связывания ассоциаций.
+    /// Содержит сведения о следующем этапе обработки данных.
+    /// </summary>
+    public struct RegionInfo
+    {
+        /// <summary>
+        /// Карта, которую необходимо обработать.
+        /// </summary>
+        public Processor CurrentProcessor;
+
+        /// <summary>
+        /// Искомое слово.
+        /// </summary>
+        public string Word;
+
+        /// <summary>
+        /// Индекс, начиная с которого будет сформирована строка названия карты.
+        /// </summary>
+        public int StartIndex;
+
+        /// <summary>
+        /// Количество символов для выборки из названия карты, оно должно быть кратно длине искомого слова.
+        /// </summary>
+        public int CharCount;
+    }
+
+    /// <summary>
+    /// Функция, обрабатывающая состояние перехода от одного этапа обработки данных к следующему.
+    /// </summary>
+    /// <param name="word">Текущее искомое слово.</param>
+    /// <param name="currentProcessor">Обработанная карта.</param>
+    /// <param name="startIndex">Индекс, начиная с которого была сформирована строка названия карты.</param>
+    /// <param name="charCount">Количество символов для выборки из названия карты, оно должно быть кратно длине искомого слова.</param>
+    /// <param name="result">Результат обработки.</param>
+    /// <returns>Возвращает сведения о следующем этапе обработки. Значение null означает остановку дальнейшей обработки данных.
+    /// Значение false параметра result означает остановку дальнейшей обработки данных.</returns>
+    public delegate RegionInfo? Interrupter(string word, Processor currentProcessor, int startIndex, int charCount, bool result);
+
+    /// <summary>
+    ///     Предназначен для связывания карт.
     /// </summary>
     public sealed class RegionMemory
     {
@@ -60,6 +98,23 @@ namespace DynamicMosaic
         bool _sorted;
 
         /// <summary>
+        /// Получает коллекцию классов для сопоставления.
+        /// </summary>
+        public IEnumerable<RegionMemory> Regions => _nextLinkedRegion;
+
+        /// <summary>
+        /// Получает коллекцию текущих связываемых карт.
+        /// </summary>
+        public IEnumerable<Processor> Processors
+        {
+            get
+            {
+                for (int k = 0; k < _currentProcessors.Count; k++)
+                    yield return _currentProcessors[k];
+            }
+        }
+
+        /// <summary>
         ///     Добавляет новые карты, которые необходимо ассоциировать с текущим объектом.
         ///     В случае необходимости создать слой для добавления карты, слой создаётся автоматически.
         /// </summary>
@@ -88,17 +143,69 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Предназначен для анализа указанной карты с применением карт указанного уровня.
+        /// Предназначен для анализа указанной карты с применением карт текущего уровня.
         /// </summary>
         /// <param name="processor">Исследуемая карта.</param>
         /// <param name="word">Искомое слово.</param>
         /// <param name="startIndex">Индекс, начиная с которого будет сформирована строка названия карты.</param>
+        /// <param name="charCount">Количество символов для выборки из названия карты, оно должно быть кратно длине искомого слова.</param>
+        /// <param name="interrupter">Функция, обрабатывающая состояние перехода от одного этапа обработки данных к следующему.</param>
         /// <returns>Возвращает значение true для в случае нахождения искомого слова, в противном случае - false.</returns>
-        public bool Recognize(Processor processor, string word, int startIndex)
+        public bool Recognize(Processor processor, string word, int startIndex, int charCount, Interrupter interrupter)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(Recognize)}: Анализируемая карта отсутствует.");
+            if (interrupter == null)
+                throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Функция обработки состояния перехода отсутствует (null).");
             SortLayers();
+            RegionInfo? ri = new RegionInfo { CharCount = charCount, CurrentProcessor = processor, StartIndex = startIndex, Word = word };
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
+            foreach (RegionMemory regionMemory in _nextLinkedRegion)
+            {
+                bool result = ri.Value.CurrentProcessor.GetEqual(regionMemory._currentProcessors)
+                    .FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount);
+                ri = interrupter(ri.Value.Word, ri.Value.CurrentProcessor, ri.Value.StartIndex, ri.Value.CharCount, result);
+                if (ri == null || !result)
+                    return false;
+                if (ri.Value.CurrentProcessor == null)
+                    throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Обрабатываемая карта отсутствует (null).");
+            }
+            return ri.Value.CurrentProcessor.GetEqual(_currentProcessors)
+                    .FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount);
+        }
+
+        /// <summary>
+        /// Суммирует ассоциации указанных классов при условии равенства всех уровней по ширине и высоте.
+        /// </summary>
+        /// <param name="rm">Суммируемый регион.</param>
+        public void Add(RegionMemory rm)
+        {
+            if (rm == null)
+                throw new ArgumentNullException(nameof(rm), $"{nameof(Add)}: Суммируемый регион равен null.");
+            SortLayers();
+            rm.SortLayers();
+            if (_nextLinkedRegion.Count != rm._nextLinkedRegion.Count)
+                throw new ArgumentException($@"{nameof(Add)}: Количество уровней связываемых должно быть одинаково: ({_nextLinkedRegion.Count} связывается с {
+                    rm._nextLinkedRegion.Count}).");
+            if (_currentProcessors.Width != rm._currentProcessors.Width)
+                throw new ArgumentException($@"{nameof(Add)}: Ассоциируемые классы должны быть равны по размерам содержащихся в них карт (текущая ширина:{
+                    _currentProcessors.Width}; сопоставляемая ширина: {rm._currentProcessors.Width}).", nameof(rm));
+            if (_currentProcessors.Height != rm._currentProcessors.Height)
+                throw new ArgumentException($@"{nameof(Add)}: Ассоциируемые классы должны быть равны по размерам содержащихся в них карт (текущая высота:{
+                    _currentProcessors.Height}; сопоставляемая высота: {rm._currentProcessors.Height}).", nameof(rm));
+            for (int k = 0; k < _nextLinkedRegion.Count; k++)
+            {
+                if (_nextLinkedRegion[k].Width != rm._nextLinkedRegion[k].Width)
+                    throw new ArgumentException($@"{nameof(Add)}: Ассоциируемые классы должны быть равны по размерам содержащихся в них карт (текущая ширина:{
+                    _nextLinkedRegion[k].Width}; сопоставляемая ширина: {rm._nextLinkedRegion[k].Width}).", nameof(rm));
+                if (_nextLinkedRegion[k].Height != rm._nextLinkedRegion[k].Height)
+                    throw new ArgumentException($@"{nameof(Add)}: Ассоциируемые классы должны быть равны по размерам содержащихся в них карт (текущая высота:{
+                    _nextLinkedRegion[k].Height}; сопоставляемая высота: {rm._nextLinkedRegion[k].Height}).", nameof(rm));
+            }
+            for (int k = 0; k < rm._currentProcessors.Count; k++)
+                _currentProcessors.Add(rm._currentProcessors[k]);
+            for (int k = 0; k < _nextLinkedRegion.Count; k++)
+                _nextLinkedRegion[k].Add(rm._nextLinkedRegion[k]);
         }
 
         /// <summary>
