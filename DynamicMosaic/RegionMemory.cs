@@ -54,7 +54,7 @@ namespace DynamicMosaic
         readonly ProcessorContainer _currentProcessors;
 
         /// <summary>
-        ///     Список классов для сопоставления.
+        ///     Список классов для сопоставления. Чем больше индекс сопоставления, тем выше его уровень.
         /// </summary>
         readonly List<RegionMemory> _nextLinkedRegion = new List<RegionMemory>();
 
@@ -159,6 +159,8 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Функция обработки состояния перехода отсутствует (null).");
             SortLayers();
             RegionInfo? ri = new RegionInfo { CharCount = charCount, CurrentProcessor = processor, StartIndex = startIndex, Word = word };
+            if (!ri.Value.CurrentProcessor.GetEqual(_currentProcessors).FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount))
+                return false;
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (RegionMemory regionMemory in _nextLinkedRegion)
             {
@@ -170,8 +172,7 @@ namespace DynamicMosaic
                 if (ri.Value.CurrentProcessor == null)
                     throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Обрабатываемая карта отсутствует (null).");
             }
-            return ri.Value.CurrentProcessor.GetEqual(_currentProcessors)
-                    .FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount);
+            return true;
         }
 
         /// <summary>
