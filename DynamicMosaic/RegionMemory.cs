@@ -98,21 +98,25 @@ namespace DynamicMosaic
         bool _sorted;
 
         /// <summary>
-        /// Получает коллекцию классов для сопоставления.
+        /// Получает требуемый класс для сопоставления.
         /// </summary>
-        public IEnumerable<RegionMemory> Regions => _nextLinkedRegion;
+        /// <param name="index">Индекс требуемой ассоциации.</param>
+        public RegionMemory GetAssociation(int index) => _nextLinkedRegion[index];
 
         /// <summary>
-        /// Получает коллекцию текущих связываемых карт.
+        /// Получает требуемую связываемую карту.
         /// </summary>
-        public IEnumerable<Processor> Processors
-        {
-            get
-            {
-                for (int k = 0; k < _currentProcessors.Count; k++)
-                    yield return _currentProcessors[k];
-            }
-        }
+        public Processor GetRelative(int index) => _currentProcessors[index];
+
+        /// <summary>
+        /// Получает количество классов для сопоставления.
+        /// </summary>
+        public int CountAssociation => _nextLinkedRegion.Count;
+
+        /// <summary>
+        /// Получает количество связываемых карт.
+        /// </summary>
+        public int CountRelation => _nextLinkedRegion.Count;
 
         /// <summary>
         ///     Добавляет новые карты, которые необходимо ассоциировать с текущим объектом.
@@ -150,17 +154,21 @@ namespace DynamicMosaic
         /// <param name="startIndex">Индекс, начиная с которого будет сформирована строка названия карты.</param>
         /// <param name="charCount">Количество символов для выборки из названия карты, оно должно быть кратно длине искомого слова.</param>
         /// <param name="interrupter">Функция, обрабатывающая состояние перехода от одного этапа обработки данных к следующему.</param>
-        /// <returns>Возвращает значение true для в случае нахождения искомого слова, в противном случае - false.</returns>
-        public bool Recognize(Processor processor, string word, int startIndex, int charCount, Interrupter interrupter)
+        /// <returns>Возвращает экземпляр класса <see cref="WordSearcher"/> в случае нахождения искомого слова, в противном случае - null.</returns>
+        public WordSearcher Recognize(Processor processor, string word, int startIndex, int charCount, Interrupter interrupter)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(Recognize)}: Анализируемая карта отсутствует.");
             if (interrupter == null)
                 throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Функция обработки состояния перехода отсутствует (null).");
             SortLayers();
+            List<string> strs = new List<string>();
             RegionInfo? ri = new RegionInfo { CharCount = charCount, CurrentProcessor = processor, StartIndex = startIndex, Word = word };
-            if (!ri.Value.CurrentProcessor.GetEqual(_currentProcessors).FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount))
-                return false;
+            bool res = ri.Value.CurrentProcessor.GetEqual(_currentProcessors).FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount);
+            strs.Add(ri.Value.Word);
+            ri = interrupter(ri.Value.Word, ri.Value.CurrentProcessor, ri.Value.StartIndex, ri.Value.CharCount, res);
+            if (ri == null || !res)
+                return null;
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (RegionMemory regionMemory in _nextLinkedRegion)
             {
@@ -168,11 +176,12 @@ namespace DynamicMosaic
                     .FindRelation(ri.Value.Word, ri.Value.StartIndex, ri.Value.CharCount);
                 ri = interrupter(ri.Value.Word, ri.Value.CurrentProcessor, ri.Value.StartIndex, ri.Value.CharCount, result);
                 if (ri == null || !result)
-                    return false;
+                    return null;
                 if (ri.Value.CurrentProcessor == null)
                     throw new ArgumentNullException(nameof(interrupter), $"{nameof(Recognize)}: Обрабатываемая карта отсутствует (null).");
+                strs.Add(ri.Value.Word);
             }
-            return true;
+            return new WordSearcher(strs);
         }
 
         /// <summary>
@@ -203,8 +212,6 @@ namespace DynamicMosaic
                     throw new ArgumentException($@"{nameof(Add)}: Ассоциируемые классы должны быть равны по размерам содержащихся в них карт (текущая высота:{
                     _nextLinkedRegion[k].Height}; сопоставляемая высота: {rm._nextLinkedRegion[k].Height}).", nameof(rm));
             }
-            for (int k = 0; k < rm._currentProcessors.Count; k++)
-                _currentProcessors.Add(rm._currentProcessors[k]);
             for (int k = 0; k < _nextLinkedRegion.Count; k++)
                 _nextLinkedRegion[k].Add(rm._nextLinkedRegion[k]);
         }
