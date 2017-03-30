@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Association.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="RegionInfo.cs" />
     <Compile Include="RegionMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
