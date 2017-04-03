@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using DynamicParser;
 
 namespace DynamicMosaic
@@ -10,6 +12,72 @@ namespace DynamicMosaic
     /// </summary>
     public sealed class RegionMemory
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        readonly List<string> _lstWords = new List<string>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="words"></param>
+        public void Add(IList<string> words)
+        {
+            if (words == null || words.Count <= 0)
+                return;
+            foreach (string s in words)
+            {
+                if (string.IsNullOrEmpty(s))
+                    throw new ArgumentNullException($"В коллекции слов найдено {nameof(string.IsNullOrEmpty)}");
+                WordSearcher ws = new WordSearcher(GetSymbols(s).ToArray());
+                foreach (string s1 in words.Where(s1 => s1 != s).Where(s1 => ws.IsEqual(s1)))
+                    throw new ArgumentException($@"{nameof(Add)}: Найдены слова, соответствующие друг другу ({s}, {s1}).", nameof(words));
+            }
+            _lstWords.AddRange(words);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        static IEnumerable<string> GetSymbols(string str)
+        {
+            if (str.Length <= 0)
+                yield break;
+            foreach (char c in str)
+                yield return new string(c, 1);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public bool FindRelation(string word)
+        {
+            for (int j = 0; j < word.Length; j++)
+                for (int k = 0; k < word.Length; k++)
+                {
+
+                }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="words"></param>
+        /// <returns></returns>
+        public ConcurrentBag<string> FindRelation(IList<string> words)
+        {
+
+        }
+
+
+
+
+
+
         /// <summary>
         ///     Текущие связываемые карты.
         /// </summary>
