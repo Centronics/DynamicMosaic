@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Threading.Tasks;
 using DynamicParser;
 
 namespace DynamicMosaic
@@ -20,33 +20,72 @@ namespace DynamicMosaic
         /// <summary>
         /// 
         /// </summary>
+        readonly List<ProcessorContainer> _lstProcessors = new List<ProcessorContainer>();
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="words"></param>
         public void Add(IList<string> words)
         {
             if (words == null || words.Count <= 0)
                 return;
-            foreach (string s in words)
-            {
-                if (string.IsNullOrEmpty(s))
-                    throw new ArgumentNullException($"В коллекции слов найдено {nameof(string.IsNullOrEmpty)}");
-                WordSearcher ws = new WordSearcher(GetSymbols(s).ToArray());
-                foreach (string s1 in words.Where(s1 => s1 != s).Where(s1 => ws.IsEqual(s1)))
-                    throw new ArgumentException($@"{nameof(Add)}: Найдены слова, соответствующие друг другу ({s}, {s1}).", nameof(words));
-            }
+            if (!VerifyWords(words))
+                throw new ArgumentException($"{nameof(Add)}: В словах не должно быть повторяющихся букв.");
             _lstWords.AddRange(words);
         }
 
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="words"></param>
+        /// <returns></returns>
+        public static bool VerifyWords(IList<string> words)
+        {
+            for (int k = 0; k < words.Count; k++)
+            {
+                if (string.IsNullOrEmpty(words[k]))
+                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдено {nameof(string.IsNullOrEmpty)}.");
+                if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t))))
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ch"></param>
         /// <param name="str"></param>
         /// <returns></returns>
-        static IEnumerable<string> GetSymbols(string str)
+        static bool SearchLetter(char ch, string str)
         {
-            if (str.Length <= 0)
-                yield break;
-            foreach (char c in str)
-                yield return new string(c, 1);
+            if (str == null)
+                throw new ArgumentNullException(nameof(str), $"{nameof(SearchLetter)}: Строка для поиска должна содержать значение.");
+            return str.ToUpper().Contains(char.ToUpper(ch));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="processors"></param>
+        public void Add(IList<Processor> processors)
+        {
+            if (processors == null || processors.Count <= 0)
+                return;
+            foreach (Processor processor in processors)
+                _lstProcessors.Add(new ProcessorContainer(processor));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="processor"></param>
+        public void Add(Processor processor)
+        {
+            if (processor == null || processor.Length <= 0)
+                return;
+            _lstProcessors.Add(new ProcessorContainer(processor));
         }
 
         /// <summary>
@@ -54,24 +93,112 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        public bool FindRelation(string word)
+        public IEnumerable<string> FindRelation(string word)
         {
             for (int j = 0; j < word.Length; j++)
-                for (int k = 0; k < word.Length; k++)
-                {
-
-                }
+                for (int k = 1; k <= word.Length; k++)
+                    if (j + k >= word.Length)
+                        yield return word.Substring(j, k);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="words"></param>
+        /// <param name="processor"></param>
         /// <returns></returns>
-        public ConcurrentBag<string> FindRelation(IList<string> words)
+        public ConcurrentBag<string> FindRelation(Processor processor)
         {
-
+            if (_lstWords == null || _lstWords.Count <= 0)
+                return new ConcurrentBag<string>();
+            SearchResults[] lstStrings = processor.GetEqual(_lstProcessors);
+            ConcurrentBag<string> bag = new ConcurrentBag<string>();
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false;
+            Parallel.ForEach(_lstWords, (word, state) =>
+            {
+                try
+                {
+                    if (IsEqualWord(word, lstStrings))
+                        bag.Add(word);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            return bag;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="sr"></param>
+        /// <returns></returns>
+        static bool IsEqualWord(string word, IEnumerable<SearchResults> sr)
+        {
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false, result = false;
+            Parallel.ForEach(sr, (k, state) =>
+            {
+                try
+                {
+                    if (!k.FindRelation(word))
+                        return;
+                    result = true;
+                    state.Stop();
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            return result;
+        }
+
+        /// <summary>
+        /// Сортирует все карты по возрастанию.
+        /// </summary>
+        //void SortLayers()
+        //{
+        //    for (int k = 0; k < _lstProcessors.Count; k++)
+        //    {
+        //        for (int j = k + 1; j < _lstProcessors.Count; j++)
+        //        {
+        //            if (_lstProcessors[j].Length >= _lstProcessors[k].Length) continue;
+        //            Processor processor = _lstProcessors[j];
+        //            _lstProcessors[j] = _lstProcessors[k];
+        //            _lstProcessors[k] = processor;
+        //        }
+        //    }
+        //}
+
+
+
 
 
 
@@ -249,22 +376,22 @@ namespace DynamicMosaic
         /// <summary>
         /// Сортирует все слои по возрастанию.
         /// </summary>
-        void SortLayers()
-        {
-            if (_sorted)
-                return;
-            for (int k = 0; k < _nextLinkedRegion.Count; k++)
-            {
-                for (int j = k + 1; j < _nextLinkedRegion.Count; j++)
-                {
-                    if (_nextLinkedRegion[j].Length >= _nextLinkedRegion[k].Length) continue;
-                    RegionMemory regionMemory = _nextLinkedRegion[j];
-                    _nextLinkedRegion[j] = _nextLinkedRegion[k];
-                    _nextLinkedRegion[k] = regionMemory;
-                }
-            }
-            _sorted = true;
-        }
+        //void SortLayers()
+        //{
+        //    if (_sorted)
+        //        return;
+        //    for (int k = 0; k < _nextLinkedRegion.Count; k++)
+        //    {
+        //        for (int j = k + 1; j < _nextLinkedRegion.Count; j++)
+        //        {
+        //            if (_nextLinkedRegion[j].Length >= _nextLinkedRegion[k].Length) continue;
+        //            RegionMemory regionMemory = _nextLinkedRegion[j];
+        //            _nextLinkedRegion[j] = _nextLinkedRegion[k];
+        //            _nextLinkedRegion[k] = regionMemory;
+        //        }
+        //    }
+        //    _sorted = true;
+        //}
 
         /// <summary>
         ///     Выполняет поиск и возвращает <see cref="RegionMemory" /> или null в зависимости от того, содержится указанный
