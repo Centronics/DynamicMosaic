@@ -13,19 +13,24 @@ namespace DynamicMosaic
     public sealed class RegionMemory
     {
         /// <summary>
-        /// 
+        /// Слова, поиск которых производится при каждом запросе.
         /// </summary>
         readonly List<string> _lstWords = new List<string>();
 
         /// <summary>
-        /// 
+        /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
         readonly List<ProcessorContainer> _lstProcessors = new List<ProcessorContainer>();
 
         /// <summary>
-        /// 
+        /// Статус сортировки.
         /// </summary>
-        /// <param name="words"></param>
+        bool _sorted;
+
+        /// <summary>
+        /// Добавляет слова, поиск которых будет производиться при каждом запросе.
+        /// </summary>
+        /// <param name="words">Добавляемые слова.</param>
         public void Add(IList<string> words)
         {
             if (words == null || words.Count <= 0)
@@ -36,10 +41,17 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// 
+        /// Добавляет слова, поиск которых будет производиться при каждом запросе.
         /// </summary>
-        /// <param name="words"></param>
-        /// <returns></returns>
+        /// <param name="words">Добавляемые слова.</param>
+        public void Add(params string[] words) => Add((IList<string>)words);
+
+        /// <summary>
+        /// Проверяет, встречаются ли в словах одинаковые буквы. Проверка производится без учёта регистра.
+        /// В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.
+        /// </summary>
+        /// <param name="words">Проверяемые слова.</param>
+        /// <returns>В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.</returns>
         public static bool VerifyWords(IList<string> words)
         {
             for (int k = 0; k < words.Count; k++)
@@ -53,66 +65,79 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// 
+        /// Выполняет поиск заданного символа в заданном слове, без учёта регистра.
         /// </summary>
-        /// <param name="ch"></param>
-        /// <param name="str"></param>
-        /// <returns></returns>
+        /// <param name="ch">Искомый символ.</param>
+        /// <param name="str">Строка, в которой необходимо произвести поиск.</param>
+        /// <returns>Возвращает значение true в случае, когда искомый символ содержится в указанном слове, в противном случае возвращает значение false.</returns>
         static bool SearchLetter(char ch, string str)
         {
             if (str == null)
-                throw new ArgumentNullException(nameof(str), $"{nameof(SearchLetter)}: Строка для поиска должна содержать значение.");
+                throw new ArgumentNullException(nameof(str), $"{nameof(SearchLetter)}: Строка поиска должна содержать значение.");
             return str.ToUpper().Contains(char.ToUpper(ch));
         }
 
         /// <summary>
-        /// 
+        /// Добавляет указанные карты, группируя их по размерам.
         /// </summary>
-        /// <param name="processors"></param>
+        /// <param name="processors">Добавляемые карты.</param>
         public void Add(IList<Processor> processors)
         {
             if (processors == null || processors.Count <= 0)
                 return;
-            List<Processor> procs = new List<Processor>(processors.Count);
-            for (int k = 0; k < processors.Count; k++)
+            _sorted = false;
+            List<Processor> procs = new List<Processor>();
+            while (processors.Count > 0)
             {
-                Processor proc = processors[k];
+                Processor proc = processors[0];
+                processors.RemoveAt(0);
                 if (proc == null)
                     continue;
+                procs.Clear();
                 procs.Add(proc);
-                procs.AddRange(processors.Where((t, j) => t != null && k != j).Where(t => proc.Width == t.Width && proc.Height == t.Height));
+                for (int j = 0; j < processors.Count; j++)
+                {
+                    if (processors[j] == null)
+                        continue;
+                    if (processors[j].Width != procs[0].Width || processors[j].Height != procs[0].Height) continue;
+                    procs.Add(processors[j]);
+                    processors.RemoveAt(j--);
+                }
                 _lstProcessors.Add(new ProcessorContainer(procs));
             }
         }
 
         /// <summary>
-        /// 
+        /// Добавляет указанные карты, сортируя их по размерам.
         /// </summary>
-        /// <param name="processor"></param>
-        public void Add(Processor processor)
+        /// <param name="processors">Добавляемые карты.</param>
+        public void Add(params Processor[] processors) => Add((IList<Processor>)processors);
+
+        /// <summary>
+        /// Производит поиск слова в имеющихся картах.
+        /// Возвращает значение true в случае, если слово найдено, в противном случае возвращает значение false.
+        /// </summary>
+        /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
+        /// <param name="word">Искомое слово.</param>
+        /// <returns>Возвращает значение true в случае, если слово найдено, в противном случае возвращает значение false.</returns>
+        public bool FindWord(Processor processor, string word)
         {
-            if (processor == null || processor.Length <= 0)
-                return;
-            _lstProcessors.Add(new ProcessorContainer(processor));
+
         }
 
         /// <summary>
-        /// 
+        /// Позволяет выяснить, содержит карта заданное слово или нет.
+        /// Для идентификации слова используется первый символ.
         /// </summary>
-        /// <param name="word"></param>
-        /// <returns></returns>
-        IEnumerable<string> FindRelation(string word) => word.Select((t, j) => word.Substring(j, 1));
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="processor"></param>
-        /// <returns></returns>
-        public ConcurrentBag<string> FindRelation(Processor processor)
+        /// <param name="processor">Анализируемая карта.</param>
+        /// <param name="processors">Карты, поиск которых будет производиться.</param>
+        /// <returns>Возвращает экземпляр класса <see cref="WordSearcher"/>, позволяющий выяснить, содержит карта заданное слово или нет.</returns>
+        WordSearcher FindRelation(Processor processor, IList<ProcessorContainer> processors)
         {
             if (_lstWords == null || _lstWords.Count <= 0)
-                return new ConcurrentBag<string>();
-            SearchResults[] lstStrings = processor.GetEqual(_lstProcessors);
+                return null;
+            SortLayers();
+            SearchResults[] lstStrings = processor.GetEqual(processors);
             ConcurrentBag<string> bag = new ConcurrentBag<string>();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -140,15 +165,15 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            return bag;
+            return new WordSearcher((from s in bag from c in s select new string(c, 1)).ToArray());
         }
 
         /// <summary>
-        /// 
+        /// Анализирует содержимое заданных карт на предмет содержания в них заданного слова.
         /// </summary>
-        /// <param name="word"></param>
-        /// <param name="sr"></param>
-        /// <returns></returns>
+        /// <param name="word">Искомое слово.</param>
+        /// <param name="sr">Карты, в которых необходимо осуществить поиск.</param>
+        /// <returns>Возвращает значение true в случае нахождения слова в какой-либо из указанных карт, в противном случае возвращает значение false.</returns>
         static bool IsEqualWord(string word, IEnumerable<SearchResults> sr)
         {
             string errString = string.Empty, errStopped = string.Empty;
@@ -187,6 +212,8 @@ namespace DynamicMosaic
         /// </summary>
         void SortLayers()
         {
+            if (_sorted)
+                return;
             for (int k = 0; k < _lstProcessors.Count; k++)
             {
                 for (int j = k + 1; j < _lstProcessors.Count; j++)
@@ -197,6 +224,7 @@ namespace DynamicMosaic
                     _lstProcessors[k] = procContainer;
                 }
             }
+            _sorted = true;
         }
     }
 }
