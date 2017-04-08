@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DynamicParser;
 
@@ -28,7 +29,21 @@ namespace DynamicMosaic
         bool _sorted;
 
         /// <summary>
-        /// Добавляет слова, поиск которых будет производиться при каждом запросе.
+        /// Получает карту, поиск которой производится при каждом запросе поиска слова.
+        /// </summary>
+        /// <param name="index">Индекс карты.</param>
+        /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
+        public ProcessorContainer GetProcessorContainerAt(int index) => _lstProcessors[index];
+
+        /// <summary>
+        /// Получает слово, по которому производится поиск при каждом запросе поиска слова.
+        /// </summary>
+        /// <param name="index">Индекс слова.</param>
+        /// <returns>Возвращает слово, поиск которого производится при каждом запросе поиска слова.</returns>
+        public string GetCompareString(int index) => _lstWords[index];
+
+        /// <summary>
+        /// Добавляет слова, поиск которых будет производиться при каждом запросе поиска слова.
         /// </summary>
         /// <param name="words">Добавляемые слова.</param>
         public void Add(IList<string> words)
@@ -41,7 +56,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Добавляет слова, поиск которых будет производиться при каждом запросе.
+        /// Добавляет слова, поиск которых будет производиться при каждом запросе поиска слова.
         /// </summary>
         /// <param name="words">Добавляемые слова.</param>
         public void Add(params string[] words) => Add((IList<string>)words);
@@ -79,6 +94,7 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Добавляет указанные карты, группируя их по размерам.
+        /// Поиск по этим картам производится при каждом запросе.
         /// </summary>
         /// <param name="processors">Добавляемые карты.</param>
         public void Add(IList<Processor> processors)
@@ -109,6 +125,7 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Добавляет указанные карты, сортируя их по размерам.
+        /// Поиск по этим картам производится при каждом запросе.
         /// </summary>
         /// <param name="processors">Добавляемые карты.</param>
         public void Add(params Processor[] processors) => Add((IList<Processor>)processors);
@@ -122,7 +139,22 @@ namespace DynamicMosaic
         /// <returns>Возвращает значение true в случае, если слово найдено, в противном случае возвращает значение false.</returns>
         public bool FindWord(Processor processor, string word)
         {
-
+            if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word))
+                return false;
+            SortLayers();
+            WordSearcher ws = new WordSearcher((from c in word select new string(c, 1)).ToArray());
+            foreach (ProcessorContainer proc in _lstProcessors)
+            {
+                if (proc == null)
+                    throw new ArgumentNullException($@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть равен null.");
+                if (proc.Count <= 0)
+                    throw new ArgumentException($@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть пустым.");
+                string str = FindRelation(processor);
+                if (string.IsNullOrEmpty(str))
+                    continue;
+                return ws.IsEqual(str);
+            }
+            return false;
         }
 
         /// <summary>
@@ -130,14 +162,12 @@ namespace DynamicMosaic
         /// Для идентификации слова используется первый символ.
         /// </summary>
         /// <param name="processor">Анализируемая карта.</param>
-        /// <param name="processors">Карты, поиск которых будет производиться.</param>
         /// <returns>Возвращает экземпляр класса <see cref="WordSearcher"/>, позволяющий выяснить, содержит карта заданное слово или нет.</returns>
-        WordSearcher FindRelation(Processor processor, IList<ProcessorContainer> processors)
+        string FindRelation(Processor processor)
         {
-            if (_lstWords == null || _lstWords.Count <= 0)
+            if (_lstWords == null || _lstWords.Count <= 0 || processor == null || processor.Length <= 0 || _lstProcessors == null || _lstProcessors.Count <= 0)
                 return null;
-            SortLayers();
-            SearchResults[] lstStrings = processor.GetEqual(processors);
+            SearchResults[] lstStrings = processor.GetEqual(_lstProcessors);
             ConcurrentBag<string> bag = new ConcurrentBag<string>();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -165,7 +195,10 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            return new WordSearcher((from s in bag from c in s select new string(c, 1)).ToArray());
+            StringBuilder sb = new StringBuilder();
+            foreach (string s in bag)
+                sb.Append(s);
+            return sb.ToString();
         }
 
         /// <summary>
