@@ -11,7 +11,7 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт.
     /// </summary>
-    public sealed class RegionMemory
+    public sealed class Reflex
     {
         /// <summary>
         /// Слова, поиск которых производится при каждом запросе.
@@ -136,25 +136,50 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает значение true в случае, если слово найдено, в противном случае возвращает значение false.</returns>
-        public bool FindWord(Processor processor, string word)
+        /// <returns>Возвращает список слов, которые так или иначе связаны с указанным словом.</returns>
+        public ConcurrentBag<string> FindWord(Processor processor, string word)
         {
             if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word))
-                return false;
+                return null;
             SortLayers();
             WordSearcher ws = new WordSearcher((from c in word select new string(c, 1)).ToArray());
-            foreach (ProcessorContainer proc in _lstProcessors)
+            ConcurrentBag<string> strings = new ConcurrentBag<string>();
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false;
+            Parallel.ForEach(_lstProcessors, (proc, state) =>
             {
-                if (proc == null)
-                    throw new ArgumentNullException($@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть равен null.");
-                if (proc.Count <= 0)
-                    throw new ArgumentException($@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть пустым.");
-                string str = FindRelation(processor);
-                if (string.IsNullOrEmpty(str))
-                    continue;
-                return ws.IsEqual(str);
-            }
-            return false;
+                try
+                {
+                    if (proc == null)
+                        throw new ArgumentNullException(
+                            $@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть равен null.");
+                    if (proc.Count <= 0)
+                        throw new ArgumentException(
+                            $@"{nameof(FindWord)}: {nameof(ProcessorContainer)} не может быть пустым.");
+                    string str = FindRelation(processor);
+                    if (string.IsNullOrEmpty(str))
+                        return;
+                    if (ws.IsEqual(str))
+                        strings.Add(str);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            return strings;
         }
 
         /// <summary>
