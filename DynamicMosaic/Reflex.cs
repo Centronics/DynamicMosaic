@@ -72,7 +72,7 @@ namespace DynamicMosaic
             for (int k = 0; k < words.Count; k++)
             {
                 if (string.IsNullOrEmpty(words[k]))
-                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдено {nameof(string.IsNullOrEmpty)}.");
+                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит.");
                 if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t))))
                     return false;
             }
@@ -101,23 +101,24 @@ namespace DynamicMosaic
         {
             if (processors == null || processors.Count <= 0)
                 return;
+            List<Processor> lstProcessors = new List<Processor>(processors);
             _sorted = false;
             List<Processor> procs = new List<Processor>();
-            while (processors.Count > 0)
+            while (lstProcessors.Count > 0)
             {
-                Processor proc = processors[0];
-                processors.RemoveAt(0);
+                Processor proc = lstProcessors[0];
+                lstProcessors.RemoveAt(0);
                 if (proc == null)
                     continue;
                 procs.Clear();
                 procs.Add(proc);
-                for (int j = 0; j < processors.Count; j++)
+                for (int j = 0; j < lstProcessors.Count; j++)
                 {
-                    if (processors[j] == null)
+                    if (lstProcessors[j] == null)
                         continue;
-                    if (processors[j].Width != procs[0].Width || processors[j].Height != procs[0].Height) continue;
-                    procs.Add(processors[j]);
-                    processors.RemoveAt(j--);
+                    if (lstProcessors[j].Width != procs[0].Width || lstProcessors[j].Height != procs[0].Height) continue;
+                    procs.Add(lstProcessors[j]);
+                    lstProcessors.RemoveAt(j--);
                 }
                 _lstProcessors.Add(new ProcessorContainer(procs));
             }
