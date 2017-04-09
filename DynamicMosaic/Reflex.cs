@@ -24,6 +24,11 @@ namespace DynamicMosaic
         readonly List<ProcessorContainer> _lstProcessors = new List<ProcessorContainer>();
 
         /// <summary>
+        /// Список состояний текущего класса, которые были сохранены при задании каждого нового запроса на поиск слова.
+        /// </summary>
+        readonly List<Reflex> _lstReflex = new List<Reflex>();
+
+        /// <summary>
         /// Статус сортировки.
         /// </summary>
         bool _sorted;
