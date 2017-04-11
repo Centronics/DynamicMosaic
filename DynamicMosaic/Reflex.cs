@@ -24,9 +24,9 @@ namespace DynamicMosaic
         readonly List<ProcessorContainer> _lstProcessors = new List<ProcessorContainer>();
 
         /// <summary>
-        /// Список состояний текущего класса, которые были сохранены при задании каждого нового запроса на поиск слова.
+        /// Список карт, задействованных в запросе поиска слов, которые сохраняются при задании каждого запроса.
         /// </summary>
-        readonly List<Reflex> _lstReflex = new List<Reflex>();
+        readonly List<List<Reflex>> _lstReflex = new List<List<Reflex>>();
 
         /// <summary>
         /// Статус сортировки.
@@ -98,6 +98,15 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Добавляет содержимое указанного контейнера в общий контейнер карт равного размера.
+        /// </summary>
+        /// <param name="pc">Добавляемый контейнер.</param>
+        void AddToGroup(ProcessorContainer pc)
+        {
+            
+        }
+
+        /// <summary>
         /// Добавляет указанные карты, группируя их по размерам.
         /// Поиск по этим картам производится при каждом запросе.
         /// </summary>
@@ -125,7 +134,8 @@ namespace DynamicMosaic
                     procs.Add(lstProcessors[j]);
                     lstProcessors.RemoveAt(j--);
                 }
-                _lstProcessors.Add(new ProcessorContainer(procs));
+                //AddToGroup
+                //_lstProcessors.Add(new ProcessorContainer(procs));
             }
         }
 
@@ -189,8 +199,18 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Получает коллекцию карт методом исключения одной карты из существующей коллекции.
+        /// </summary>
+        /// <param name="pc">Исходная коллекция карт.</param>
+        /// <returns>Возвращает коллекцию карт методом исключения одной карты из существующей коллекции.</returns>
+        IEnumerable<ProcessorContainer> GetCollectionExclude(ProcessorContainer pc)
+        {
+            
+        }
+
+        /// <summary>
         /// Позволяет выяснить, содержит карта заданное слово или нет.
-        /// Для идентификации слова используется первый символ.
+        /// Для идентификации слова используется первый символ поля <see cref="Processor.Tag"/> каждой карты.
         /// </summary>
         /// <param name="processor">Анализируемая карта.</param>
         /// <returns>Возвращает экземпляр класса <see cref="WordSearcher"/>, позволяющий выяснить, содержит карта заданное слово или нет.</returns>
@@ -198,7 +218,7 @@ namespace DynamicMosaic
         {
             if (_lstWords == null || _lstWords.Count <= 0 || processor == null || processor.Length <= 0 || _lstProcessors == null || _lstProcessors.Count <= 0)
                 return null;
-            SearchResults[] lstStrings = processor.GetEqual(_lstProcessors);
+            SearchResults[] lstResults = processor.GetEqual(_lstProcessors);
             ConcurrentBag<string> bag = new ConcurrentBag<string>();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -206,7 +226,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    if (IsEqualWord(word, lstStrings))
+                    if (IsEqualWord(word, lstResults))//необходимо добавлять не слова поиска, а присутствующие карты, задействованные в поиске слова, а так же все имеющиеся слова.
                         bag.Add(word);
                 }
                 catch (Exception ex)
