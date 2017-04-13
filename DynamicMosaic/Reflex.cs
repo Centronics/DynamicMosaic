@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DynamicParser;
 
 namespace DynamicMosaic
@@ -20,11 +21,6 @@ namespace DynamicMosaic
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
         readonly List<Processor> _lstProcessors = new List<Processor>();
-
-        /// <summary>
-        /// Список карт, задействованных в запросе поиска слов, которые сохраняются при задании каждого запроса.
-        /// </summary>
-        readonly List<Reflex> _lstReflex = new List<Reflex>();
 
         /// <summary>
         /// Получает карту, поиск которой производится при каждом запросе поиска слова.
@@ -50,6 +46,8 @@ namespace DynamicMosaic
                 return;
             if (!VerifyWords(words))
                 throw new ArgumentException($"{nameof(Add)}: В словах не должно быть повторяющихся букв.");
+            for (int k = 0; k < words.Count; k++)
+                words[k] = words[k].ToUpper();
             _lstWords.AddRange(words);
         }
 
@@ -69,8 +67,10 @@ namespace DynamicMosaic
         {
             for (int k = 0; k < words.Count; k++)
             {
-                if (string.IsNullOrEmpty(words[k]))
-                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит.");
+                if (words[k] == null)
+                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит (null).");
+                if (words[k] == string.Empty)
+                    throw new ArgumentException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит.");
                 if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t))))
                     return false;
             }
@@ -95,56 +95,97 @@ namespace DynamicMosaic
         /// Поиск по этим картам производится при каждом запросе.
         /// </summary>
         /// <param name="processors">Добавляемые карты.</param>
-        public void Add(IList<Processor> processors)
+        public void Add(ProcessorContainer processors)
         {
-            if (processors == null || processors.Count <= 0)
+            if (processors == null)
                 return;
-            List<Processor> lstProcessors = new List<Processor>(processors);
-            List<Processor> procs = new List<Processor>();
-            while (lstProcessors.Count > 0)
+            if (_lstProcessors.Count > 0)
             {
-                Processor proc = lstProcessors[0];
-                lstProcessors.RemoveAt(0);
-                if (proc == null)
-                    continue;
-                procs.Clear();
-                procs.Add(proc);
-                for (int j = 0; j < lstProcessors.Count; j++)
-                {
-                    if (lstProcessors[j] == null)
-                        continue;
-                    if (lstProcessors[j].Width != procs[0].Width || lstProcessors[j].Height != procs[0].Height) continue;
-                    procs.Add(lstProcessors[j]);
-                    lstProcessors.RemoveAt(j--);
-                }
-                //AddToGroup
-                //_lstProcessors.Add(new ProcessorContainer(procs));
+                if (processors.Width != _lstProcessors[0].Width)
+                    throw new ArgumentException($"{nameof(Add)}: Карты должны быть равны по ширине ({processors.Width} != {_lstProcessors[0].Width}).",
+                        nameof(processors));
+                if (processors.Height != _lstProcessors[0].Height)
+                    throw new ArgumentException($"{nameof(Add)}: Карты должны быть равны по высоте ({processors.Height} != {_lstProcessors[0].Height}).",
+                        nameof(processors));
             }
+            for (int k = 0; k < processors.Count; k++)
+                _lstProcessors.Add(processors[k]);
         }
 
         /// <summary>
-        /// Добавляет указанные карты, сортируя их по размерам.
-        /// Поиск по этим картам производится при каждом запросе.
-        /// </summary>
-        /// <param name="processors">Добавляемые карты.</param>
-        public void Add(params Processor[] processors) => Add((IList<Processor>)processors);
-
-        /// <summary>
         /// Производит поиск слова в имеющихся картах.
-        /// Возвращает значение true в случае, если слово найдено, в противном случае возвращает значение false.
+        /// Возвращает строку, которая так или иначе связана с указанным словом.
         /// </summary>
         /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает список слов, которые так или иначе связаны с указанным словом.</returns>
-        public ConcurrentBag<string> FindWord(Processor processor, string word)
+        /// <returns>Возвращает строку, которая так или иначе связана с указанным словом.</returns>
+        public string FindWord(Processor processor, string word)
         {
             if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word) ||
                 _lstWords == null || _lstWords.Count <= 0 || _lstProcessors == null || _lstProcessors.Count <= 0)
                 return null;
-            WordSearcher ws = new WordSearcher((from c in word select new string(c, 1)).ToArray());
-            //необходимо добавлять не слова поиска, а присутствующие карты, задействованные в поиске слова, а так же все имеющиеся слова.
-            ConcurrentBag<string> strings = processor.GetEqual(new ProcessorContainer(_lstProcessors)).FindRelation((IList<string>)_lstWords);
-
+            char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
+            object locker = new object();
+            StringBuilder bigStrings = new StringBuilder();
+            string allerrString = string.Empty, allerrStopped = string.Empty;
+            bool allexThrown = false, allexStopped = false;
+            Parallel.ForEach(GetCollectionExclude(new ProcessorContainer(_lstProcessors)), (pc, allstate) =>
+            {
+                try
+                {
+                    object thisLock = new object();
+                    StringBuilder sb = new StringBuilder();
+                    string errString = string.Empty, errStopped = string.Empty;
+                    bool exThrown = false, exStopped = false;
+                    Parallel.ForEach(processor.GetEqual(pc).FindRelation((IList<string>)_lstWords), (k, state) =>
+                    {
+                        try
+                        {
+                            if (string.IsNullOrEmpty(k))
+                                throw new Exception($"{nameof(FindWord)}: При чтении данных из внутреннего массива произошла ошибка.");
+                            if (!IsCharsInWord(chars, k))
+                                return;
+                            lock (thisLock)
+                                sb.Append(k);
+                        }
+                        catch (Exception ex)
+                        {
+                            try
+                            {
+                                errString = ex.Message;
+                                exThrown = true;
+                                state.Stop();
+                            }
+                            catch (Exception ex1)
+                            {
+                                errStopped = ex1.Message;
+                                exStopped = true;
+                            }
+                        }
+                    });
+                    if (exThrown)
+                        throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+                    lock (locker)
+                        bigStrings.Append(sb.ToString());
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        allerrString = ex.Message;
+                        allexThrown = true;
+                        allstate.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        allerrStopped = ex1.Message;
+                        allexStopped = true;
+                    }
+                }
+            });
+            if (allexThrown)
+                throw new Exception(allexStopped ? $@"{allerrString}{Environment.NewLine}{allerrStopped}" : allerrString);
+            return bigStrings.ToString();
         }
 
         /// <summary>
@@ -153,13 +194,11 @@ namespace DynamicMosaic
         /// <param name="chars">Набор символов для проверки.</param>
         /// <param name="word">Проверяемое слово.</param>
         /// <returns>Возвращает значение true в случае успешной проверки, в противном случае - false.</returns>
-        bool IsCharsInWord(ICollection<char> chars, string word)
+        static bool IsCharsInWord(ICollection<char> chars, string word)
         {
             if (chars == null || chars.Count <= 0)
                 return false;
-            char[] chs = chars.Select(char.ToUpper).ToArray();
-            word = word.ToUpper();
-            return !word.All(c => chs.Any(v => v == c));
+            return !word.All(c => chars.Any(v => v == c));
         }
 
         /// <summary>
