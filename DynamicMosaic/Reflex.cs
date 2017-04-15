@@ -13,6 +13,11 @@ namespace DynamicMosaic
     public sealed class Reflex
     {
         /// <summary>
+        /// Содержит вложенные карты.
+        /// </summary>
+        readonly List<Reflex> _lstNested = new List<Reflex>();
+
+        /// <summary>
         /// Слова, поиск которых производится при каждом запросе.
         /// </summary>
         readonly List<string> _lstWords = new List<string>();
@@ -20,7 +25,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
-        readonly List<Processor> _lstProcessors = new List<Processor>();
+        readonly ProcessorContainer _lstProcessors = new ProcessorContainer();
 
         /// <summary>
         /// Получает карту, поиск которой производится при каждом запросе поиска слова.
@@ -91,25 +96,39 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Добавляет указанные карты, группируя их по размерам.
-        /// Поиск по этим картам производится при каждом запросе.
+        /// Добавляет указанную карту.
+        /// Поиск по добавленным картам производится при каждом запросе.
+        /// </summary>
+        /// <param name="processor">Добавляемая карта.</param>
+        public void Add(Processor processor)
+        {
+            if (processor == null)
+                return;
+            _lstProcessors.Add(processor);
+        }
+
+        /// <summary>
+        /// Добавляет указанные карты.
+        /// Поиск по добавленным картам производится при каждом запросе.
         /// </summary>
         /// <param name="processors">Добавляемые карты.</param>
-        public void Add(ProcessorContainer processors)
+        public void AddRange(IList<Processor> processors)
         {
-            if (processors == null)
+            if (processors == null || processors.Count <= 0)
                 return;
-            if (_lstProcessors.Count > 0)
-            {
-                if (processors.Width != _lstProcessors[0].Width)
-                    throw new ArgumentException($"{nameof(Add)}: Карты должны быть равны по ширине ({processors.Width} != {_lstProcessors[0].Width}).",
-                        nameof(processors));
-                if (processors.Height != _lstProcessors[0].Height)
-                    throw new ArgumentException($"{nameof(Add)}: Карты должны быть равны по высоте ({processors.Height} != {_lstProcessors[0].Height}).",
-                        nameof(processors));
-            }
-            for (int k = 0; k < processors.Count; k++)
-                _lstProcessors.Add(processors[k]);
+            _lstProcessors.AddRange(processors);
+        }
+
+        /// <summary>
+        /// Добавляет указанные карты.
+        /// Поиск по добавленным картам производится при каждом запросе.
+        /// </summary>
+        /// <param name="processors">Добавляемые карты.</param>
+        public void AddRange(params Processor[] processors)
+        {
+            if (processors == null || processors.Length <= 0)
+                return;
+            _lstProcessors.AddRange((IList<Processor>)processors);
         }
 
         /// <summary>
@@ -127,9 +146,10 @@ namespace DynamicMosaic
             char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
             object locker = new object();
             StringBuilder bigStrings = new StringBuilder();
+            List<string> lstFindStrings = new List<string>();
             string allerrString = string.Empty, allerrStopped = string.Empty;
             bool allexThrown = false, allexStopped = false;
-            Parallel.ForEach(GetCollectionExclude(new ProcessorContainer(_lstProcessors)), (pc, allstate) =>
+            Parallel.ForEach(GetCollectionExclude(_lstProcessors), (pc, allstate) =>
             {
                 try
                 {
@@ -146,7 +166,10 @@ namespace DynamicMosaic
                             if (!IsCharsInWord(chars, k))
                                 return;
                             lock (thisLock)
+                            {
                                 sb.Append(k);
+                                lstFindStrings.Add(k);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -185,7 +208,26 @@ namespace DynamicMosaic
             });
             if (allexThrown)
                 throw new Exception(allexStopped ? $@"{allerrString}{Environment.NewLine}{allerrStopped}" : allerrString);
-            return bigStrings.ToString();
+            string result = bigStrings.ToString();
+            if (IsAllMaps(result))
+                return result;
+            //Собрать слова и карты, затем создать новый Reflex.
+            return result;
+        }
+
+        /// <summary>
+        /// Проверяет, содержат ли карты в своих именах все буквы указанного слова.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>Возвращает значение true в случае, если текущий экземпляр полностью описывает указанное слово, в противном случае - false.</returns>
+        bool IsAllMaps(string word)
+        {
+            if (string.IsNullOrEmpty(word))
+                throw new ArgumentNullException(nameof(word), $"{nameof(IsAllMaps)}: Искомое слово должно быть задано.");
+            for (int k = 0; k < _lstProcessors.Count; k++)
+                if (!_lstProcessors[k].IsProcessorName(word, 0))
+                    return false;
+            return true;
         }
 
         /// <summary>
