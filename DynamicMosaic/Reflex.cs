@@ -146,6 +146,37 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Проверяет, присутствуют ли одинаковые буквы в словарных запасах указанных контекстов или нет.
+        /// </summary>
+        /// <param name="reflex">Проверяемые контексты.</param>
+        /// <returns>Возвращает значение true в случае пересечения контекстов, в противном случае возвращает значение false.</returns>
+        public bool IsConflict(params Reflex[] reflex)
+        {
+            
+        }
+
+        /// <summary>
+        /// Получает <see cref="Reflex"/>, соответствующий указанному слову состояния.
+        /// </summary>
+        /// <param name="word">Искомое слово состояния.</param>
+        /// <returns>Возвращает <see cref="Reflex"/>, соответствующий указанному слову состояния.</returns>
+        public Reflex GetReflexByWord(string word)
+        {
+            
+        }
+
+        /// <summary>
+        /// Получает слово состояния, которое представляет текущий экземпляр.
+        /// </summary>
+        public string StateWord
+        {
+            get
+            {
+                
+            }
+        }
+
+        /// <summary>
         /// Производит поиск слова в имеющихся картах.
         /// Возвращает строку, которая так или иначе связана с указанным словом или null, если связи нет.
         /// </summary>
