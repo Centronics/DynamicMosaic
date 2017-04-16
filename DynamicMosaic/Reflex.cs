@@ -163,7 +163,7 @@ namespace DynamicMosaic
             StringBuilder sb = new StringBuilder();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
-            Parallel.ForEach(processor.GetEqual(_seaProcessors).FindRelation((IList<string>)_lstWords), (k, state) => //pc
+            Parallel.ForEach(processor.GetEqual(_seaProcessors).FindRelation((IList<string>)_lstWords), (k, state) =>
             {
                 try
                 {
