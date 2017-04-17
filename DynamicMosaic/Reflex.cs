@@ -13,11 +13,6 @@ namespace DynamicMosaic
     public sealed class Reflex
     {
         /// <summary>
-        /// Содержит вложенные карты.
-        /// </summary>
-        readonly List<Reflex> _lstNested = new List<Reflex>();
-
-        /// <summary>
         /// Слова, поиск которых производится при каждом запросе.
         /// </summary>
         readonly List<string> _lstWords = new List<string>();
@@ -146,34 +141,18 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Проверяет, присутствуют ли одинаковые буквы в словарных запасах указанных контекстов или нет.
+        /// Проверяет, присутствуют ли одинаковые буквы в словарных запасах указанных <see cref="Reflex"/> или нет.
         /// </summary>
         /// <param name="reflex">Проверяемые контексты.</param>
         /// <returns>Возвращает значение true в случае пересечения контекстов, в противном случае возвращает значение false.</returns>
-        public bool IsConflict(params Reflex[] reflex)
+        public static bool IsConflict(params Reflex[] reflex)
         {
-            
-        }
-
-        /// <summary>
-        /// Получает <see cref="Reflex"/>, соответствующий указанному слову состояния.
-        /// </summary>
-        /// <param name="word">Искомое слово состояния.</param>
-        /// <returns>Возвращает <see cref="Reflex"/>, соответствующий указанному слову состояния.</returns>
-        public Reflex GetReflexByWord(string word)
-        {
-            
-        }
-
-        /// <summary>
-        /// Получает слово состояния, которое представляет текущий экземпляр.
-        /// </summary>
-        public string StateWord
-        {
-            get
-            {
-                
-            }
+            if (reflex == null || reflex.Length <= 0)
+                return false;
+            List<string> lstStrings = new List<string>();
+            foreach (Reflex r in reflex.Where(r => r != null))
+                lstStrings.AddRange(r._lstWords);
+            return VerifyWords(lstStrings);
         }
 
         /// <summary>
@@ -228,13 +207,6 @@ namespace DynamicMosaic
             if (IsAllMaps(sb.ToString()))
                 return this;
             Reflex reflex = new Reflex();
-            for (int k = 0; k < _lstNested.Count; k++)
-            {
-                Reflex r = _lstNested[k].FindWord(processor, word);
-                if (r == null) continue;
-                k++;
-                _lstNested.Insert(0, r);
-            }
             reflex.Add(lstFindStrings);
             foreach (char c in lstFindStrings.SelectMany(str => str))
                 for (int k = 0; k < _seaProcessors.Count; k++)
@@ -243,7 +215,6 @@ namespace DynamicMosaic
                     reflex.Add(_seaProcessors[k]);
                     break;
                 }
-            _lstNested.Add(reflex);
             return reflex;
         }
 
