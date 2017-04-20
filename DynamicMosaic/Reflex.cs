@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -153,6 +154,46 @@ namespace DynamicMosaic
             foreach (Reflex r in reflex.Where(r => r != null))
                 lstStrings.AddRange(r._lstWords);
             return VerifyWords(lstStrings);
+        }
+
+        /// <summary>
+        /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
+        /// </summary>
+        /// <param name="words">Искомые слова.</param>
+        /// <returns>Возвращает слова, в случае присутствия указанных слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
+        public ConcurrentBag<string> FindWord(IList<string> words)
+        {
+            if (words == null)
+                return null;
+            WordSearcher ws = new WordSearcher(words);
+            ConcurrentBag<string> lstResult = new ConcurrentBag<string>();
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false;
+            Parallel.ForEach(_lstWords, (k, state) =>
+            {
+                try
+                {
+                    if (ws.IsEqual(k))
+                        lstResult.Add(k);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            return lstResult;
         }
 
         /// <summary>
