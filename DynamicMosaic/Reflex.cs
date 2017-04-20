@@ -157,10 +157,31 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Получает слова для проверки их существования в контексте класса <see cref="Reflex"/>.
+        /// </summary>
+        /// <param name="word">Искомое слово.</param>
+        /// <returns>Возвращает слова для проверки их существования в контексте класса <see cref="Reflex"/>.</returns>
+        public static IEnumerable<string> GetWords(string word)
+        {
+            if (string.IsNullOrEmpty(word))
+                yield break;
+            for (int k = 1; k <= word.Length; k++)
+                for (int j = 0, max = word.Length - k; j <= max; j++)
+                    yield return word.Substring(j, k);
+        }
+
+        /// <summary>
+        /// Возвращает результат, обозначающий, находится ли заданное слово в текущем контексте класса <see cref="Reflex"/>.
+        /// </summary>
+        /// <param name="word">Искомое слово.</param>
+        /// <returns>Возвращает слова в случае присутствия их в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
+        public ConcurrentBag<string> FindWord(string word) => string.IsNullOrEmpty(word) ? null : FindWord(GetWords(word).ToArray());
+
+        /// <summary>
         /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
         /// </summary>
         /// <param name="words">Искомые слова.</param>
-        /// <returns>Возвращает слова, в случае присутствия указанных слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
+        /// <returns>Возвращает слова в случае присутствия указанных слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
         public ConcurrentBag<string> FindWord(IList<string> words)
         {
             if (words == null)
