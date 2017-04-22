@@ -7,8 +7,9 @@ namespace DynamicMosaicTest
     public class DynamicMosaicTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void ReflexTest1()
         {
+
         }
     }
 }
