@@ -1,6 +1,6 @@
 ﻿namespace DynamicMosaicExample
 {
-    partial class Form1
+    partial class MosaicExample
     {
         /// <summary>
         /// Обязательная переменная конструктора.

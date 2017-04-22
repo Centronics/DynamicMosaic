@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace DynamicMosaicExample
 {
-    public partial class Form1 : Form
+    public partial class MosaicExample : Form
     {
-        public Form1()
+        public MosaicExample()
         {
             InitializeComponent();
         }
