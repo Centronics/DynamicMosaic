@@ -24,6 +24,11 @@ namespace DynamicMosaic
         readonly ProcessorContainer _seaProcessors = new ProcessorContainer();
 
         /// <summary>
+        /// Рефлексы, которые система испытывала при предыдущих запросах.
+        /// </summary>
+        readonly List<Reflex> _lstReflexs = new List<Reflex>();
+
+        /// <summary>
         /// Получает карту, поиск которой производится при каждом запросе поиска слова.
         /// </summary>
         /// <param name="index">Индекс карты.</param>
@@ -36,6 +41,21 @@ namespace DynamicMosaic
         /// <param name="index">Индекс слова.</param>
         /// <returns>Возвращает слово, поиск которого производится при каждом запросе поиска слова.</returns>
         public string GetCompareString(int index) => _lstWords[index];
+
+        /// <summary>
+        /// Получает количество карт в контексте.
+        /// </summary>
+        public int CountProcessor => _seaProcessors.Count;
+
+        /// <summary>
+        /// Получает количество слов в контексте.
+        /// </summary>
+        public int CountWords => _lstWords.Count;
+
+        /// <summary>
+        /// Получает количество рефлексов в контексте.
+        /// </summary>
+        public int CountReflexs => _lstReflexs.Count;
 
         /// <summary>
         /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которого начинается указанным символом.
@@ -268,16 +288,59 @@ namespace DynamicMosaic
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
             if (IsAllMaps(sb.ToString()))
                 return this;
+            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
             Reflex reflex = new Reflex();
-            reflex.Add(lstFindStrings);
             foreach (char c in lstFindStrings.SelectMany(str => str))
                 for (int k = 0; k < _seaProcessors.Count; k++)
-                {
-                    if (char.ToUpper(_seaProcessors[k].Tag[0]) != c) continue;
-                    reflex.Add(_seaProcessors[k]);
-                    break;
-                }
+                    if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
+                        reflex.Add(_seaProcessors[k]);
+            if (reflex.CountWords <= 0) return null;
+            reflex.Add(lstFindStrings);
+            _lstReflexs.Add(reflex);
             return reflex;
+        }
+
+        /// <summary>
+        /// Находит указанное слово, используя карты, находящиеся в коллекции.
+        /// </summary>
+        /// <param name="word">Искомое слово.</param>
+        /// <param name="processor">Карта, на которой производится поиск искомого слова.</param>
+        /// <returns>Возвращает коллекцию подходящих карт.</returns>
+        ConcurrentBag<Reflex> FindWordLst(string word, Processor processor)
+        {
+            if (word == null)
+                throw new ArgumentNullException(nameof(word), $"{nameof(FindWordLst)}: Искомое слово должно быть указано.");
+            if (word == string.Empty)
+                throw new ArgumentException($"{nameof(FindWordLst)}: Искомое слово должно быть указано.", nameof(word));
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $"{nameof(FindWordLst)}: Карта, на которой производится поиск, не указана.");
+            ConcurrentBag<Reflex> lstReflexs = new ConcurrentBag<Reflex>();
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false;
+            Parallel.ForEach(_lstReflexs, (k, state) =>
+            {
+                try
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            return lstReflexs;
         }
 
         /// <summary>
