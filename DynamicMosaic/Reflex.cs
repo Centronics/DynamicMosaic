@@ -288,8 +288,11 @@ namespace DynamicMosaic
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
             if (IsAllMaps(sb.ToString()))
                 return this;
-            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
             Reflex reflex = new Reflex();
+            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
+            if (lstReflexs != null)
+                foreach (Reflex refl in lstReflexs.Where(refl => !IsSimilar(refl)))
+                    reflex._lstReflexs.Add(refl);
             foreach (char c in lstFindStrings.SelectMany(str => str))
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
@@ -308,6 +311,8 @@ namespace DynamicMosaic
         /// <returns>Возвращает коллекцию подходящих карт.</returns>
         ConcurrentBag<Reflex> FindWordLst(string word, Processor processor)
         {
+            if (_lstReflexs.Count <= 0)
+                return null;
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindWordLst)}: Искомое слово должно быть указано.");
             if (word == string.Empty)
@@ -321,7 +326,10 @@ namespace DynamicMosaic
             {
                 try
                 {
-
+                    Reflex reflex = FindWord(processor, word);
+                    if (reflex == null)
+                        return;
+                    lstReflexs.Add(reflex);
                 }
                 catch (Exception ex)
                 {
@@ -341,6 +349,24 @@ namespace DynamicMosaic
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
             return lstReflexs;
+        }
+
+        /// <summary>
+        /// Возвращает результат, говорящий о том, присутствует ли <see cref="Reflex"/> с такими же поисковыми картами в текущем <see cref="Reflex"/>,
+        /// как указано в запросе.
+        /// </summary>
+        /// <param name="reflex">Искомый контекст <see cref="Reflex"/>.</param>
+        /// <returns>Возвращает результат true в случае нахождения подобной карты, false - в противном случае.</returns>
+        bool IsSimilar(Reflex reflex)
+        {
+            if (reflex == null)
+                throw new ArgumentNullException(nameof(reflex), $"{nameof(IsSimilar)}: Искомый контекст должен быть указан.");
+            if (_seaProcessors.Count != reflex._seaProcessors.Count)
+                return false;
+            for (int k = 0; k < reflex._seaProcessors.Count; k++)
+                if (string.Compare(_seaProcessors[k].Tag, reflex._seaProcessors[k].Tag, StringComparison.OrdinalIgnoreCase) != 0)
+                    return false;
+            return true;
         }
 
         /// <summary>
