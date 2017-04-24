@@ -11,7 +11,7 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт.
     /// </summary>
-    public sealed class Reflex
+    public sealed class Reflex : ICloneable
     {
         /// <summary>
         /// Слова, поиск которых производится при каждом запросе.
@@ -299,6 +299,8 @@ namespace DynamicMosaic
                         reflex.Add(_seaProcessors[k]);
             if (reflex.CountWords <= 0) return null;
             reflex.Add(lstFindStrings);
+            Reflex r = FindSimilar(reflex);
+            if (r != null) return r.FindWord(processor, word);
             _lstReflexs.Add(reflex);
             return reflex;
         }
@@ -417,6 +419,46 @@ namespace DynamicMosaic
             if (chars == null || chars.Count <= 0)
                 return false;
             return !word.All(c => chars.Any(v => v == c));
+        }
+
+        /// <summary>
+        /// Находит контекст, полностью соответствующий заданному по своему потенциалу.
+        /// </summary>
+        /// <param name="reflex">Искомый потенциал.</param>
+        /// <returns>Возвращает контекст, полностью соответствующий заданному по своему потенциалу.</returns>
+        Reflex FindSimilar(Reflex reflex) => _lstReflexs.FirstOrDefault(r => r.IsEqual(reflex));
+
+        /// <summary>
+        /// Сравнивает контексты по их потенциалам.
+        /// </summary>
+        /// <param name="reflex">Сопоставляемый контекст.</param>
+        /// <returns>В случае соответствия возвращает значение true, в противном случае - false.</returns>
+        public bool IsEqual(Reflex reflex)
+        {
+            if (reflex?.CountWords != CountWords || reflex.CountProcessor != CountProcessor)
+                return false;
+            if ((from str in _lstWords from s in reflex._lstWords where string.Compare(s, str, StringComparison.OrdinalIgnoreCase) != 0 select str).Any())
+                return false;
+            for (int k = 0; k < reflex.CountProcessor; k++)
+                for (int j = 0; j < CountProcessor; j++)
+                    if (string.Compare(reflex.GetProcessorContainerAt(k).Tag, GetProcessorContainerAt(j).Tag, StringComparison.OrdinalIgnoreCase) != 0)
+                        return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Создаёт полную копию текущего контекста.
+        /// </summary>
+        /// <returns>Возвращает полную копию текущего контекста.</returns>
+        public object Clone()
+        {
+            Reflex reflex = new Reflex();
+            for (int k = 0; k < _seaProcessors.Count; k++)
+                reflex._seaProcessors.Add(_seaProcessors[k]);
+            reflex._lstWords.AddRange(_lstWords);
+            foreach (Reflex r in _lstReflexs)
+                reflex._lstReflexs.Add((Reflex)r.Clone());
+            return reflex;
         }
     }
 }
