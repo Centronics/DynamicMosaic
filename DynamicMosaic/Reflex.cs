@@ -81,9 +81,7 @@ namespace DynamicMosaic
                 return;
             if (!VerifyWords(words))
                 throw new ArgumentException($"{nameof(Add)}: В словах не должно быть повторяющихся букв.");
-            for (int k = 0; k < words.Count; k++)
-                words[k] = words[k].ToUpper();
-            _lstWords.AddRange(words);
+            _lstWords.AddRange(words.Select(t => t.ToUpper()));
         }
 
         /// <summary>
@@ -239,11 +237,11 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Производит поиск слова в имеющихся картах.
-        /// Возвращает строку, которая так или иначе связана с указанным словом или null, если связи нет.
+        /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
         /// </summary>
         /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или null, если связи нет.</returns>
+        /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
         public Reflex FindWord(Processor processor, string word)
         {
             if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word) ||
@@ -354,7 +352,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Возвращает результат, говорящий о том, присутствует ли <see cref="Reflex"/> с такими же поисковыми картами в текущем <see cref="Reflex"/>,
+        /// Возвращает результат, говорящий о том, присутствует ли в текущем контексте <see cref="Reflex"/> с такими же поисковыми картами в текущем <see cref="Reflex"/>,
         /// как указано в запросе.
         /// </summary>
         /// <param name="reflex">Искомый контекст <see cref="Reflex"/>.</param>

@@ -35,10 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicParser">
+      <HintPath>..\..\..\Программы\Системы программирования\ДИС\DynamicParserRelease\Скомпилировано\Библиотека\DynamicParser.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicProcessor">
+      <HintPath>..\..\..\Программы\Системы программирования\ДИС\DynamicParserRelease\Скомпилировано\Библиотека\DynamicProcessor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -55,6 +62,12 @@
   <ItemGroup>
     <Compile Include="DynamicMosaicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DynamicMosaic\DynamicMosaic.csproj">
+      <Project>{83dda58c-9f2e-4747-b32b-fb727c43ac71}</Project>
+      <Name>DynamicMosaic</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
