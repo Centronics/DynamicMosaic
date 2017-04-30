@@ -40,9 +40,9 @@ namespace DynamicMosaicTest
             DynamicParser.Processor procE = new DynamicParser.Processor(mapE, "E");
             Reflex reflex = new Reflex();
             reflex.Add(procA, procB, procC, procD, procE);
-            reflex.Add("ACD", "B", "E");
-            Reflex r = reflex.FindWord(main, "ABCDE");
-            Reflex r1 = r.FindWord(main, "ABCDEF");
+            reflex.Add("A", "C", "D", "B", "E");
+            Reflex r = reflex.FindWord(main, "ABC");
+            Reflex r1 = r.FindWord(main, "ABEF");
             //поставить проверки
             ConcurrentBag<string> strings0 = reflex.FindWord("ABCDE");
             ConcurrentBag<string> strings1 = r.FindWord("ABCDE");
