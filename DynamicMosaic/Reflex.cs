@@ -260,7 +260,7 @@ namespace DynamicMosaic
         public Reflex FindWord(Processor processor, string word)
         {
             if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word) ||
-                _lstWords == null || _lstWords.Count <= 0 || _seaProcessors == null || _seaProcessors.Count <= 0 || !IsExistWords(word))
+                _lstWords == null || _lstWords.Count <= 0 || _seaProcessors == null || _seaProcessors.Count <= 0 || !IsAllMaps(word))
                 return null;
             char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
             List<string> lstFindStrings = new List<string>();
@@ -387,25 +387,6 @@ namespace DynamicMosaic
                 if (!reflex._seaProcessors.ContainsTag(_seaProcessors[k].Tag))
                     return false;
             return _lstWords.All(t => reflex._lstWords.All(source => string.Compare(source, t, StringComparison.OrdinalIgnoreCase) != 0));
-        }
-
-        /// <summary>
-        /// Проверяет, содержит ли указанное слово название какой-либо из поисковых карт текущего экземпляра.
-        /// Используется для оптимизации поиска слова в экземплярах класса <see cref="Reflex"/>.
-        /// </summary>
-        /// <param name="word">Искомое слово.</param>
-        /// <returns>В случае нахождения слова в текущем экземпляре <see cref="Reflex"/> возвращает значение true, в противном случае - false.</returns>
-        bool IsExistWords(string word)
-        {
-            if (string.IsNullOrEmpty(word))
-                return false;
-            return word.Any(c =>
-            {
-                for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
-                        return true;
-                return false;
-            });
         }
 
         /// <summary>
