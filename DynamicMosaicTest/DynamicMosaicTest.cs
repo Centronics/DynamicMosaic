@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Concurrent;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DynamicMosaic;
 
 namespace DynamicMosaicTest
@@ -39,10 +40,13 @@ namespace DynamicMosaicTest
             DynamicParser.Processor procE = new DynamicParser.Processor(mapE, "E");
             Reflex reflex = new Reflex();
             reflex.Add(procA, procB, procC, procD, procE);
-            reflex.Add("A", "B", "C", "D", "E");
+            reflex.Add("ACD", "B", "E");
             Reflex r = reflex.FindWord(main, "ABCDE");
             Reflex r1 = r.FindWord(main, "ABCDEF");
             //поставить проверки
+            ConcurrentBag<string> strings0 = reflex.FindWord("ABCDE");
+            ConcurrentBag<string> strings1 = r.FindWord("ABCDE");
+            ConcurrentBag<string> strings2 = r1.FindWord("ABCDE");
         }
     }
 }

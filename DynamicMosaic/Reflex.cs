@@ -21,7 +21,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
-        readonly ProcessorContainer _seaProcessors = new ProcessorContainer();
+        ProcessorContainer _seaProcessors;
 
         /// <summary>
         /// Рефлексы, которые система испытывала при предыдущих запросах.
@@ -132,6 +132,11 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 return;
+            if (_seaProcessors == null)
+            {
+                _seaProcessors = new ProcessorContainer(processor);
+                return;
+            }
             _seaProcessors.Add(processor);
         }
 
@@ -144,6 +149,11 @@ namespace DynamicMosaic
         {
             if (processors == null || processors.Count <= 0)
                 return;
+            if (_seaProcessors == null)
+            {
+                _seaProcessors = new ProcessorContainer(processors);
+                return;
+            }
             _seaProcessors.AddRange(processors);
         }
 
@@ -156,6 +166,11 @@ namespace DynamicMosaic
         {
             if (processors == null || processors.Length <= 0)
                 return;
+            if (_seaProcessors == null)
+            {
+                _seaProcessors = new ProcessorContainer(processors);
+                return;
+            }
             _seaProcessors.AddRange((IList<Processor>)processors);
         }
 
@@ -295,8 +310,10 @@ namespace DynamicMosaic
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
                         reflex.Add(_seaProcessors[k]);
-            if (reflex.CountWords <= 0) return null;
+            if (lstFindStrings.Count <= 0)
+                return null;
             reflex.Add(lstFindStrings);
+            if (reflex.CountWords <= 0) return null;
             Reflex r = FindSimilar(reflex);
             if (r != null) return r.FindWord(processor, word);
             _lstReflexs.Add(reflex);
@@ -397,13 +414,12 @@ namespace DynamicMosaic
         {
             if (string.IsNullOrEmpty(word))
                 throw new ArgumentNullException(nameof(word), $"{nameof(IsAllMaps)}: Искомое слово должно быть задано.");
-            return word.All(c =>
-            {
+            bool[] maps = new bool[_seaProcessors.Count];
+            foreach (char c in word)
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
-                        return true;
-                return false;
-            });
+                        maps[k] = true;
+            return maps.All(b => b);
         }
 
         /// <summary>
@@ -416,7 +432,7 @@ namespace DynamicMosaic
         {
             if (chars == null || chars.Count <= 0)
                 return false;
-            return !word.All(c => chars.Any(v => v == c));
+            return word.All(chars.Contains);
         }
 
         /// <summary>
