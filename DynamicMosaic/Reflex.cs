@@ -299,13 +299,11 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            if (lstFindStrings.Count <= 0)
+                return null;
             if (IsAllMaps(sb.ToString()))
                 return this;
             Reflex reflex = new Reflex();
-            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
-            if (lstReflexs != null)
-                foreach (Reflex refl in lstReflexs.Where(refl => !IsSimilar(refl)))
-                    reflex._lstReflexs.Add(refl);
             foreach (char c in lstFindStrings.SelectMany(str => str))
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
@@ -313,10 +311,15 @@ namespace DynamicMosaic
             if (lstFindStrings.Count <= 0)
                 return null;
             reflex.Add(lstFindStrings);
-            if (reflex.CountWords <= 0) return null;
             Reflex r = FindSimilar(reflex);
             if (r != null) return r.FindWord(processor, word);
-            _lstReflexs.Add(reflex);
+            if (IsSimilar(reflex))
+                return this;
+            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
+            if (lstReflexs != null)
+                reflex._lstReflexs.AddRange(lstReflexs);
+            if (_lstReflexs.All(refl => !refl.IsSimilar(reflex)))
+                _lstReflexs.Add(reflex);
             return reflex;
         }
 
@@ -343,7 +346,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    Reflex reflex = FindWord(processor, word);
+                    Reflex reflex = k.FindWord(processor, word);
                     if (reflex == null)
                         return;
                     lstReflexs.Add(reflex);
@@ -369,7 +372,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Возвращает результат, говорящий о том, присутствует ли в текущем контексте <see cref="Reflex"/> с такими же поисковыми картами в текущем <see cref="Reflex"/>,
+        /// Возвращает результат, говорящий о том, присутствует ли в текущем контексте <see cref="Reflex"/> с такими же поисковыми картами,
         /// как указано в запросе.
         /// </summary>
         /// <param name="reflex">Искомый контекст <see cref="Reflex"/>.</param>
@@ -378,12 +381,12 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $"{nameof(IsSimilar)}: Искомый контекст должен быть указан.");
-            if (_seaProcessors.Count != reflex._seaProcessors.Count)
+            if (_seaProcessors.Count != reflex._seaProcessors.Count || _lstWords.Count != reflex._lstWords.Count)
                 return false;
-            for (int k = 0; k < reflex._seaProcessors.Count; k++)
-                if (string.Compare(_seaProcessors[k].Tag, reflex._seaProcessors[k].Tag, StringComparison.OrdinalIgnoreCase) != 0)
+            for (int k = 0; k < _seaProcessors.Count; k++)
+                if (!reflex._seaProcessors.ContainsTag(_seaProcessors[k].Tag))
                     return false;
-            return true;
+            return _lstWords.All(t => reflex._lstWords.All(source => string.Compare(source, t, StringComparison.OrdinalIgnoreCase) != 0));
         }
 
         /// <summary>

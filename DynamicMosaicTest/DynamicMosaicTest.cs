@@ -47,6 +47,12 @@ namespace DynamicMosaicTest
             ConcurrentBag<string> strings0 = reflex.FindWord("ABCDE");
             ConcurrentBag<string> strings1 = r.FindWord("ABCDE");
             ConcurrentBag<string> strings2 = r1.FindWord("ABCDE");
+            Reflex r2 = reflex.FindWord(main, "ABC");
+            Reflex r3 = r2.FindWord(main, "ABEF");
+            //поставить проверки
+            ConcurrentBag<string> strings3 = reflex.FindWord("ABCDE");
+            ConcurrentBag<string> strings4 = r2.FindWord("ABCDE");
+            ConcurrentBag<string> strings5 = r3.FindWord("ABCDE");
         }
     }
 }
