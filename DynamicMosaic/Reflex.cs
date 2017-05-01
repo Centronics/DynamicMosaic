@@ -11,7 +11,7 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт.
     /// </summary>
-    public sealed class Reflex : ICloneable
+    public sealed class Reflex
     {
         /// <summary>
         /// Слова, поиск которых производится при каждом запросе.
@@ -33,14 +33,21 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="index">Индекс карты.</param>
         /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
-        public Processor GetProcessorContainerAt(int index) => _seaProcessors[index];
+        public Processor GetProcessor(int index) => _seaProcessors[index];
 
         /// <summary>
         /// Получает слово, по которому производится поиск при каждом запросе поиска слова.
         /// </summary>
         /// <param name="index">Индекс слова.</param>
         /// <returns>Возвращает слово, поиск которого производится при каждом запросе поиска слова.</returns>
-        public string GetCompareString(int index) => _lstWords[index];
+        public string GetString(int index) => _lstWords[index];
+
+        /// <summary>
+        /// Получает <see cref="Reflex"/> по указанному индексу.
+        /// </summary>
+        /// <param name="index">Индекс <see cref="Reflex"/>.</param>
+        /// <returns>Возвращает <see cref="Reflex"/> по указанному индексу.</returns>
+        public Reflex GetReflex(int index) => _lstReflexs[index];
 
         /// <summary>
         /// Получает количество карт в контексте.
@@ -63,7 +70,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="c">Искомый символ.</param>
         /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которого начинается указанным символом.</returns>
-        public Processor GetMapByChar(char c)
+        public Processor GetMap(char c)
         {
             for (int k = 0; k < _seaProcessors.Count; k++)
                 if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
@@ -92,11 +99,12 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Проверяет, встречаются ли в словах одинаковые буквы. Проверка производится без учёта регистра.
+        /// В случае обнаружения совпадающих символов в коллекции, возвращается значение false.
         /// В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.
         /// </summary>
         /// <param name="words">Проверяемые слова.</param>
         /// <returns>В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.</returns>
-        public static bool VerifyWords(IList<string> words)
+        bool VerifyWords(IList<string> words)
         {
             for (int k = 0; k < words.Count; k++)
             {
@@ -104,7 +112,7 @@ namespace DynamicMosaic
                     throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит (null).");
                 if (words[k] == string.Empty)
                     throw new ArgumentException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит.");
-                if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t))))
+                if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t)) || _lstWords.Any(s => s.Any(c => SearchLetter(c, t)))))
                     return false;
             }
             return true;
@@ -121,23 +129,6 @@ namespace DynamicMosaic
             if (str == null)
                 throw new ArgumentNullException(nameof(str), $"{nameof(SearchLetter)}: Строка поиска должна содержать значение.");
             return str.ToUpper().Contains(char.ToUpper(ch));
-        }
-
-        /// <summary>
-        /// Добавляет указанную карту.
-        /// Поиск по добавленным картам производится при каждом запросе.
-        /// </summary>
-        /// <param name="processor">Добавляемая карта.</param>
-        public void Add(Processor processor)
-        {
-            if (processor == null)
-                return;
-            if (_seaProcessors == null)
-            {
-                _seaProcessors = new ProcessorContainer(processor);
-                return;
-            }
-            _seaProcessors.Add(processor);
         }
 
         /// <summary>
@@ -175,26 +166,11 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Проверяет, присутствуют ли одинаковые буквы в словарных запасах указанных <see cref="Reflex"/> или нет.
-        /// </summary>
-        /// <param name="reflex">Проверяемые контексты.</param>
-        /// <returns>Возвращает значение true в случае пересечения контекстов, в противном случае возвращает значение false.</returns>
-        public static bool IsConflict(params Reflex[] reflex)
-        {
-            if (reflex == null || reflex.Length <= 0)
-                return false;
-            List<string> lstStrings = new List<string>();
-            foreach (Reflex r in reflex.Where(r => r != null))
-                lstStrings.AddRange(r._lstWords);
-            return VerifyWords(lstStrings);
-        }
-
-        /// <summary>
         /// Получает слова для проверки их существования в контексте класса <see cref="Reflex"/>.
         /// </summary>
         /// <param name="word">Искомое слово.</param>
         /// <returns>Возвращает слова для проверки их существования в контексте класса <see cref="Reflex"/>.</returns>
-        public static IEnumerable<string> GetWords(string word)
+        static IEnumerable<string> GetWords(string word)
         {
             if (string.IsNullOrEmpty(word))
                 yield break;
@@ -204,11 +180,11 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Возвращает результат, обозначающий, находится ли заданное слово в текущем контексте класса <see cref="Reflex"/>.
+        /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
         /// </summary>
-        /// <param name="word">Искомое слово.</param>
+        /// <param name="words">Искомые слова.</param>
         /// <returns>Возвращает слова в случае присутствия их в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
-        public ConcurrentBag<string> FindWord(string word) => string.IsNullOrEmpty(word) ? null : FindWord(GetWords(word).ToArray());
+        public ConcurrentBag<string> FindWord(params string[] words) => FindWord((IList<string>)words);
 
         /// <summary>
         /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
@@ -219,16 +195,40 @@ namespace DynamicMosaic
         {
             if (words == null)
                 return null;
-            WordSearcher ws = new WordSearcher(words);
             ConcurrentBag<string> lstResult = new ConcurrentBag<string>();
+            WordSearcher ws = new WordSearcher(words);
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
             Parallel.ForEach(_lstWords, (k, state) =>
             {
                 try
                 {
-                    if (ws.IsEqual(k))
-                        lstResult.Add(k);
+                    if (string.IsNullOrEmpty(k))
+                        return;
+                    Parallel.ForEach(GetWords(k), (m, stat) =>
+                    {
+                        try
+                        {
+                            if (string.IsNullOrEmpty(m))
+                                return;
+                            if (ws.IsEqual(m))
+                                lstResult.Add(m);
+                        }
+                        catch (Exception ex)
+                        {
+                            try
+                            {
+                                errString = ex.Message;
+                                exThrown = true;
+                                state.Stop();
+                            }
+                            catch (Exception ex1)
+                            {
+                                errStopped = ex1.Message;
+                                exStopped = true;
+                            }
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -462,20 +462,5 @@ namespace DynamicMosaic
         /// <param name="reflex">Искомый потенциал.</param>
         /// <returns>Возвращает контекст, полностью соответствующий заданному по своему потенциалу.</returns>
         Reflex FindSimilar(Reflex reflex) => _lstReflexs.FirstOrDefault(r => r.IsSimilar(reflex));
-
-        /// <summary>
-        /// Создаёт полную копию текущего контекста.
-        /// </summary>
-        /// <returns>Возвращает полную копию текущего контекста.</returns>
-        public object Clone()
-        {
-            Reflex reflex = new Reflex();
-            for (int k = 0; k < _seaProcessors.Count; k++)
-                reflex._seaProcessors.Add(_seaProcessors[k]);
-            reflex._lstWords.AddRange(_lstWords);
-            foreach (Reflex r in _lstReflexs)
-                reflex._lstReflexs.Add((Reflex)r.Clone());
-            return reflex;
-        }
     }
 }
