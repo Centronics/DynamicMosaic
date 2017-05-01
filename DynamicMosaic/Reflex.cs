@@ -81,7 +81,7 @@ namespace DynamicMosaic
                 return;
             if (!VerifyWords(words))
                 throw new ArgumentException($"{nameof(Add)}: В словах не должно быть повторяющихся букв.");
-            _lstWords.AddRange(words.Select(t => t.ToUpper()));
+            _lstWords.AddRange(words.Select(word => word.ToUpper()).Where(IsMapsWord));
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace DynamicMosaic
         public Reflex FindWord(Processor processor, string word)
         {
             if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word) ||
-                _lstWords == null || _lstWords.Count <= 0 || _seaProcessors == null || _seaProcessors.Count <= 0 || !IsAllMaps(word))
+                _lstWords == null || _lstWords.Count <= 0 || _seaProcessors == null || _seaProcessors.Count <= 0 || !IsExistWords(word))
                 return null;
             char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
             List<string> lstFindStrings = new List<string>();
@@ -308,17 +308,14 @@ namespace DynamicMosaic
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
                         reflex.Add(_seaProcessors[k]);
-            if (lstFindStrings.Count <= 0)
-                return null;
             reflex.Add(lstFindStrings);
             Reflex r = FindSimilar(reflex);
-            if (r != null) return r.FindWord(processor, word);
-            if (IsSimilar(reflex))
-                return this;
+            if (r != null)
+                return r.FindWord(processor, word);
             ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
-            if (lstReflexs != null)
+            if (lstReflexs?.Count > 0)
                 reflex._lstReflexs.AddRange(lstReflexs);
-            if (_lstReflexs.All(refl => !refl.IsSimilar(reflex)))
+            if (_lstReflexs.All(re => !re.IsSimilar(reflex)))
                 _lstReflexs.Add(reflex);
             return reflex;
         }
@@ -349,7 +346,8 @@ namespace DynamicMosaic
                     Reflex reflex = k.FindWord(processor, word);
                     if (reflex == null)
                         return;
-                    lstReflexs.Add(reflex);
+                    if (reflex != k)
+                        lstReflexs.Add(reflex);
                 }
                 catch (Exception ex)
                 {
@@ -386,7 +384,44 @@ namespace DynamicMosaic
             for (int k = 0; k < _seaProcessors.Count; k++)
                 if (!reflex._seaProcessors.ContainsTag(_seaProcessors[k].Tag))
                     return false;
-            return _lstWords.All(t => reflex._lstWords.All(source => string.Compare(source, t, StringComparison.OrdinalIgnoreCase) != 0));
+            return _lstWords.All(t => reflex._lstWords.Any(source => string.Compare(source, t, StringComparison.OrdinalIgnoreCase) != 0));
+        }
+
+        /// <summary>
+        /// Позволяет выяснить, содержит ли текущий контекст достаточное количество карт для составления указанного слова.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
+        bool IsMapsWord(string word)
+        {
+            if (string.IsNullOrEmpty(word))
+                return false;
+            return word.All(c =>
+            {
+                for (int k = 0; k < _seaProcessors.Count; k++)
+                    if (char.ToUpper(_seaProcessors[k].Tag[0]) != c)
+                        return true;
+                return false;
+            });
+        }
+
+        /// <summary>
+        /// Проверяет, содержит ли указанное слово название какой-либо из поисковых карт текущего экземпляра.
+        /// Используется для оптимизации поиска слова в экземплярах класса <see cref="Reflex"/>.
+        /// </summary>
+        /// <param name="word">Искомое слово.</param>
+        /// <returns>В случае нахождения слова в текущем экземпляре <see cref="Reflex"/> возвращает значение true, в противном случае - false.</returns>
+        bool IsExistWords(string word)
+        {
+            if (string.IsNullOrEmpty(word))
+                return false;
+            return word.Any(c =>
+            {
+                for (int k = 0; k < _seaProcessors.Count; k++)
+                    if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
+                        return true;
+                return false;
+            });
         }
 
         /// <summary>
@@ -398,6 +433,8 @@ namespace DynamicMosaic
         {
             if (string.IsNullOrEmpty(word))
                 throw new ArgumentNullException(nameof(word), $"{nameof(IsAllMaps)}: Искомое слово должно быть задано.");
+            if (word.Length != _seaProcessors.Count)
+                return false;
             bool[] maps = new bool[_seaProcessors.Count];
             foreach (char c in word)
                 for (int k = 0; k < _seaProcessors.Count; k++)
@@ -424,25 +461,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="reflex">Искомый потенциал.</param>
         /// <returns>Возвращает контекст, полностью соответствующий заданному по своему потенциалу.</returns>
-        Reflex FindSimilar(Reflex reflex) => _lstReflexs.FirstOrDefault(r => r.IsEqual(reflex));
-
-        /// <summary>
-        /// Сравнивает контексты по их потенциалам.
-        /// </summary>
-        /// <param name="reflex">Сопоставляемый контекст.</param>
-        /// <returns>В случае соответствия возвращает значение true, в противном случае - false.</returns>
-        public bool IsEqual(Reflex reflex)
-        {
-            if (reflex?.CountWords != CountWords || reflex.CountProcessor != CountProcessor)
-                return false;
-            if ((from str in _lstWords from s in reflex._lstWords where string.Compare(s, str, StringComparison.OrdinalIgnoreCase) != 0 select str).Any())
-                return false;
-            for (int k = 0; k < reflex.CountProcessor; k++)
-                for (int j = 0; j < CountProcessor; j++)
-                    if (string.Compare(reflex.GetProcessorContainerAt(k).Tag, GetProcessorContainerAt(j).Tag, StringComparison.OrdinalIgnoreCase) != 0)
-                        return false;
-            return true;
-        }
+        Reflex FindSimilar(Reflex reflex) => _lstReflexs.FirstOrDefault(r => r.IsSimilar(reflex));
 
         /// <summary>
         /// Создаёт полную копию текущего контекста.
