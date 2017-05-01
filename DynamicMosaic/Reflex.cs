@@ -72,8 +72,9 @@ namespace DynamicMosaic
         /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которого начинается указанным символом.</returns>
         public Processor GetMap(char c)
         {
+            char ch = char.ToUpper(c);
             for (int k = 0; k < _seaProcessors.Count; k++)
-                if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
+                if (char.ToUpper(_seaProcessors[k].Tag[0]) == ch)
                     return _seaProcessors[k];
             return null;
         }
