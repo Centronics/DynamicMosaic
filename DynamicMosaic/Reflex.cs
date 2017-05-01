@@ -65,18 +65,22 @@ namespace DynamicMosaic
         public int CountReflexs => _lstReflexs.Count;
 
         /// <summary>
-        /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которого начинается указанным символом.
+        /// Получает значение, является ли текущий экземпляр <see cref="Reflex"/> объектом, порождённым от какого-либо.
+        /// </summary>
+        public bool IsChild { get; private set; }
+
+        /// <summary>
+        /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.
         /// Поиск производится без учёта регистра.
         /// </summary>
         /// <param name="c">Искомый символ.</param>
-        /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которого начинается указанным символом.</returns>
-        public Processor GetMap(char c)
+        /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.</returns>
+        public IEnumerable<Processor> GetMap(char c)
         {
             char ch = char.ToUpper(c);
             for (int k = 0; k < _seaProcessors.Count; k++)
                 if (char.ToUpper(_seaProcessors[k].Tag[0]) == ch)
-                    return _seaProcessors[k];
-            return null;
+                    yield return _seaProcessors[k];
         }
 
         /// <summary>
@@ -85,6 +89,8 @@ namespace DynamicMosaic
         /// <param name="words">Добавляемые слова.</param>
         public void Add(IList<string> words)
         {
+            if (IsChild)
+                throw new Exception($"{nameof(Add)}: В дочерний объект нельзя добавлять карты или слова.");
             if (words == null || words.Count <= 0)
                 return;
             if (!VerifyWords(words))
@@ -139,6 +145,8 @@ namespace DynamicMosaic
         /// <param name="processors">Добавляемые карты.</param>
         public void Add(IList<Processor> processors)
         {
+            if (IsChild)
+                throw new Exception($"{nameof(Add)}: В дочерний объект нельзя добавлять карты или слова.");
             if (processors == null || processors.Count <= 0)
                 return;
             if (_seaProcessors == null)
@@ -154,17 +162,7 @@ namespace DynamicMosaic
         /// Поиск по добавленным картам производится при каждом запросе.
         /// </summary>
         /// <param name="processors">Добавляемые карты.</param>
-        public void Add(params Processor[] processors)
-        {
-            if (processors == null || processors.Length <= 0)
-                return;
-            if (_seaProcessors == null)
-            {
-                _seaProcessors = new ProcessorContainer(processors);
-                return;
-            }
-            _seaProcessors.AddRange((IList<Processor>)processors);
-        }
+        public void Add(params Processor[] processors) => Add((IList<Processor>)processors);
 
         /// <summary>
         /// Возвращает результат, обозначающий, находится ли заданное слово в текущем контексте <see cref="Reflex"/>.
@@ -265,6 +263,7 @@ namespace DynamicMosaic
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
                         reflex.Add(_seaProcessors[k]);
             reflex.Add(lstFindStrings);
+            reflex.IsChild = true;
             Reflex r = FindSimilar(reflex);
             if (r != null)
                 return r.FindWord(processor, word);
