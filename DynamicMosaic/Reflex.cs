@@ -166,69 +166,24 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Получает слова для проверки их существования в контексте класса <see cref="Reflex"/>.
+        /// Возвращает результат, обозначающий, находится ли заданное слово в текущем контексте <see cref="Reflex"/>.
         /// </summary>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает слова для проверки их существования в контексте класса <see cref="Reflex"/>.</returns>
-        static IEnumerable<string> GetWords(string word)
+        /// <returns>Возвращает слова в случае присутствия этих слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
+        public ConcurrentBag<string> FindWord(string word)
         {
             if (string.IsNullOrEmpty(word))
-                yield break;
-            for (int k = 1; k <= word.Length; k++)
-                for (int j = 0, max = word.Length - k; j <= max; j++)
-                    yield return word.Substring(j, k);
-        }
-
-        /// <summary>
-        /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
-        /// </summary>
-        /// <param name="words">Искомые слова.</param>
-        /// <returns>Возвращает слова в случае присутствия их в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
-        public ConcurrentBag<string> FindWord(params string[] words) => FindWord((IList<string>)words);
-
-        /// <summary>
-        /// Возвращает результат, обозначающий, находятся ли заданные слова в текущем контексте класса <see cref="Reflex"/>.
-        /// </summary>
-        /// <param name="words">Искомые слова.</param>
-        /// <returns>Возвращает слова в случае присутствия указанных слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
-        public ConcurrentBag<string> FindWord(IList<string> words)
-        {
-            if (words == null)
                 return null;
             ConcurrentBag<string> lstResult = new ConcurrentBag<string>();
-            WordSearcher ws = new WordSearcher(words);
+            char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
             Parallel.ForEach(_lstWords, (k, state) =>
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(k))
-                        return;
-                    Parallel.ForEach(GetWords(k), (m, stat) =>
-                    {
-                        try
-                        {
-                            if (string.IsNullOrEmpty(m))
-                                return;
-                            if (ws.IsEqual(m))
-                                lstResult.Add(m);
-                        }
-                        catch (Exception ex)
-                        {
-                            try
-                            {
-                                errString = ex.Message;
-                                exThrown = true;
-                                state.Stop();
-                            }
-                            catch (Exception ex1)
-                            {
-                                errStopped = ex1.Message;
-                                exStopped = true;
-                            }
-                        }
-                    });
+                    if (IsCharsInWord(chars, k, false))
+                        lstResult.Add(k);
                 }
                 catch (Exception ex)
                 {
@@ -448,12 +403,13 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="chars">Набор символов для проверки.</param>
         /// <param name="word">Проверяемое слово.</param>
+        /// <param name="full">Указывает, требуется ли полное соответствие слова.</param>
         /// <returns>Возвращает значение true в случае успешной проверки, в противном случае - false.</returns>
-        static bool IsCharsInWord(ICollection<char> chars, string word)
+        static bool IsCharsInWord(ICollection<char> chars, string word, bool full = true)
         {
-            if (chars == null || chars.Count <= 0)
+            if (chars == null || chars.Count <= 0 || string.IsNullOrEmpty(word))
                 return false;
-            return word.All(chars.Contains);
+            return full ? word.All(chars.Contains) : word.Any(chars.Contains);
         }
 
         /// <summary>
