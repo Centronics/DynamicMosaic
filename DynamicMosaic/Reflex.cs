@@ -14,14 +14,9 @@ namespace DynamicMosaic
     public sealed class Reflex
     {
         /// <summary>
-        /// Слова, поиск которых производится при каждом запросе.
-        /// </summary>
-        readonly List<string> _lstWords = new List<string>();
-
-        /// <summary>
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
-        ProcessorContainer _seaProcessors;
+        readonly ProcessorContainer _seaProcessors;
 
         /// <summary>
         /// Рефлексы, которые система испытывала при предыдущих запросах.
@@ -36,13 +31,6 @@ namespace DynamicMosaic
         public Processor GetProcessor(int index) => _seaProcessors[index];
 
         /// <summary>
-        /// Получает слово, по которому производится поиск при каждом запросе поиска слова.
-        /// </summary>
-        /// <param name="index">Индекс слова.</param>
-        /// <returns>Возвращает слово, поиск которого производится при каждом запросе поиска слова.</returns>
-        public string GetString(int index) => _lstWords[index];
-
-        /// <summary>
         /// Получает <see cref="Reflex"/> по указанному индексу.
         /// </summary>
         /// <param name="index">Индекс <see cref="Reflex"/>.</param>
@@ -55,19 +43,22 @@ namespace DynamicMosaic
         public int CountProcessor => _seaProcessors.Count;
 
         /// <summary>
-        /// Получает количество слов в контексте.
-        /// </summary>
-        public int CountWords => _lstWords.Count;
-
-        /// <summary>
         /// Получает количество рефлексов в контексте.
         /// </summary>
         public int CountReflexs => _lstReflexs.Count;
 
         /// <summary>
-        /// Получает значение, является ли текущий экземпляр <see cref="Reflex"/> объектом, порождённым от какого-либо.
+        /// Инициализирует текущий контекст указанными картами.
         /// </summary>
-        public bool IsChild { get; private set; }
+        /// <param name="processors">Карты, которые необходимо добавить в контекст.</param>
+        public Reflex(IList<Processor> processors)
+        {
+            if (processors == null)
+                throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
+            if (processors.Count <= 0)
+                throw new ArgumentException($"{nameof(Reflex)}: Карты должны присутствовать в контексте (Count = 0).");
+            _seaProcessors = new ProcessorContainer(processors);
+        }
 
         /// <summary>
         /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.
@@ -84,127 +75,6 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Добавляет слова, поиск которых будет производиться при каждом запросе поиска слова.
-        /// </summary>
-        /// <param name="words">Добавляемые слова.</param>
-        public void Add(IList<string> words)
-        {
-            if (IsChild)
-                throw new Exception($"{nameof(Add)}: В дочерний объект нельзя добавлять карты или слова.");
-            if (words == null || words.Count <= 0)
-                return;
-            if (!VerifyWords(words))
-                throw new ArgumentException($"{nameof(Add)}: В словах не должно быть повторяющихся букв.");
-            _lstWords.AddRange(words.Select(word => word.ToUpper()).Where(IsMapsWord));
-        }
-
-        /// <summary>
-        /// Добавляет слова, поиск которых будет производиться при каждом запросе поиска слова.
-        /// </summary>
-        /// <param name="words">Добавляемые слова.</param>
-        public void Add(params string[] words) => Add((IList<string>)words);
-
-        /// <summary>
-        /// Проверяет, встречаются ли в словах одинаковые буквы. Проверка производится без учёта регистра.
-        /// В случае обнаружения совпадающих символов в коллекции, возвращается значение false.
-        /// В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.
-        /// </summary>
-        /// <param name="words">Проверяемые слова.</param>
-        /// <returns>В случае нахождения повторяющихся букв, возвращает значение false, в противном случае - true.</returns>
-        bool VerifyWords(IList<string> words)
-        {
-            for (int k = 0; k < words.Count; k++)
-            {
-                if (words[k] == null)
-                    throw new ArgumentNullException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит (null).");
-                if (words[k] == string.Empty)
-                    throw new ArgumentException($"{nameof(VerifyWords)}: В коллекции слов найдена позиция, которая ничего не содержит.");
-                if (words.Where((t, j) => j != k).Any(t => words[k].Any(c => SearchLetter(c, t)) || _lstWords.Any(s => s.Any(c => SearchLetter(c, t)))))
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Выполняет поиск заданного символа в заданном слове, без учёта регистра.
-        /// </summary>
-        /// <param name="ch">Искомый символ.</param>
-        /// <param name="str">Строка, в которой необходимо произвести поиск.</param>
-        /// <returns>Возвращает значение true в случае, когда искомый символ содержится в указанном слове, в противном случае возвращает значение false.</returns>
-        static bool SearchLetter(char ch, string str)
-        {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str), $"{nameof(SearchLetter)}: Строка поиска должна содержать значение.");
-            return str.ToUpper().Contains(char.ToUpper(ch));
-        }
-
-        /// <summary>
-        /// Добавляет указанные карты.
-        /// Поиск по добавленным картам производится при каждом запросе.
-        /// </summary>
-        /// <param name="processors">Добавляемые карты.</param>
-        public void Add(IList<Processor> processors)
-        {
-            if (IsChild)
-                throw new Exception($"{nameof(Add)}: В дочерний объект нельзя добавлять карты или слова.");
-            if (processors == null || processors.Count <= 0)
-                return;
-            if (_seaProcessors == null)
-            {
-                _seaProcessors = new ProcessorContainer(processors);
-                return;
-            }
-            _seaProcessors.AddRange(processors);
-        }
-
-        /// <summary>
-        /// Добавляет указанные карты.
-        /// Поиск по добавленным картам производится при каждом запросе.
-        /// </summary>
-        /// <param name="processors">Добавляемые карты.</param>
-        public void Add(params Processor[] processors) => Add((IList<Processor>)processors);
-
-        /// <summary>
-        /// Возвращает результат, обозначающий, находится ли заданное слово в текущем контексте <see cref="Reflex"/>.
-        /// </summary>
-        /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает слова в случае присутствия этих слов в текущем контексте <see cref="Reflex"/>, в противном случае - null.</returns>
-        public ConcurrentBag<string> FindWord(string word)
-        {
-            if (string.IsNullOrEmpty(word))
-                return null;
-            ConcurrentBag<string> lstResult = new ConcurrentBag<string>();
-            char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
-            string errString = string.Empty, errStopped = string.Empty;
-            bool exThrown = false, exStopped = false;
-            Parallel.ForEach(_lstWords, (k, state) =>
-            {
-                try
-                {
-                    if (IsCharsInWord(chars, k, false))
-                        lstResult.Add(k);
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        errString = ex.Message;
-                        exThrown = true;
-                        state.Stop();
-                    }
-                    catch (Exception ex1)
-                    {
-                        errStopped = ex1.Message;
-                        exStopped = true;
-                    }
-                }
-            });
-            if (exThrown)
-                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            return lstResult;
-        }
-
-        /// <summary>
         /// Производит поиск слова в имеющихся картах.
         /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
         /// </summary>
@@ -213,57 +83,24 @@ namespace DynamicMosaic
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
         public Reflex FindWord(Processor processor, string word)
         {
-            if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word) ||
-                _lstWords == null || _lstWords.Count <= 0 || _seaProcessors == null || _seaProcessors.Count <= 0 || !IsExistWords(word))
+            if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word))
                 return null;
-            char[] chars = (from c in word select c).Select(char.ToUpper).ToArray();
-            List<string> lstFindStrings = new List<string>();
-            object thisLock = new object();
+            if (_seaProcessors == null || _seaProcessors.Count <= 0)
+                throw new ArgumentException($"{nameof(FindWord)}: Карты для поиска искомого слова должны присутствовать.");
+            word = word.ToUpper();
+            if (!IsMapsWord(word))
+                return null;
             StringBuilder sb = new StringBuilder();
-            string errString = string.Empty, errStopped = string.Empty;
-            bool exThrown = false, exStopped = false;
-            Parallel.ForEach(processor.GetEqual(_seaProcessors).FindRelation((IList<string>)_lstWords), (k, state) =>
-            {
-                try
-                {
-                    if (string.IsNullOrEmpty(k))
-                        throw new Exception($"{nameof(FindWord)}: При чтении данных из внутреннего массива произошла ошибка.");
-                    if (!IsCharsInWord(chars, k))
-                        return;
-                    lock (thisLock)
-                    {
-                        sb.Append(k);
-                        lstFindStrings.Add(k);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        errString = ex.Message;
-                        exThrown = true;
-                        state.Stop();
-                    }
-                    catch (Exception ex1)
-                    {
-                        errStopped = ex1.Message;
-                        exStopped = true;
-                    }
-                }
-            });
-            if (exThrown)
-                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            if (lstFindStrings.Count <= 0)
+            if (!processor.GetEqual(_seaProcessors).FindRelation(word))
                 return null;
             if (IsAllMaps(sb.ToString()))
                 return this;
-            Reflex reflex = new Reflex();
-            foreach (char c in lstFindStrings.SelectMany(str => str))
+            List<Processor> lstProcessors = new List<Processor>();
+            foreach (char c in word.Select(str => str))
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
-                        reflex.Add(_seaProcessors[k]);
-            reflex.Add(lstFindStrings);
-            reflex.IsChild = true;
+                        lstProcessors.Add(_seaProcessors[k]);
+            Reflex reflex = new Reflex(lstProcessors);
             Reflex r = FindSimilar(reflex);
             if (r != null)
                 return r.FindWord(processor, word);
@@ -334,12 +171,12 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $"{nameof(IsSimilar)}: Искомый контекст должен быть указан.");
-            if (_seaProcessors.Count != reflex._seaProcessors.Count || _lstWords.Count != reflex._lstWords.Count)
+            if (_seaProcessors.Count != reflex._seaProcessors.Count)
                 return false;
             for (int k = 0; k < _seaProcessors.Count; k++)
                 if (!reflex._seaProcessors.ContainsTag(_seaProcessors[k].Tag))
                     return false;
-            return _lstWords.All(t => reflex._lstWords.Any(source => string.Compare(source, t, StringComparison.OrdinalIgnoreCase) != 0));
+            return true;
         }
 
         /// <summary>
@@ -355,25 +192,6 @@ namespace DynamicMosaic
             {
                 for (int k = 0; k < _seaProcessors.Count; k++)
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) != c)
-                        return true;
-                return false;
-            });
-        }
-
-        /// <summary>
-        /// Проверяет, содержит ли указанное слово название какой-либо из поисковых карт текущего экземпляра.
-        /// Используется для оптимизации поиска слова в экземплярах класса <see cref="Reflex"/>.
-        /// </summary>
-        /// <param name="word">Искомое слово.</param>
-        /// <returns>В случае нахождения слова в текущем экземпляре <see cref="Reflex"/> возвращает значение true, в противном случае - false.</returns>
-        bool IsExistWords(string word)
-        {
-            if (string.IsNullOrEmpty(word))
-                return false;
-            return word.Any(c =>
-            {
-                for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
                         return true;
                 return false;
             });
@@ -396,20 +214,6 @@ namespace DynamicMosaic
                     if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
                         maps[k] = true;
             return maps.All(b => b);
-        }
-
-        /// <summary>
-        /// Позволяет узнать, состоит ли запрашиваемое слово из указанных символов.
-        /// </summary>
-        /// <param name="chars">Набор символов для проверки.</param>
-        /// <param name="word">Проверяемое слово.</param>
-        /// <param name="full">Указывает, требуется ли полное соответствие слова.</param>
-        /// <returns>Возвращает значение true в случае успешной проверки, в противном случае - false.</returns>
-        static bool IsCharsInWord(ICollection<char> chars, string word, bool full = true)
-        {
-            if (chars == null || chars.Count <= 0 || string.IsNullOrEmpty(word))
-                return false;
-            return full ? word.All(chars.Contains) : word.Any(chars.Contains);
         }
 
         /// <summary>
