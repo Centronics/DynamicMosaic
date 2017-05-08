@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DynamicParser;
 
 namespace DynamicMosaic
@@ -61,35 +62,43 @@ namespace DynamicMosaic
         /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
         /// </summary>
         /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
-        /// <param name="word">Искомое слово.</param>
+        /// <param name="words">Искомое слово.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
-        public Reflex FindWord(Processor processor, string word)
+        public Variant FindWord(Processor processor, IList<string> words)
         {
-            if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word))
+            if (processor == null || processor.Length <= 0 || words == null || words.Count <= 0)
                 return null;
             if (_seaProcessors == null || _seaProcessors.Count <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Карты для поиска искомого слова должны присутствовать.");
-            word = word.ToUpper();
-            if (!IsMapsWord(word))
-                return null;
-            StringBuilder sb = new StringBuilder();
-            if (!processor.GetEqual(_seaProcessors).FindRelation(word))
-                return null;
-            List<Processor> lstProcessors = new List<Processor>();
-            foreach (char c in word.Select(str => str))
-                for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (char.ToUpper(_seaProcessors[k].Tag[0]) == c)
-                        lstProcessors.Add(_seaProcessors[k]);
-            Reflex reflex = new Reflex(lstProcessors);
-            Reflex r = FindSimilar(reflex);
-            if (r != null)
-                return r.FindWord(processor, word);
-            ConcurrentBag<Reflex> lstReflexs = FindWordLst(word, processor);
-            if (lstReflexs?.Count > 0)
-                reflex._lstReflexs.AddRange(lstReflexs);
-            if (_lstReflexs.All(re => !re.IsSimilar(reflex)))
-                _lstReflexs.Add(reflex);
-            return reflex;
+                throw new ArgumentException(
+                    $"{nameof(FindWord)}: Карты для поиска искомого слова должны присутствовать.");
+            bool exThrown = false, exStopping = false;
+            string exString = string.Empty, exStoppingString = string.Empty;
+            Parallel.ForEach(words, (word, state) =>
+            {
+                try
+                {
+                    if (!IsMapsWord(word))
+                        return;
+
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        exThrown = true;
+                        exString = ex.Message;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        exStopping = true;
+                        exStoppingString = ex1.Message;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopping ? $"{exString}{Environment.NewLine}{exStoppingString}" : exString);
+
         }
 
         /// <summary>
