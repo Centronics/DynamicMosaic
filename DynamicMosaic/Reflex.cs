@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DynamicParser;
 using System.Drawing;
+using DynamicProcessor;
+using Processor = DynamicParser.Processor;
 
 namespace DynamicMosaic
 {
@@ -57,6 +59,27 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Получает карту по указанным координатам целевой карты.
+        /// </summary>
+        /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
+        /// <param name="registered">Информация о получаемой карте.</param>
+        /// <returns>Возвращает карту по указанным координатам целевой карты.</returns>
+        public static Processor GetMap(Processor processor, Registered registered)
+        {
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
+            if (registered == null)
+                throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
+            if (registered.IsEmpty)
+                throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Отсутствует информация о размерах выбираемой карты.");
+            SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
+            for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                    values[x1, y1] = processor[x, y];
+            return new Processor(values, processor.Tag);
+        }
+
+        /// <summary>
         /// Производит поиск слова в имеющихся картах.
         /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
         /// </summary>
@@ -87,11 +110,12 @@ namespace DynamicMosaic
                             return;
                         lstRegs.AddRange(lstReg);
                     }
-                    Processor[] lstProcs = FindWord(lstRegs, word, searchResults);
-                    if ((lstProcs?.Length ?? 0) <= 0)
+                    Registered[] lstProcs = FindWord(lstRegs, word, searchResults);
+                    if (lstProcs == null || lstProcs.Length <= 0)
                         return;
                     lock (thisLock)
-                        _seaProcessors.AddRange(lstProcs);
+                        _seaProcessors.AddRange(lstProcs.Where(p => p != null && p.Register.SelectedProcessor != null).
+                            Select(p => p.Register.SelectedProcessor).ToArray());
                     lock (thisLock1)
                         lstProcessors.Add(word);
                 }
@@ -122,7 +146,7 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <param name="searchResults">Поле результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static Processor[] FindWord(IList<Reg> regs, string word, SearchResults searchResults)
+        static Registered[] FindWord(IList<Reg> regs, string word, SearchResults searchResults)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs),
@@ -153,7 +177,7 @@ namespace DynamicMosaic
                 }
                 if (result)
                 {
-                    Processor[] procs = GetProcessorsFromRegion(region, word).ToArray();
+                    Registered[] procs = GetProcessorsFromRegion(region, word).ToArray();
                     if (procs.Length > 0)
                         return procs;
                 }
@@ -172,13 +196,13 @@ namespace DynamicMosaic
         /// <returns>
         ///     Возвращает <see cref="Processor" /> из первых букв названия (<see cref="Processor.Tag" />) объектов <see cref="DynamicParser.Region" />.
         /// </returns>
-        static IEnumerable<Processor> GetProcessorsFromRegion(DynamicParser.Region region, string word)
+        static IEnumerable<Registered> GetProcessorsFromRegion(DynamicParser.Region region, string word)
         {
             if (region == null)
                 throw new ArgumentNullException(nameof(region), $@"{nameof(GetProcessorsFromRegion)}: Регион для получения карт должен быть указан.");
             if ((from c in word from r in region.Elements where char.ToUpper(r.Register.SelectedProcessor.Tag[0]) != char.ToUpper(c) select c).Any())
                 return null;
-            return from r in region.Elements where r.Register.SelectedProcessor != null select r.Register.SelectedProcessor;
+            return from r in region.Elements where r != null select r;
         }
 
         /// <summary>
