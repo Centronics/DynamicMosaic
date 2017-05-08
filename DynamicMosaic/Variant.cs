@@ -39,10 +39,17 @@ namespace DynamicMosaic
             if (words.Count <= 0)
                 throw new ArgumentException($@"{nameof(Variant)}: Загружаемые слова должны быть указаны.", nameof(words));
             foreach (string word in words.Where(word => !string.IsNullOrEmpty(word)).Where(word =>
-                words.All(s => string.Compare(s, word, StringComparison.OrdinalIgnoreCase) != 0)))
+                _lstWords.All(s => string.Compare(s, word, StringComparison.OrdinalIgnoreCase) != 0)))
                 _lstWords.Add(word);
             if (_lstWords.Count <= 0)
                 throw new ArgumentException($@"{nameof(Variant)}: Слова отсутствуют.", nameof(words));
         }
+
+        /// <summary>
+        /// Проверяет, содержится указанное слово в коллекции или нет.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>В случае нахождения слова возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
+        public bool Contains(string word) => !string.IsNullOrEmpty(word) && _lstWords.Any(s => string.Compare(s, word, StringComparison.OrdinalIgnoreCase) == 0);
     }
 }
