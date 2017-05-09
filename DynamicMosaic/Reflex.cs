@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DynamicParser;
 using System.Drawing;
 using DynamicProcessor;
@@ -24,7 +23,19 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="index">Индекс карты.</param>
         /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
-        public Processor GetProcessor(int index) => _seaProcessors[index];
+        public Processor this[int index] => _seaProcessors[index];
+
+        /// <summary>
+        /// Получает все карты контекста <see cref="Reflex"/>.
+        /// </summary>
+        public IEnumerable<Processor> Processors
+        {
+            get
+            {
+                for (int k = 0; k < _seaProcessors.Count; k++)
+                    yield return _seaProcessors[k];
+            }
+        }
 
         /// <summary>
         /// Получает количество карт в контексте.
@@ -63,79 +74,50 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Информация о получаемой карте.</param>
+        /// <param name="namedBy">Контейнер, необходимый для генерации имени карты, которая в нём отсутствует.</param>
         /// <returns>Возвращает карту по указанным координатам целевой карты.</returns>
-        public static Processor GetMap(Processor processor, Registered registered)
+        static void GetMap(Processor processor, Registered registered, ProcessorContainer namedBy)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
                 throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
+            if (namedBy == null)
+                throw new ArgumentNullException(nameof(namedBy), $@"{nameof(GetMap)}: Контейнер, куда предполагается добавить карту, должен быть указан.");
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
                 for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
                     values[x1, y1] = processor[x, y];
-            return new Processor(values, $"{processor.Tag}0");
+            string s = registered.Register.SelectedProcessor.Tag;
+            while (namedBy.ContainsTag(s))
+                s += '0';
+            namedBy.Add(new Processor(values, s));
         }
 
         /// <summary>
         /// Производит поиск слова в имеющихся картах.
         /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
         /// </summary>
-        /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
-        /// <param name="words">Искомое слово.</param>
+        /// <param name="processor">Карта, на которой будет производиться поиск.</param>
+        /// <param name="word">Искомое слово.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
-        public WordSearcher FindWord(Processor processor, IList<string> words)
+        public bool FindWord(Processor processor, string word)
         {
-            if (processor == null || processor.Length <= 0 || words == null || words.Count <= 0)
-                return null;
+            if (processor == null || processor.Length <= 0 || string.IsNullOrEmpty(word))
+                return false;
             if (_seaProcessors == null || _seaProcessors.Count <= 0)
                 throw new ArgumentException($"{nameof(FindWord)}: Карты для поиска искомого слова должны присутствовать.");
-            object thisLock = new object(), thisLock1 = new object();
-            List<string> lstProcessors = new List<string>();
+            if (!IsMapsWord(word))
+                return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            bool exThrown = false, exStopping = false;
-            string exString = string.Empty, exStoppingString = string.Empty;
-            Parallel.ForEach(words, (word, state) =>
-            {
-                try
-                {
-                    if (!IsMapsWord(word))
-                        return;
-                    List<Reg> lstRegs = new List<Reg>();
-                    foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)))
-                    {
-                        if (lstReg.Count <= 0)
-                            return;
-                        lstRegs.AddRange(lstReg);
-                    }
-                    foreach (Registered[] lstProcs in FindWord(lstRegs, word, searchResults))
-                    {
-                        if (lstProcs == null || lstProcs.Length <= 0)
-                            return;
-                        lock (thisLock)
-                            _seaProcessors.AddRange(lstProcs.Select(p => GetMap(processor, p)).ToArray());
-                    }
-                    lock (thisLock1)
-                        lstProcessors.Add(word);
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        exThrown = true;
-                        exString = ex.Message;
-                        state.Stop();
-                    }
-                    catch (Exception ex1)
-                    {
-                        exStopping = true;
-                        exStoppingString = ex1.Message;
-                    }
-                }
-            });
-            if (exThrown)
-                throw new Exception(exStopping ? $"{exString}{Environment.NewLine}{exStoppingString}" : exString);
-            return new WordSearcher(lstProcessors);
+            if (!searchResults.FindRelation(word))
+                return false;
+            List<Reg> lstRegs = new List<Reg>();
+            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
+                lstRegs.AddRange(lstReg);
+            foreach (Registered r in FindWord(lstRegs, word, searchResults).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
+                GetMap(processor, r, _seaProcessors);
+            return true;
         }
 
         /// <summary>
@@ -145,7 +127,7 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <param name="searchResults">Поле результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static IEnumerable<Registered[]> FindWord(IList<Reg> regs, string word, SearchResults searchResults)
+        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, SearchResults searchResults)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs),
@@ -175,11 +157,7 @@ namespace DynamicMosaic
                     region.Add(rect, pp.SelectedProcessor, pp.Percent);
                 }
                 if (result)
-                {
-                    Registered[] procs = GetProcessorsFromRegion(region, word).ToArray();
-                    if (procs.Length > 0)
-                        yield return procs;
-                }
+                    yield return GetProcessorsFromRegion(region, word);
                 if ((counter = ChangeCount(counting, regs.Count)) < 0)
                     yield break;
                 region.Clear();
@@ -244,6 +222,7 @@ namespace DynamicMosaic
         {
             if (string.IsNullOrEmpty(word))
                 return false;
+            word = word.ToUpper();
             return word.All(c =>
             {
                 for (int k = 0; k < _seaProcessors.Count; k++)

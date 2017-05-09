@@ -1,6 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using DynamicMosaic;
+using DynamicProcessor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DynamicMosaic;
+using Processor = DynamicParser.Processor;
 
 namespace DynamicMosaicTest
 {
@@ -10,49 +11,45 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest1()
         {
-            DynamicProcessor.SignValue[,] map = new DynamicProcessor.SignValue[4, 4];
-            map[0, 0] = DynamicProcessor.SignValue.MaxValue;
-            map[2, 0] = DynamicProcessor.SignValue.MaxValue;
-            map[1, 1] = DynamicProcessor.SignValue.MaxValue;
-            map[2, 1] = DynamicProcessor.SignValue.MaxValue;
-            map[0, 2] = DynamicProcessor.SignValue.MaxValue;
-            map[2, 2] = DynamicProcessor.SignValue.MaxValue;
-            map[3, 3] = DynamicProcessor.SignValue.MaxValue;
-            DynamicProcessor.SignValue[,] mapA = new DynamicProcessor.SignValue[2, 2];
-            mapA[0, 0] = DynamicProcessor.SignValue.MaxValue;
-            mapA[0, 1] = DynamicProcessor.SignValue.MaxValue;
-            DynamicProcessor.SignValue[,] mapB = new DynamicProcessor.SignValue[2, 2];
-            mapB[1, 1] = DynamicProcessor.SignValue.MaxValue;
-            DynamicProcessor.SignValue[,] mapC = new DynamicProcessor.SignValue[2, 2];
-            mapC[0, 0] = DynamicProcessor.SignValue.MaxValue;
-            mapC[0, 1] = DynamicProcessor.SignValue.MaxValue;
-            DynamicProcessor.SignValue[,] mapD = new DynamicProcessor.SignValue[2, 2];
-            mapD[0, 0] = DynamicProcessor.SignValue.MaxValue;
-            mapD[0, 1] = DynamicProcessor.SignValue.MaxValue;
-            mapD[1, 0] = DynamicProcessor.SignValue.MaxValue;
-            mapD[1, 1] = DynamicProcessor.SignValue.MaxValue;
-            DynamicProcessor.SignValue[,] mapE = new DynamicProcessor.SignValue[2, 2];
-            DynamicParser.Processor main = new DynamicParser.Processor(map, "main");
-            DynamicParser.Processor procA = new DynamicParser.Processor(mapA, "A");
-            DynamicParser.Processor procB = new DynamicParser.Processor(mapB, "B");
-            DynamicParser.Processor procC = new DynamicParser.Processor(mapC, "C");
-            DynamicParser.Processor procD = new DynamicParser.Processor(mapD, "D");
-            DynamicParser.Processor procE = new DynamicParser.Processor(mapE, "E");
-            Reflex reflex = new Reflex();
-            reflex.Add(procA, procB, procC, procD, procE);
-            reflex.Add("A", "C", "D", "B", "E");
-            Reflex r = reflex.FindWord(main, "ABC");
-            Reflex r1 = r.FindWord(main, "ABEF");
-            //поставить проверки
-            ConcurrentBag<string> strings0 = reflex.FindWord("ABCDE");
-            ConcurrentBag<string> strings1 = r.FindWord("ABCDE");
-            ConcurrentBag<string> strings2 = r1.FindWord("ABCDE");
-            Reflex r2 = reflex.FindWord(main, "ABC");
-            Reflex r3 = r2.FindWord(main, "ABEF");
-            //поставить проверки
-            ConcurrentBag<string> strings3 = reflex.FindWord("ABCDE");
-            ConcurrentBag<string> strings4 = r2.FindWord("ABCDE");
-            ConcurrentBag<string> strings5 = r3.FindWord("ABCDE");
+            SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+            Processor main = new Processor(map, "main");
+            Processor procA = new Processor(mapA, "A");
+            Processor procB = new Processor(mapB, "B");
+            Processor procC = new Processor(mapC, "C");
+            Processor procD = new Processor(mapD, "D");
+            Processor procE = new Processor(mapE, "E");
+            Reflex reflex = new Reflex(new[] { procA, procB, procC, procD, procE });
+            Assert.AreEqual(true, reflex.FindWord(main, "A"));
+            Assert.AreEqual(true, reflex.FindWord(main, "A"));
+            Assert.AreEqual(false, reflex.FindWord(main, "B"));
+            Assert.AreEqual(false, reflex.FindWord(main, "B"));
+            Assert.AreEqual(true, reflex.FindWord(main, "C"));
+            Assert.AreEqual(true, reflex.FindWord(main, "D"));
+            Assert.AreEqual(false, reflex.FindWord(main, "E"));
+            Assert.AreEqual(true, reflex.FindWord(main, "A"));
+            Assert.AreEqual(false, reflex.FindWord(main, "B"));
+            Assert.AreEqual(true, reflex.FindWord(main, "C"));
         }
     }
 }
