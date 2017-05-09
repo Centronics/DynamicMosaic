@@ -108,11 +108,13 @@ namespace DynamicMosaic
                             return;
                         lstRegs.AddRange(lstReg);
                     }
-                    Registered[] lstProcs = FindWord(lstRegs, word, searchResults);
-                    if (lstProcs == null || lstProcs.Length <= 0)
-                        return;
-                    lock (thisLock)
-                        _seaProcessors.AddRange(lstProcs.Select(p => GetMap(processor, p)).ToArray());
+                    foreach (Registered[] lstProcs in FindWord(lstRegs, word, searchResults))
+                    {
+                        if (lstProcs == null || lstProcs.Length <= 0)
+                            return;
+                        lock (thisLock)
+                            _seaProcessors.AddRange(lstProcs.Select(p => GetMap(processor, p)).ToArray());
+                    }
                     lock (thisLock1)
                         lstProcessors.Add(word);
                 }
@@ -143,7 +145,7 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <param name="searchResults">Поле результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static Registered[] FindWord(IList<Reg> regs, string word, SearchResults searchResults)
+        static IEnumerable<Registered[]> FindWord(IList<Reg> regs, string word, SearchResults searchResults)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs),
@@ -151,7 +153,7 @@ namespace DynamicMosaic
             if (searchResults == null)
                 throw new ArgumentException($@"{nameof(FindWord)}: Поле результатов поиска отсутствует.", nameof(searchResults));
             if (regs.Count <= 0)
-                return null;
+                yield break;
             int[] counting = new int[word.Length];
             Reg[] regsCounting = new Reg[word.Length];
             DynamicParser.Region region = new DynamicParser.Region(searchResults.Width, searchResults.Height);
@@ -176,13 +178,12 @@ namespace DynamicMosaic
                 {
                     Registered[] procs = GetProcessorsFromRegion(region, word).ToArray();
                     if (procs.Length > 0)
-                        return procs;
+                        yield return procs;
                 }
                 if ((counter = ChangeCount(counting, regs.Count)) < 0)
-                    return null;
+                    yield break;
                 region.Clear();
             }
-            return null;
         }
 
         /// <summary>
