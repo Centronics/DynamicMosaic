@@ -59,7 +59,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Получает карту по указанным координатам целевой карты.
+        /// Получает карту из целевой карты по указанным координатам.
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Информация о получаемой карте.</param>
@@ -70,13 +70,11 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
                 throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
-            if (registered.IsEmpty)
-                throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Отсутствует информация о размерах выбираемой карты.");
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
                 for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
                     values[x1, y1] = processor[x, y];
-            return new Processor(values, processor.Tag);
+            return new Processor(values, $"{processor.Tag}0");
         }
 
         /// <summary>
@@ -86,7 +84,7 @@ namespace DynamicMosaic
         /// <param name="processor">Анализируемая карта, на которой будет производиться поиск.</param>
         /// <param name="words">Искомое слово.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
-        public Variant FindWord(Processor processor, IList<string> words)
+        public WordSearcher FindWord(Processor processor, IList<string> words)
         {
             if (processor == null || processor.Length <= 0 || words == null || words.Count <= 0)
                 return null;
@@ -114,8 +112,7 @@ namespace DynamicMosaic
                     if (lstProcs == null || lstProcs.Length <= 0)
                         return;
                     lock (thisLock)
-                        _seaProcessors.AddRange(lstProcs.Where(p => p != null && p.Register.SelectedProcessor != null).
-                            Select(p => p.Register.SelectedProcessor).ToArray());
+                        _seaProcessors.AddRange(lstProcs.Select(p => GetMap(processor, p)).ToArray());
                     lock (thisLock1)
                         lstProcessors.Add(word);
                 }
@@ -136,7 +133,7 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopping ? $"{exString}{Environment.NewLine}{exStoppingString}" : exString);
-            return new Variant(lstProcessors);
+            return new WordSearcher(lstProcessors);
         }
 
         /// <summary>
