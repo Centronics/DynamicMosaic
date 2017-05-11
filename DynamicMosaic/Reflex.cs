@@ -11,7 +11,7 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт.
     /// </summary>
-    public sealed class Reflex
+    public sealed class Reflex : ICloneable
     {
         /// <summary>
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
@@ -19,11 +19,26 @@ namespace DynamicMosaic
         readonly ProcessorContainer _seaProcessors;
 
         /// <summary>
+        /// Карты, изначально загруженные в текущий экземпляр <see cref="Reflex"/> и предназначенные для клонирования текущего экземпляра <see cref="Reflex"/>.
+        /// </summary>
+        readonly List<Processor> _lstProcessors;
+
+        /// <summary>
         /// Получает карту, поиск которой производится при каждом запросе поиска слова.
         /// </summary>
         /// <param name="index">Индекс карты.</param>
         /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
         public Processor this[int index] => _seaProcessors[index];
+
+        /// <summary>
+        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindWord(Processor, string)"/>.
+        /// </summary>
+        public IEnumerable<Processor> ProcessorsBase => _lstProcessors;
+
+        /// <summary>
+        /// Получает количество карт, с которыми был инициализирован текущий контекст <see cref="Reflex"/>.
+        /// </summary>
+        public int CountProcessorsBase => _lstProcessors.Count;
 
         /// <summary>
         /// Получает все карты контекста <see cref="Reflex"/>.
@@ -53,6 +68,7 @@ namespace DynamicMosaic
             if (processors.Count <= 0)
                 throw new ArgumentException($"{nameof(Reflex)}: Карты должны присутствовать в контексте (Count = 0).");
             _seaProcessors = new ProcessorContainer(processors);
+            _lstProcessors = new List<Processor>(processors);
         }
 
         /// <summary>
@@ -264,5 +280,12 @@ namespace DynamicMosaic
                 }
             return lstRegs;
         }
+
+        /// <summary>
+        /// Создаёт неполную копию текущего экземпляра.
+        /// Копируются только изначальные значения текущего экземпляра <see cref="Reflex"/>.
+        /// </summary>
+        /// <returns>Возвращает неполную копию текущего экземпляра.</returns>
+        public object Clone() => new Reflex(_lstProcessors);
     }
 }
