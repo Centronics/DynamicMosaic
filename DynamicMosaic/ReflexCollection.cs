@@ -16,6 +16,11 @@ namespace DynamicMosaic
         readonly List<Reflex> _reflexs = new List<Reflex>();
 
         /// <summary>
+        /// Содержит первоначальный экземпляр <see cref="Reflex"/>.
+        /// </summary>
+        readonly Reflex _startReflex;
+
+        /// <summary>
         /// Получает коллекцию <see cref="Reflex"/> из текущего экземпляра.
         /// </summary>
         public IEnumerable<Reflex> Reflexs => _reflexs;
@@ -28,7 +33,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Получает <see cref="Reflex"/>, который изначально был загружен в текущий экземпляр <see cref="ReflexCollection"/>.
         /// </summary>
-        public Reflex StartReflex { get; }
+        public Reflex StartReflex => (Reflex)_startReflex.Clone();
 
         /// <summary>
         /// Инициализирует начальным значением типа <see cref="Reflex"/>.
@@ -41,7 +46,7 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(reflex), $@"{nameof(ReflexCollection)}: Начальное значение {nameof(Reflex)} должно быть указано.");
             if (reflex.CountProcessor < 2)
                 throw new ArgumentException($@"{nameof(ReflexCollection)}: В изначальном значении {nameof(Reflex)} должно быть хотя бы две карты.", nameof(reflex));
-            StartReflex = reflex;
+            _startReflex = reflex;
         }
 
         /// <summary>
