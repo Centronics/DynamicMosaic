@@ -40,6 +40,14 @@ namespace DynamicMosaicTest
             Processor procD = new Processor(mapD, "D");
             Processor procE = new Processor(mapE, "E");
             Reflex reflex = new Reflex(new[] { procA, procB, procC, procD, procE });
+            ReflexCollection rc = new ReflexCollection(reflex);
+            rc.FindRelation(main, "A");
+            rc.FindRelation(main, "A");
+            rc.FindRelation(main, "B");
+            rc.FindRelation(main, "C");
+            rc.FindRelation(main, "D");
+            rc.FindRelation(main, "E");
+            rc.FindRelation(main, "E");
             Assert.AreEqual(true, reflex.FindWord(main, "A"));
             Assert.AreEqual(true, reflex.FindWord(main, "A"));
             Assert.AreEqual(false, reflex.FindWord(main, "B"));

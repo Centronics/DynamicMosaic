@@ -31,7 +31,8 @@ namespace DynamicMosaic
         public int CountReflexs => _reflexs.Count;
 
         /// <summary>
-        /// Получает <see cref="Reflex"/>, который изначально был загружен в текущий экземпляр <see cref="ReflexCollection"/>.
+        /// Получает клон <see cref="Reflex"/>, который изначально был загружен в текущий экземпляр <see cref="ReflexCollection"/>.
+        /// Использует метод <see cref="Clone"/>.
         /// </summary>
         public Reflex StartReflex => (Reflex)_startReflex.Clone();
 
@@ -59,7 +60,7 @@ namespace DynamicMosaic
         {
             if (string.IsNullOrEmpty(word))
                 return false;
-            _reflexs.Add((Reflex)StartReflex.Clone());
+            _reflexs.Add(StartReflex);
             bool val = false;
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -87,6 +88,8 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            if (!val)
+                _reflexs.RemoveAt(_reflexs.Count - 1);
             return val;
         }
 
