@@ -58,7 +58,7 @@ namespace DynamicMosaic
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
         public bool FindRelation(Processor processor, string word)
         {
-            if (string.IsNullOrEmpty(word))
+            if (string.IsNullOrEmpty(word) || !StartReflex.IsMapsWord(word))
                 return false;
             _reflexs.Add(StartReflex);
             bool val = false;

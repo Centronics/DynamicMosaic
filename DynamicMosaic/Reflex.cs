@@ -234,7 +234,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
         /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
-        bool IsMapsWord(string word)
+        public bool IsMapsWord(string word)
         {
             if (string.IsNullOrEmpty(word))
                 return false;
