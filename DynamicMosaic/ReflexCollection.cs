@@ -60,7 +60,6 @@ namespace DynamicMosaic
         {
             if (string.IsNullOrEmpty(word) || !StartReflex.IsMapsWord(word))
                 return false;
-            _reflexs.Add(StartReflex);
             bool val = false;
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -88,9 +87,13 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            if (!val)
-                _reflexs.RemoveAt(_reflexs.Count - 1);
-            return val;
+            if (val)
+                return val;
+            Reflex r = StartReflex;
+            if (!r.FindWord(processor, word))
+                return false;
+            _reflexs.Add(r);
+            return true;
         }
 
         /// <summary>
