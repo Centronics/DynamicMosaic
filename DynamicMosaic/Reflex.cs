@@ -21,7 +21,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Карты, изначально загруженные в текущий экземпляр <see cref="Reflex"/> и предназначенные для клонирования текущего экземпляра <see cref="Reflex"/>.
         /// </summary>
-        readonly List<Processor> _lstProcessors;
+        readonly ProcessorContainer _seaMaps;
 
         /// <summary>
         /// Получает карту, поиск которой производится при каждом запросе поиска слова.
@@ -33,12 +33,19 @@ namespace DynamicMosaic
         /// <summary>
         /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindWord(Processor, string)"/>.
         /// </summary>
-        public IEnumerable<Processor> ProcessorsBase => _lstProcessors;
+        public IEnumerable<Processor> ProcessorsBase
+        {
+            get
+            {
+                for (int k = 0; k < _seaMaps.Count; k++)
+                    yield return _seaMaps[k];
+            }
+        }
 
         /// <summary>
         /// Получает количество карт, с которыми был инициализирован текущий контекст <see cref="Reflex"/>.
         /// </summary>
-        public int CountProcessorsBase => _lstProcessors.Count;
+        public int CountProcessorsBase => _seaMaps.Count;
 
         /// <summary>
         /// Получает все карты контекста <see cref="Reflex"/>.
@@ -61,14 +68,17 @@ namespace DynamicMosaic
         /// Инициализирует текущий контекст указанными картами.
         /// </summary>
         /// <param name="processors">Карты, которые необходимо добавить в контекст.</param>
-        public Reflex(IList<Processor> processors)
+        public Reflex(ProcessorContainer processors)
         {
             if (processors == null)
                 throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
             if (processors.Count <= 0)
                 throw new ArgumentException($"{nameof(Reflex)}: Карты должны присутствовать в контексте (Count = 0).");
-            _seaProcessors = new ProcessorContainer(processors);
-            _lstProcessors = new List<Processor>(processors);
+            Processor[] procs = new Processor[processors.Count];
+            for (int k = 0; k < procs.Length; k++)
+                procs[k] = processors[k];
+            _seaProcessors = new ProcessorContainer(procs);
+            _seaMaps = new ProcessorContainer(procs);
         }
 
         /// <summary>
@@ -286,6 +296,6 @@ namespace DynamicMosaic
         /// Копируются только изначальные значения текущего экземпляра <see cref="Reflex"/>.
         /// </summary>
         /// <returns>Возвращает неполную копию текущего экземпляра.</returns>
-        public object Clone() => new Reflex(_lstProcessors);
+        public object Clone() => new Reflex(_seaMaps);
     }
 }
