@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DynamicParser;
 
@@ -23,7 +24,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Получает коллекцию <see cref="Reflex"/> из текущего экземпляра.
         /// </summary>
-        public IEnumerable<Reflex> Reflexs => _reflexs;
+        public IEnumerable<Reflex> Reflexs => _reflexs.Select(r => (Reflex)r.Clone());
 
         /// <summary>
         /// Получает количество объектов <see cref="Reflex"/> в текущем экземпляре.
