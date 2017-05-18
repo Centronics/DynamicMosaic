@@ -105,7 +105,7 @@ namespace DynamicMosaic
             for (int z = 1; z < _pairs.Count; z++)
                 for (int k = 1; k < _pairs.Count; k++)
                 {
-                    int[] count = new int[z];
+                    int[] count = new int[z];//нужно оптимизировать, в т.ч. for
                     while (ChangeCount(count, k) != -1)
                     {
                         GetWord(count, lstPairWordValues);
