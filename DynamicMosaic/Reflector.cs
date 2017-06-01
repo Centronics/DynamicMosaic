@@ -98,14 +98,18 @@ namespace DynamicMosaic
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
         public bool FindRelation(string word)
         {
-            if (string.IsNullOrEmpty(word))
+            if (!Contains(word))
                 return false;
-            _reflexCollection = (ReflexCollection)_reflexCollection.Clone();//можно добавить метод Clear
+            _reflexCollection = (ReflexCollection)_reflexCollection.Clone();
             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
+            List<int> count = new List<int>(_pairs.Count);
             for (int z = 1; z < _pairs.Count; z++)
+            {
+                for (int k = 0; k < count.Count; k++)
+                    count[k] = 0;
+                count.Add(0);
                 for (int k = 1; k < _pairs.Count; k++)
                 {
-                    int[] count = new int[z];//нужно оптимизировать, в т.ч. for
                     while (ChangeCount(count, k) != -1)
                     {
                         GetWord(count, lstPairWordValues);
@@ -119,8 +123,16 @@ namespace DynamicMosaic
                         _reflexCollection = (ReflexCollection)_reflexCollection.Clone();
                     }
                 }
+            }
             return false;
         }
+
+        /// <summary>
+        /// Получает значение, показывающее, содержится ли указанное слово в коллекции.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>Возвращает значение, показывающее, содержится ли указанное слово в коллекции.</returns>
+        public bool Contains(string word) => !string.IsNullOrEmpty(word) && _pairs.Any(p => string.Compare(word, p.FindString, StringComparison.OrdinalIgnoreCase) == 0);
 
         /// <summary>
         ///     Увеличивает значение старших разрядов счётчика букв, если это возможно.
@@ -130,17 +142,17 @@ namespace DynamicMosaic
         /// <param name="count">Массив-счётчик.</param>
         /// <param name="maxCount">Максимальное значение, которого может достигать счётчик в одном разряде.</param>
         /// <returns>Возвращается номер позиции, на которой произошло изменение, в противном случае -1.</returns>
-        int ChangeCount(int[] count, int maxCount)
+        int ChangeCount(IList<int> count, int maxCount)
         {
-            if (count == null || count.Length <= 0)
-                throw new ArgumentException($"{nameof(ChangeCount)}: Массив-счётчик не указан или его длина некорректна ({count?.Length}).", nameof(count));
+            if (count == null || count.Count <= 0)
+                throw new ArgumentException($"{nameof(ChangeCount)}: Массив-счётчик не указан или его длина некорректна ({count?.Count}).", nameof(count));
             if (maxCount <= 0)
                 throw new ArgumentException($@"{nameof(ChangeCount)}: Значение {nameof(maxCount)} должно быть больше ноля ({maxCount}).", nameof(maxCount));
-            for (int k = count.Length - 1; k >= 0; k--)
+            for (int k = count.Count - 1; k >= 0; k--)
             {
-                if (count[k] >= maxCount - 1) continue;
+                if (count[k] >= maxCount) continue;
                 count[k]++;
-                for (int x = k + 1; x < count.Length; x++)
+                for (int x = k + 1; x < count.Count; x++)
                     count[x] = 0;
                 return k;
             }

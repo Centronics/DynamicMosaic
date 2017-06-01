@@ -1,4 +1,5 @@
 ﻿using DynamicMosaic;
+using DynamicParser;
 using DynamicProcessor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Processor = DynamicParser.Processor;
@@ -39,8 +40,21 @@ namespace DynamicMosaicTest
             Processor procC = new Processor(mapC, "C");
             Processor procD = new Processor(mapD, "D");
             Processor procE = new Processor(mapE, "E");
-            Reflex reflex = new Reflex(new[] { procA, procB, procC, procD, procE });
-            ReflexCollection rc = new ReflexCollection(reflex);
+            Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE));
+            Reflector reflector = new Reflector(reflex);
+            reflector.Add("A", procA);
+            reflector.Add("B", procB);
+            reflector.Add("C", procC);
+            reflector.Add("D", procD);
+            reflector.Add("E", procE);
+            Assert.AreEqual(true, reflector.FindRelation("A"));
+            Assert.AreEqual(true, reflector.FindRelation("B"));
+            Assert.AreEqual(true, reflector.FindRelation("C"));
+            Assert.AreEqual(true, reflector.FindRelation("D"));
+            Assert.AreEqual(true, reflector.FindRelation("E"));
+            Assert.AreEqual(false, reflector.FindRelation("W"));
+
+            /*ReflexCollection rc = new ReflexCollection(reflex);
             Assert.AreEqual(true, rc.FindRelation(main, "A"));
             Assert.AreEqual(true, rc.FindRelation(main, "A"));
             Assert.AreEqual(true, rc.FindRelation(main, "B"));
@@ -57,7 +71,7 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, reflex.FindWord(main, "E"));
             Assert.AreEqual(true, reflex.FindWord(main, "A"));
             Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(true, reflex.FindWord(main, "C"));
+            Assert.AreEqual(true, reflex.FindWord(main, "C"));*/
         }
     }
 }
