@@ -56,11 +56,21 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
         /// <param name="word">Искомое слово.</param>
+        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
+        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public bool FindRelation(Processor processor, string word)
+        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
         {
-            if (string.IsNullOrEmpty(word) || !StartReflex.IsMapsWord(word))
-                return false;
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
+            if (word == null)
+                throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
+            if (word == string.Empty)
+                throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.");
+            if (count <= 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.");
             bool val = false;
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
@@ -68,7 +78,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    if (reflex.FindWord(processor, word))
+                    if (reflex.FindWord(processor, word, startIndex, count))
                         val = true;
                 }
                 catch (Exception ex)
@@ -91,7 +101,7 @@ namespace DynamicMosaic
             if (val)
                 return val;
             Reflex r = StartReflex;
-            if (!r.FindWord(processor, word))
+            if (!r.FindWord(processor, word, startIndex, count))
                 return false;
             _reflexs.Add(r);
             return true;

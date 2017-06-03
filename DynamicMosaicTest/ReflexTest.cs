@@ -7,7 +7,7 @@ using Processor = DynamicParser.Processor;
 namespace DynamicMosaicTest
 {
     [TestClass]
-    public class DynamicMosaicTest
+    public class ReflexTest
     {
         [TestMethod]
         public void ReflexTest1()
@@ -53,25 +53,6 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, reflector.FindRelation("D"));
             Assert.AreEqual(true, reflector.FindRelation("E"));
             Assert.AreEqual(false, reflector.FindRelation("W"));
-
-            /*ReflexCollection rc = new ReflexCollection(reflex);
-            Assert.AreEqual(true, rc.FindRelation(main, "A"));
-            Assert.AreEqual(true, rc.FindRelation(main, "A"));
-            Assert.AreEqual(true, rc.FindRelation(main, "B"));
-            Assert.AreEqual(true, rc.FindRelation(main, "C"));
-            Assert.AreEqual(true, rc.FindRelation(main, "D"));
-            Assert.AreEqual(true, rc.FindRelation(main, "E"));
-            Assert.AreEqual(true, rc.FindRelation(main, "E"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(true, reflex.FindWord(main, "C"));
-            Assert.AreEqual(true, reflex.FindWord(main, "D"));
-            Assert.AreEqual(false, reflex.FindWord(main, "E"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(true, reflex.FindWord(main, "C"));*/
         }
     }
 }

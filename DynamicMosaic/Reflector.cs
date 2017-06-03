@@ -100,28 +100,38 @@ namespace DynamicMosaic
         /// В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
+        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
+        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public bool FindRelation(string word)
+        public bool FindRelation(string word, int startIndex = 0, int count = 1)
         {
+            if (word == null)
+                throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
+            if (word == string.Empty)
+                throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.");
+            if (count <= 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.");
             if (!Contains(word))
                 return false;
             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
-            List<int> count = new List<int>(_pairs.Count);
+            List<int> counting = new List<int>(_pairs.Count);
             for (int z = 1; z < _pairs.Count; z++)
             {
-                for (int k = 0; k < count.Count; k++)
-                    count[k] = 0;
-                count.Add(0);
+                for (int k = 0; k < counting.Count; k++)
+                    counting[k] = 0;
+                counting.Add(0);
                 for (int k = 1; k < _pairs.Count; k++)
-                    while (ChangeCount(count, k) != -1)
+                    while (ChangeCount(counting, k) != -1)
                     {
                         ReflexCollection reflexCollection = SourceReflexCollection;
-                        GetWord(count, lstPairWordValues);
+                        GetWord(counting, lstPairWordValues);
                         foreach (PairWordValue p in lstPairWordValues)
                         {
                             if (p.IsEmpty)
                                 throw new Exception($@"{nameof(FindRelation)}: {nameof(PairWordValue)} пустая.");
-                            if (reflexCollection.FindRelation(p.Field, p.FindString))
+                            if (reflexCollection.FindRelation(p.Field, p.FindString, startIndex, count))
                                 return true;
                         }
                     }
