@@ -127,7 +127,7 @@ namespace DynamicMosaic
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
         /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
+        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения их соответствия указанному слову.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
         public bool FindWord(Processor processor, string word, int startIndex = 0, int count = 1)
         {
@@ -137,20 +137,30 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindWord)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindWord)}: Искомое слово не указано.", nameof(word));
-            if (_seaProcessors == null || _seaProcessors.Count <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Карты для поиска искомого слова должны присутствовать.");
             if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Индекс начала поиска имеет некорректное значение: {startIndex}.");
+                throw new ArgumentException($"{nameof(FindWord)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Количество символов поиска задано неверно: {count}.");
+                throw new ArgumentException($"{nameof(FindWord)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (!IsMapsWord(word))
                 return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
             if (!searchResults.FindRelation(word, startIndex, count))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
-            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
-                lstRegs.AddRange(lstReg);
+            if (count == 1)
+            {
+                foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults, startIndex)).Where(lstReg => lstReg.Count > 0))
+                    lstRegs.AddRange(lstReg);
+            }
+            else
+            {
+                for (int p = 0, mx = word.Length - (count - 1); p < mx; p++)
+                {
+                    List<Reg> lstReg = FindSymbols(word.Substring(p, count), searchResults, startIndex);
+                    if (lstReg.Count > 0)
+                        lstRegs.AddRange(lstReg);
+                }
+            }
             foreach (Registered r in FindWord(lstRegs, word, searchResults).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
                 GetMap(processor, r, _seaProcessors);
             return true;
@@ -274,18 +284,60 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="procName">Искомая строка.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
+        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
         /// <returns>Возвращает информацию о найденных картах.</returns>
-        static List<Reg> FindSymbols(char procName, SearchResults searchResults)//добавить параметр количества букв
+        static List<Reg> FindSymbols(string procName, SearchResults searchResults, int startIndex)
+        {
+            if (procName == null)
+                throw new ArgumentNullException(nameof(procName), $"{nameof(FindSymbols)}: Искомая строка не может быть равна null.");
+            if (procName == string.Empty)
+                throw new ArgumentException($"{nameof(FindSymbols)}: Искомая строка не может быть пустой.", nameof(procName));
+            if (searchResults == null)
+                throw new ArgumentNullException(nameof(searchResults), $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(FindSymbols)}: Стартовый индекс должен быть больше ноля ({startIndex}).", nameof(startIndex));
+            List<Reg> lstRegs = new List<Reg>();
+            for (int y = 0; y < searchResults.Height; y++)
+                for (int x = 0; x < searchResults.Width; x++)
+                {
+                    Processor[] processors = searchResults[x, y].Procs?.Where(pr => pr != null).Where(pr => pr.IsProcessorName(procName, startIndex)).ToArray();
+                    if ((processors?.Length ?? 0) <= 0)
+                        continue;
+                    double percent = searchResults[x, y].Percent;
+                    Point point = new Point(x, y);
+                    lstRegs.AddRange(from pr in processors
+                                     where pr != null
+                                     select new Reg(point)
+                                     {
+                                         SelectedProcessor = pr,
+                                         Percent = percent
+                                     });
+                }
+            return lstRegs;
+        }
+
+        /// <summary>
+        ///     Находит карты в результатах поиска, поля <see cref="Processor.Tag" /> которых по указанной позиции соответствуют
+        ///     указанной строке.
+        /// </summary>
+        /// <param name="procName">Искомая строка.</param>
+        /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
+        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
+        /// <returns>Возвращает информацию о найденных картах.</returns>
+        static List<Reg> FindSymbols(char procName, SearchResults searchResults, int startIndex)
         {
             if (searchResults == null)
                 throw new ArgumentNullException(nameof(searchResults),
                     $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(FindSymbols)}: Стартовый индекс должен быть больше ноля ({startIndex}).", nameof(startIndex));
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0; y < searchResults.Height; y++)
                 for (int x = 0; x < searchResults.Width; x++)
                 {
-                    Processor[] processors = searchResults[x, y].Procs?.Where(pr => pr != null).Where(pr => char.ToUpper(pr.Tag[0]) == procName).ToArray();
+                    Processor[] processors = searchResults[x, y].Procs?.Where(pr => pr != null).Where(pr =>
+                        startIndex < pr.Tag.Length && char.ToUpper(pr.Tag[startIndex]) == procName).ToArray();
                     if ((processors?.Length ?? 0) <= 0)
                         continue;
                     double percent = searchResults[x, y].Percent;
