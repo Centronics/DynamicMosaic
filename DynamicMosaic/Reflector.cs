@@ -61,7 +61,12 @@ namespace DynamicMosaic
         /// <summary>
         /// Анализирует входные данные.
         /// </summary>
-        ReflexCollection _reflexCollection;
+        readonly ReflexCollection _reflexCollection;
+
+        /// <summary>
+        /// Получает исходную <see cref="ReflexCollection"/>, используя метод <see cref="ReflexCollection.Clone"/>.
+        /// </summary>
+        public ReflexCollection SourceReflexCollection => (ReflexCollection)_reflexCollection.Clone();
 
         /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
@@ -100,7 +105,6 @@ namespace DynamicMosaic
         {
             if (!Contains(word))
                 return false;
-            _reflexCollection = (ReflexCollection)_reflexCollection.Clone();
             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
             List<int> count = new List<int>(_pairs.Count);
             for (int z = 1; z < _pairs.Count; z++)
@@ -109,20 +113,18 @@ namespace DynamicMosaic
                     count[k] = 0;
                 count.Add(0);
                 for (int k = 1; k < _pairs.Count; k++)
-                {
                     while (ChangeCount(count, k) != -1)
                     {
+                        ReflexCollection reflexCollection = SourceReflexCollection;
                         GetWord(count, lstPairWordValues);
                         foreach (PairWordValue p in lstPairWordValues)
                         {
                             if (p.IsEmpty)
                                 throw new Exception($@"{nameof(FindRelation)}: {nameof(PairWordValue)} пустая.");
-                            if (_reflexCollection.FindRelation(p.Field, p.FindString))
+                            if (reflexCollection.FindRelation(p.Field, p.FindString))
                                 return true;
                         }
-                        _reflexCollection = (ReflexCollection)_reflexCollection.Clone();
                     }
-                }
             }
             return false;
         }
