@@ -117,6 +117,7 @@ namespace DynamicMosaic
                 return false;
             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
             List<int> counting = new List<int>(_pairs.Count);
+            bool result = false;
             for (int z = 1; z < _pairs.Count; z++)
             {
                 for (int k = 0; k < counting.Count; k++)
@@ -131,12 +132,13 @@ namespace DynamicMosaic
                         {
                             if (p.IsEmpty)
                                 throw new Exception($@"{nameof(FindRelation)}: {nameof(PairWordValue)} пустая.");
-                            if (reflexCollection.FindRelation(p.Field, p.FindString, startIndex, count))
-                                return true;
+                            if (!reflexCollection.FindRelation(p.Field, p.FindString, startIndex, count)) continue;
+                            if (string.Compare(word, p.FindString, StringComparison.OrdinalIgnoreCase) == 0)
+                                result = true;
                         }
                     }
             }
-            return false;
+            return result;
         }
 
         /// <summary>
