@@ -40,8 +40,7 @@ namespace DynamicMosaicTest
             Processor procC = new Processor(mapC, "C");
             Processor procD = new Processor(mapD, "D");
             Processor procE = new Processor(mapE, "E");
-            Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE));
-            Reflector reflector = new Reflector(reflex);
+            Reflector reflector = new Reflector(new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE)));
             reflector.Add("A", procA);
             reflector.Add("B", procB);
             reflector.Add("C", procC);

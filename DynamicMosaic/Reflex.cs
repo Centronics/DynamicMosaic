@@ -100,24 +100,21 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Информация о получаемой карте.</param>
-        /// <param name="namedBy">Контейнер, необходимый для генерации имени карты, которая в нём отсутствует.</param>
         /// <returns>Возвращает карту по указанным координатам целевой карты.</returns>
-        static void GetMap(Processor processor, Registered registered, ProcessorContainer namedBy)
+        void GetMap(Processor processor, Registered registered)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
                 throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
-            if (namedBy == null)
-                throw new ArgumentNullException(nameof(namedBy), $@"{nameof(GetMap)}: Контейнер, куда предполагается добавить карту, должен быть указан.");
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
                 for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
                     values[x1, y1] = processor[x, y];
             string s = registered.Register.SelectedProcessor.Tag;
-            while (namedBy.ContainsTag(s))
+            while (_seaProcessors.ContainsTag(s))
                 s += '0';
-            namedBy.Add(new Processor(values, s));
+            _seaProcessors.Add(new Processor(values, s));
         }
 
         /// <summary>
@@ -154,15 +151,11 @@ namespace DynamicMosaic
             }
             else
             {
-                for (int p = 0, mx = word.Length - (count - 1); p < mx; p++)
-                {
-                    List<Reg> lstReg = FindSymbols(word.Substring(p, count), searchResults, startIndex);
-                    if (lstReg.Count > 0)
-                        lstRegs.AddRange(lstReg);
-                }
+                for (int p = 0, mx = word.Length - count; p <= mx; p++)
+                    lstRegs.AddRange(FindSymbols(word.Substring(p, count), searchResults, startIndex));
             }
             foreach (Registered r in FindWord(lstRegs, word, searchResults).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
-                GetMap(processor, r, _seaProcessors);
+                GetMap(processor, r);
             return true;
         }
 
@@ -246,8 +239,7 @@ namespace DynamicMosaic
                     nameof(count));
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCount),
-                    $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount
-                        }).");
+                    $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
             for (int k = count.Count - 1, mc = maxCount - 1; k >= 0; k--)
             {
                 if (count[k] >= mc) continue;

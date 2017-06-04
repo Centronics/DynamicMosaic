@@ -68,12 +68,11 @@ namespace DynamicMosaic
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
             if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.");
+                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.");
-            bool val = false;
+                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             string errString = string.Empty, errStopped = string.Empty;
-            bool exThrown = false, exStopped = false;
+            bool exThrown = false, exStopped = false, val = false;
             Parallel.ForEach(_reflexs, (reflex, state) =>
             {
                 try
@@ -99,7 +98,7 @@ namespace DynamicMosaic
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
             if (val)
-                return val;
+                return true;
             Reflex r = StartReflex;
             if (!r.FindWord(processor, word, startIndex, count))
                 return false;
