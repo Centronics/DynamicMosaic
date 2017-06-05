@@ -110,9 +110,9 @@ namespace DynamicMosaic
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
             if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.");
+                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.");
+                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (!Contains(word))
                 return null;
             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
@@ -129,7 +129,7 @@ namespace DynamicMosaic
                     {
                         GetWord(counting, lstPairWordValues);
                         foreach (PairWordValue p in lstPairWordValues)
-                        {
+                        {//необходимо блокировать добавление карт после первого вызова этой функции
                             if (p.IsEmpty)
                                 throw new Exception($@"{nameof(FindRelation)}: {nameof(PairWordValue)} пустая.");
                             if (!reflexCollection.FindRelation(p.Field, p.FindString, startIndex, count)) continue;
