@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Внутреннее хранилище ранее загруженных данных.
         /// </summary>
-        readonly List<Reflex> _reflexs = new List<Reflex>();
+        ConcurrentBag<Reflex> _reflexs = new ConcurrentBag<Reflex>();
 
         /// <summary>
         /// Содержит первоначальный экземпляр <see cref="Reflex"/>.
@@ -52,6 +53,40 @@ namespace DynamicMosaic
         }
 
         /// <summary>
+        /// Удаляет все объекты <see cref="Reflex"/> из коллекции текущего экземпляра.
+        /// </summary>
+        public void Clear()
+        {
+            _reflexs = new ConcurrentBag<Reflex>();
+        }
+
+        /// <summary>
+        /// Добавляет <see cref="Reflex"/> в коллекцию текущего экземпляра <see cref="ReflexCollection"/>.
+        /// </summary>
+        /// <param name="pairs">Поисковые запросы для инициализации текущего экземпляра <see cref="ReflexCollection"/>.</param>
+        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
+        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
+        public void AddPair(IList<PairWordValue> pairs, int startIndex = 0, int count = 1)
+        {
+            if (pairs == null)
+                throw new ArgumentNullException(nameof(pairs), $"{nameof(AddPair)}: Запросы для выполнения должны быть указаны.");
+            if (pairs.Count <= 0)
+                throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запросов поиска, должен присутствовать хотя бы один запрос.", nameof(pairs));
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(AddPair)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
+            if (count <= 0)
+                throw new ArgumentException($"{nameof(AddPair)}: Количество символов поиска задано неверно: {count}.", nameof(count));
+            Reflex r = StartReflex;
+            _reflexs.Add(r);
+            foreach (PairWordValue p in pairs)
+            {
+                if (p.IsEmpty)
+                    throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запроса поиска все его аргументы должны быть указаны.", nameof(pairs));
+                r.FindWord(p.Field, p.FindString, startIndex, count);
+            }
+        }
+
+        /// <summary>
         /// Находит связь между заданным словом и текущими картами объекта <see cref="ReflexCollection"/>.
         /// </summary>
         /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
@@ -71,7 +106,6 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
                 throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
-            _reflexs.Add(StartReflex);//необходимы две функции: одна на инициализацию, другая для работы
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false, val = false;
             Parallel.ForEach(_reflexs, (reflex, state) =>

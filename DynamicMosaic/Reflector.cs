@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DynamicParser;
 
 namespace DynamicMosaic
@@ -8,7 +9,7 @@ namespace DynamicMosaic
     /// <summary>
     /// Пара "искомое значение - поле для поиска".
     /// </summary>
-    struct PairWordValue
+    public struct PairWordValue
     {
         /// <summary>
         /// Искомая строка.
@@ -69,6 +70,11 @@ namespace DynamicMosaic
         public ReflexCollection SourceReflexCollection => (ReflexCollection)_reflexCollection.Clone();
 
         /// <summary>
+        /// Получает значение, показывающее, инициализирован текущий экземпляр <see cref="Reflector"/> или нет.
+        /// </summary>
+        public bool IsInitialized { get; private set; }
+
+        /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
         /// </summary>
         /// <param name="reflex">Начальное значение <see cref="Reflex"/>.</param>
@@ -93,18 +99,63 @@ namespace DynamicMosaic
             if (string.IsNullOrEmpty(word))
                 return;
             _pairs.Add(new PairWordValue(word, processor));
+            IsInitialized = false;
+        }
+
+        /// <summary>
+        /// Выполняет подготовку к обработке данных в текущем экземпляре <see cref="Reflector"/>.
+        /// </summary>
+        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
+        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
+        public void Initialize(int startIndex = 0, int count = 1)
+        {
+            if (IsInitialized)
+                return;
+            if (startIndex < 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
+            if (count <= 0)
+                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
+            string errString = string.Empty, errStopped = string.Empty;
+            bool exThrown = false, exStopped = false;
+            Parallel.ForEach(InitializePairs, (pairs, state) =>
+            {
+                try
+                {
+                    _reflexCollection.AddPair(pairs, startIndex, count);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        errString = ex.Message;
+                        exThrown = true;
+                        state.Stop();
+                    }
+                    catch (Exception ex1)
+                    {
+                        errStopped = ex1.Message;
+                        exStopped = true;
+                    }
+                }
+            });
+            if (exThrown)
+                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
+            IsInitialized = true;
         }
 
         /// <summary>
         /// Находит связь между заданным словом и данными в контексте.
         /// В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
         /// </summary>
+        /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
         /// <param name="word">Проверяемое слово.</param>
         /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
         /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public ReflexCollection FindRelation(string word, int startIndex = 0, int count = 1)
+        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
         {
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
@@ -114,31 +165,36 @@ namespace DynamicMosaic
             if (count <= 0)
                 throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (!Contains(word))
-                return null;
-            List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
-            List<int> counting = new List<int>(_pairs.Count);
-            for (int z = 1; z < _pairs.Count; z++)
+                throw new ArgumentException($"{nameof(FindRelation)}: Указанное слово не содержится в коллекции текущего экземпляра: {word}.", nameof(word));
+            if (!IsInitialized)
+                throw new Exception($"{nameof(FindRelation)}: Текущий экземпляр {nameof(Reflector)} не инициализирован.");
+            return _reflexCollection.FindRelation(processor, word, startIndex, count);
+        }
+
+        /// <summary>
+        /// Получает коллекцию <see cref="PairWordValue"/>, предназначенную для инициализации <see cref="ReflexCollection"/>.
+        /// </summary>
+        IEnumerable<IList<PairWordValue>> InitializePairs
+        {
+            get
             {
-                for (int k = 0; k < counting.Count; k++)
-                    counting[k] = 0;
-                counting.Add(0);
-                for (int k = 1; k < _pairs.Count; k++)
+                List<int> counting = new List<int>(_pairs.Count);
+                List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
+                for (int z = 1; z < _pairs.Count; z++)
                 {
-                    ReflexCollection reflexCollection = SourceReflexCollection;
-                    while (ChangeCount(counting, k) != -1)
+                    for (int k = 0; k < counting.Count; k++)
+                        counting[k] = 0;
+                    counting.Add(0);
+                    for (int k = 1; k < _pairs.Count; k++)
                     {
-                        GetWord(counting, lstPairWordValues);
-                        foreach (PairWordValue p in lstPairWordValues)
-                        {//необходимо блокировать добавление карт после первого вызова этой функции
-                            if (p.IsEmpty)
-                                throw new Exception($@"{nameof(FindRelation)}: {nameof(PairWordValue)} пустая.");
-                            if (!reflexCollection.FindRelation(p.Field, p.FindString, startIndex, count)) continue;
-                            return reflexCollection;
+                        while (ChangeCount(counting, k) != -1)
+                        {
+                            GetWord(counting, lstPairWordValues);
+                            yield return lstPairWordValues;
                         }
                     }
                 }
             }
-            return null;
         }
 
         /// <summary>
