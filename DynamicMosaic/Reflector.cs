@@ -115,6 +115,7 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
                 throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
+            _reflexCollection.Clear();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false;
             Parallel.ForEach(InitializePairs, (pairs, state) =>
@@ -168,7 +169,9 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindRelation)}: Указанное слово не содержится в коллекции текущего экземпляра: {word}.", nameof(word));
             if (!IsInitialized)
                 throw new Exception($"{nameof(FindRelation)}: Текущий экземпляр {nameof(Reflector)} не инициализирован.");
-            return _reflexCollection.FindRelation(processor, word, startIndex, count);
+            bool result = _reflexCollection.FindRelation(processor, word, startIndex, count);
+            _pairs.Add(new PairWordValue(word, processor));
+            return result;
         }
 
         /// <summary>
