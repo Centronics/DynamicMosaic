@@ -182,7 +182,6 @@ namespace DynamicMosaic
             get
             {
                 List<int> counting = new List<int>(_pairs.Count);
-                List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
                 for (int z = 1; z < _pairs.Count; z++)
                 {
                     for (int k = 0; k < counting.Count; k++)
@@ -192,6 +191,7 @@ namespace DynamicMosaic
                     {
                         while (ChangeCount(counting, k) != -1)
                         {
+                            List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
                             GetWord(counting, lstPairWordValues);
                             yield return lstPairWordValues;
                         }

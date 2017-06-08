@@ -46,12 +46,13 @@ namespace DynamicMosaicTest
             reflector.Add("C", procC);
             reflector.Add("D", procD);
             reflector.Add("E", procE);
-            Assert.AreEqual(true, reflector.FindRelation("A"));
-            Assert.AreEqual(true, reflector.FindRelation("B"));
-            Assert.AreEqual(true, reflector.FindRelation("C"));
-            Assert.AreEqual(true, reflector.FindRelation("D"));
-            Assert.AreEqual(true, reflector.FindRelation("E"));
-            Assert.AreEqual(false, reflector.FindRelation("W"));
+            reflector.Initialize();
+            Assert.AreEqual(true, reflector.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "C"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "D"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "E"));
+            Assert.AreEqual(false, reflector.FindRelation(main, "W"));
         }
     }
 }
