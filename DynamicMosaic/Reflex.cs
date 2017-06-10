@@ -31,7 +31,7 @@ namespace DynamicMosaic
         public Processor this[int index] => _seaProcessors[index];
 
         /// <summary>
-        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindWord(Processor, string, int, int)"/>.
+        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string, int, int)"/>.
         /// </summary>
         public IEnumerable<Processor> ProcessorsBase
         {
@@ -85,13 +85,13 @@ namespace DynamicMosaic
         /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.
         /// Поиск производится без учёта регистра.
         /// </summary>
-        /// <param name="c">Искомый символ.</param>
+        /// <param name="name">Искомая строка.</param>
+        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
         /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.</returns>
-        public IEnumerable<Processor> GetMap(char c)
+        public IEnumerable<Processor> GetMap(string name, int startIndex = 0)
         {
-            char ch = char.ToUpper(c);
             for (int k = 0; k < _seaProcessors.Count; k++)
-                if (char.ToUpper(_seaProcessors[k].Tag[0]) == ch)
+                if (_seaProcessors[k].IsProcessorName(name, startIndex))
                     yield return _seaProcessors[k];
         }
 
@@ -126,7 +126,7 @@ namespace DynamicMosaic
         /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
         /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения их соответствия указанному слову.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
-        public bool FindWord(Processor processor, string word, int startIndex = 0, int count = 1)
+        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindWord)}: Карта для поиска не указана (null).");
@@ -255,8 +255,9 @@ namespace DynamicMosaic
         /// Позволяет выяснить, содержит ли текущий контекст достаточное количество карт для составления указанного слова.
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
+        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
         /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
-        public bool IsMapsWord(string word)
+        public bool IsMapsWord(string word, int startIndex = 0)
         {
             if (string.IsNullOrEmpty(word))
                 return false;
@@ -264,7 +265,7 @@ namespace DynamicMosaic
             return word.All(c =>
             {
                 for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (char.ToUpper(_seaProcessors[k].Tag[0]) != c)
+                    if (_seaProcessors[k].IsProcessorName(word, startIndex))
                         return true;
                 return false;
             });

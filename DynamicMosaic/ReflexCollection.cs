@@ -82,7 +82,7 @@ namespace DynamicMosaic
             {
                 if (p.IsEmpty)
                     throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запроса поиска все его аргументы должны быть указаны.", nameof(pairs));
-                r.FindWord(p.Field, p.FindString, startIndex, count);
+                r.FindRelation(p.Field, p.FindString, startIndex, count);
             }
         }
 
@@ -112,7 +112,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    if (reflex.FindWord(processor, word, startIndex, count))
+                    if (reflex.FindRelation(processor, word, startIndex, count))
                         val = true;
                 }
                 catch (Exception ex)
