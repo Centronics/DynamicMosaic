@@ -106,6 +106,9 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
                 throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
+            if (CountReflexs <= 0)
+                throw new ArgumentException($@"{nameof(FindRelation)}: Невозможно начать операцию анализа данных по причине отсутствия {nameof(Reflex)
+                    }. Используйте метод {nameof(AddPair)} для добавления рефлексов ({nameof(Reflex)}).");
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false, val = false;
             Parallel.ForEach(_reflexs, (reflex, state) =>

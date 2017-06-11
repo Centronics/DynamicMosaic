@@ -255,17 +255,28 @@ namespace DynamicMosaic
         /// Позволяет выяснить, содержит ли текущий контекст достаточное количество карт для составления указанного слова.
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
-        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
         /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
-        public bool IsMapsWord(string word, int startIndex = 0)
+        public bool IsMapsWord(string word)
         {
             if (string.IsNullOrEmpty(word))
                 return false;
-            word = word.ToUpper();
+            List<char> lstCh = word.Select(char.ToUpper).ToList();
             return word.All(c =>
             {
+                if (lstCh.Count <= 0)
+                    return true;
                 for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (_seaProcessors[k].IsProcessorName(word, startIndex))
+                    if (_seaProcessors[k].Tag.Any(cd =>
+                    {
+                        bool result = false;
+                        for (int j = 0; j < lstCh.Count; j++)
+                        {
+                            if (lstCh[j] != char.ToUpper(cd)) continue;
+                            lstCh.RemoveAt(j--);
+                            result = true;
+                        }
+                        return result;
+                    }))
                         return true;
                 return false;
             });

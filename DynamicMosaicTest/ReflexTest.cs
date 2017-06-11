@@ -46,7 +46,9 @@ namespace DynamicMosaicTest
 
             TestingAllProperties(reflex);
 
-            TestingAllProperties((Reflex)reflex.Clone());
+            Reflex r = (Reflex)reflex.Clone();
+            Assert.AreNotSame(r, reflex);
+            TestingAllProperties(r);
 
             GetMapTest();
 
@@ -59,9 +61,16 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, reflex.FindRelation(main, "E"));
             Assert.AreEqual(false, reflex.FindRelation(main, "W"));
 
+            TestingAllProperties((Reflex)reflex.Clone());
 
+            TestingAllCount(reflex);
 
-            Processor[] procs = reflex.Processors.ToArray();
+            foreach (Processor p in reflex.GetMap("A"))
+            {
+                Assert.AreNotEqual(null, p);
+                Assert.AreEqual(SignValue.MaxValue, p[0, 0]);
+                //продолжить после отладки
+            }
         }
 
         static void TestingAllProperties(Reflex reflex)
@@ -87,6 +96,41 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "C", StringComparison.OrdinalIgnoreCase) == 0));
             Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "D", StringComparison.OrdinalIgnoreCase) == 0));
             Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "E", StringComparison.OrdinalIgnoreCase) == 0));
+        }
+
+        static void TestingAllCount(Reflex reflex)
+        {
+            int count = 0;
+            Assert.AreNotEqual(true, reflex.CountProcessor > reflex.CountProcessorsBase);
+            Assert.AreEqual(5, reflex.CountProcessorsBase);
+            try
+            {
+                // ReSharper disable once UnusedVariable
+                Processor p = reflex[reflex.CountProcessor];
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                count++;
+            }
+            try
+            {
+                // ReSharper disable once UnusedVariable
+                Processor p = reflex[reflex.CountProcessor - 1];
+            }
+            catch
+            {
+                count++;
+            }
+            try
+            {
+                // ReSharper disable once UnusedVariable
+                Processor p = reflex[-1];
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                count++;
+            }
+            Assert.AreEqual(2, count);
         }
 
         static void GetMapTest()
@@ -177,7 +221,57 @@ namespace DynamicMosaicTest
 
         static void IsMapsWordTest()
         {
-            
+            SignValue[,] map = new SignValue[2, 2];
+            Processor procA = new Processor(map, "A1");
+            Processor procA1 = new Processor(map, "A12");
+            Processor procB = new Processor(map, "B1");
+            Processor procB1 = new Processor(map, "B13");
+            Processor procB2 = new Processor(map, "B14");
+            Processor procC = new Processor(map, " C1");
+            Processor procC1 = new Processor(map, " C14388 ");
+            Processor procC2 = new Processor(map, " C15388 ");
+            Processor procD = new Processor(map, "  D1    ");
+            Processor procD1 = new Processor(map, "D12 ");
+            Processor procD2 = new Processor(map, "D13 ");
+            Processor procE = new Processor(map, "E1");
+            Processor procE1 = new Processor(map, " E12");
+            Processor procE2 = new Processor(map, " E13");
+            Reflex reflex = new Reflex(new ProcessorContainer(procA, procA1, procB, procB1, procB2, procC, procC1, procC2, procD, procD1, procD2, procE, procE1, procE2));
+
+            Assert.AreEqual(true, reflex.IsMapsWord("1"));
+            Assert.AreEqual(true, reflex.IsMapsWord("ABCDE"));
+            Assert.AreEqual(true, reflex.IsMapsWord("ABcde"));
+            Assert.AreEqual(true, reflex.IsMapsWord("dacBe"));
+            Assert.AreEqual(false, reflex.IsMapsWord("dacBe "));
+            Assert.AreEqual(false, reflex.IsMapsWord(" dacBe"));
+            Assert.AreEqual(false, reflex.IsMapsWord(" dacBe "));
+            Assert.AreEqual(false, reflex.IsMapsWord("d acBe"));
+            Assert.AreEqual(false, reflex.IsMapsWord("dac   Be"));
+            Assert.AreEqual(false, reflex.IsMapsWord("  dacBe    "));
+            Assert.AreEqual(false, reflex.IsMapsWord("dacBe    "));
+            Assert.AreEqual(false, reflex.IsMapsWord("  dacBe"));
+            Assert.AreEqual(true, reflex.IsMapsWord("AEdbC"));
+            Assert.AreEqual(true, reflex.IsMapsWord("AB143"));
+            Assert.AreEqual(false, reflex.IsMapsWord("ABCDEW"));
+            Assert.AreEqual(false, reflex.IsMapsWord("ABCDE "));
+            Assert.AreEqual(false, reflex.IsMapsWord(" ABCDEW"));
+            Assert.AreEqual(false, reflex.IsMapsWord(" ABCDEW "));
+            Assert.AreEqual(false, reflex.IsMapsWord("  ABCDE   "));
+            Assert.AreEqual(false, reflex.IsMapsWord("ABCDEW    "));
+            Assert.AreEqual(false, reflex.IsMapsWord("  ABCDEW"));
+            Assert.AreEqual(false, reflex.IsMapsWord("F"));
+            Assert.AreEqual(false, reflex.IsMapsWord(" "));
+            Assert.AreEqual(false, reflex.IsMapsWord("  "));
+            Assert.AreEqual(false, reflex.IsMapsWord(string.Empty));
+            Assert.AreEqual(false, reflex.IsMapsWord(null));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReflexArgumentNullException()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new Reflex(null);
         }
     }
 }
