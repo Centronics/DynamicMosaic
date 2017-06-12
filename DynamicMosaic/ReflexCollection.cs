@@ -77,13 +77,18 @@ namespace DynamicMosaic
             if (count <= 0)
                 throw new ArgumentException($"{nameof(AddPair)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             Reflex r = StartReflex;
-            _reflexs.Add(r);
+            bool res = true;
             foreach (PairWordValue p in pairs)
             {
                 if (p.IsEmpty)
                     throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запроса поиска все его аргументы должны быть указаны.", nameof(pairs));
-                r.FindRelation(p.Field, p.FindString, startIndex, count);
+                if (r.FindRelation(p.Field, p.FindString, startIndex, count))
+                    continue;
+                res = false;
+                break;
             }
+            if (res)
+                _reflexs.Add(r);
         }
 
         /// <summary>

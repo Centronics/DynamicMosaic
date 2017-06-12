@@ -75,6 +75,16 @@ namespace DynamicMosaic
         public bool IsInitialized { get; private set; }
 
         /// <summary>
+        /// Количество поданных запросов для инициализации текущего экземпляра <see cref="Reflector"/>.
+        /// </summary>
+        public int CountQuery => _pairs.Count;
+
+        /// <summary>
+        /// Получает содержимое запросов, предназначенных для инициализации текущего экземпляра <see cref="Reflector"/>.
+        /// </summary>
+        public IEnumerable<PairWordValue> InitializeQuery => _pairs;
+
+        /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
         /// </summary>
         /// <param name="reflex">Начальное значение <see cref="Reflex"/>.</param>
@@ -96,8 +106,10 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(Add)}: Карта для поиска должна быть указана.");
-            if (string.IsNullOrEmpty(word))
-                return;
+            if (string.IsNullOrWhiteSpace(word))
+                throw new ArgumentException($"{nameof(Add)}: Добавляемое слово должно быть указано.", nameof(word));
+            if (!SourceReflex.IsMapsWord(word))
+                throw new ArgumentException($"{nameof(Add)}: Добавляемое слово найти невозможно, т.к. буквы его составляющие отсутствуют в базе {nameof(Reflex)}.", nameof(word));
             _pairs.Add(new PairWordValue(word, processor));
             IsInitialized = false;
         }

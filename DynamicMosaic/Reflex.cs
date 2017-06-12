@@ -114,7 +114,39 @@ namespace DynamicMosaic
             string s = registered.Register.SelectedProcessor.Tag;
             while (_seaProcessors.ContainsTag(s))
                 s += '0';
-            _seaProcessors.Add(new Processor(values, s));
+            Processor p = new Processor(values, s);
+            if (!MapContains(p))
+                _seaProcessors.Add(p);
+        }
+
+        /// <summary>
+        /// Определяет, содержит ли текущий экземпляр <see cref="Reflex"/> карту с совпадающим содержимым или нет.
+        /// В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
+        /// </summary>
+        /// <param name="processor">Проверяемая карта.</param>
+        /// <returns>В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
+        bool MapContains(Processor processor)
+        {
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor), $"{nameof(MapContains)}: Карта должна быть указана.");
+            for (int k = 0; k < _seaProcessors.Count; k++)
+            {
+                Processor p = _seaProcessors[k];
+                if (p.Width != processor.Width || p.Height != processor.Height)
+                    throw new ArgumentException($"{nameof(MapContains)}: Карты не соответствуют по размерам.", nameof(processor));
+                bool res = true;
+                for (int y = 0; y < processor.Height; y++)
+                    for (int x = 0; x < processor.Width; x++)
+                    {
+                        if (p[x, y] == processor[x, y]) continue;
+                        res = false;
+                        goto exit;
+                    }
+                exit:
+                if (res)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

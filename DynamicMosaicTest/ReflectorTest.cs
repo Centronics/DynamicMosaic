@@ -1,4 +1,6 @@
-﻿using DynamicMosaic;
+﻿using System;
+using System.Linq;
+using DynamicMosaic;
 using DynamicParser;
 using DynamicProcessor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,24 +14,30 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflectorTest1()
         {
-            /*ReflexCollection rc = new ReflexCollection(reflex);
-            Assert.AreEqual(true, rc.FindRelation(main, "A"));
-            Assert.AreEqual(true, rc.FindRelation(main, "A"));
-            Assert.AreEqual(true, rc.FindRelation(main, "B"));
-            Assert.AreEqual(true, rc.FindRelation(main, "C"));
-            Assert.AreEqual(true, rc.FindRelation(main, "D"));
-            Assert.AreEqual(true, rc.FindRelation(main, "E"));
-            Assert.AreEqual(true, rc.FindRelation(main, "E"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(true, reflex.FindWord(main, "C"));
-            Assert.AreEqual(true, reflex.FindWord(main, "D"));
-            Assert.AreEqual(false, reflex.FindWord(main, "E"));
-            Assert.AreEqual(true, reflex.FindWord(main, "A"));
-            Assert.AreEqual(false, reflex.FindWord(main, "B"));
-            Assert.AreEqual(true, reflex.FindWord(main, "C"));*/
+            Reflector reflector = new Reflector(new Reflex(new ProcessorContainer(
+                new Processor(new[] { SignValue.MinValue }, "1"),
+                new Processor(new[] { SignValue.MaxValue }, "2"))));
+            Assert.AreEqual(false, reflector.IsInitialized);
+            Assert.AreEqual(0, reflector.CountQuery);
+            Assert.AreEqual(0, reflector.InitializeQuery.Count());
+            reflector.Initialize();
+            //reflector.Add("");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReflectorArgumentNullException()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new Reflector(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ReflectorArgumentException()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new Reflector(new Reflex(new ProcessorContainer(new Processor(new SignValue[1], "1"))));
         }
     }
 }
