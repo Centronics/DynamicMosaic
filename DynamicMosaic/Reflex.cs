@@ -107,46 +107,51 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
                 throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
-            SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
-            for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                    values[x1, y1] = processor[x, y];
+            SignValue[,] values = AddMap(registered, processor);
+            if (values == null)
+                return;
             string s = registered.Register.SelectedProcessor.Tag;
             while (_seaProcessors.ContainsTag(s))
                 s += '0';
-            Processor p = new Processor(values, s);
-            if (!MapContains(p))
-                _seaProcessors.Add(p);
+            _seaProcessors.Add(new Processor(values, s));
         }
 
         /// <summary>
         /// Определяет, содержит ли текущий экземпляр <see cref="Reflex"/> карту с совпадающим содержимым или нет.
         /// В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
         /// </summary>
-        /// <param name="processor">Проверяемая карта.</param>
+        /// <param name="registered">Информация о получаемой карте.</param>
+        /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <returns>В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        bool MapContains(Processor processor)
+        SignValue[,] AddMap(Registered registered, Processor processor)
         {
+            if (registered == null)
+                throw new ArgumentNullException(nameof(registered), $"{nameof(AddMap)}: Информация о получаемой карте должна присутствовать.");
             if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $"{nameof(MapContains)}: Карта должна быть указана.");
+                throw new ArgumentNullException(nameof(processor), $"{nameof(AddMap)}: Карта, из которой необходимо получить целевую карту, должна быть указана.");
             for (int k = 0; k < _seaProcessors.Count; k++)
             {
                 Processor p = _seaProcessors[k];
-                if (p.Width != processor.Width || p.Height != processor.Height)
-                    throw new ArgumentException($"{nameof(MapContains)}: Карты не соответствуют по размерам.", nameof(processor));
+                if (p.Width != registered.Region.Width || p.Height != registered.Region.Height)
+                    throw new ArgumentException($"{nameof(AddMap)}: Карты не соответствуют по размерам.", nameof(registered));
                 bool res = true;
-                for (int y = 0; y < processor.Height; y++)
-                    for (int x = 0; x < processor.Width; x++)
+                for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
+                    for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
                     {
-                        if (p[x, y] == processor[x, y]) continue;
+                        if (p[x1, y1] == processor[x, y])
+                            continue;
                         res = false;
                         goto exit;
                     }
                 exit:
                 if (res)
-                    return true;
+                    return null;
             }
-            return false;
+            SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
+            for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                    values[x1, y1] = processor[x, y];
+            return values;
         }
 
         /// <summary>
