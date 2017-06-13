@@ -37,7 +37,7 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             reflector.Add("13a", new Processor(new[] { new SignValue(SignValue.MaxValue - 1) }, "t"));
-            reflector.Add("24b", new Processor(new[] { new SignValue(SignValue.MaxValue - 1) }, "y"));
+            reflector.Add("24b", new Processor(new[] { new SignValue(SignValue.MinValue + 1) }, "y"));
             Assert.AreEqual(0, reflector.CountQuery);
             Assert.AreEqual(0, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
