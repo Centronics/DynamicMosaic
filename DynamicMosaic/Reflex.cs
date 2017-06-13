@@ -65,6 +65,11 @@ namespace DynamicMosaic
         public int CountProcessor => _seaProcessors.Count;
 
         /// <summary>
+        /// Получает размер загруженных карт в текущий экземпляр <see cref="Reflex"/>.
+        /// </summary>
+        public Size MapSize => new Size(_seaMaps[0].Width, _seaMaps[0].Height);
+
+        /// <summary>
         /// Инициализирует текущий контекст указанными картами.
         /// </summary>
         /// <param name="processors">Карты, которые необходимо добавить в контекст.</param>

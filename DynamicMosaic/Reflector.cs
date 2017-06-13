@@ -169,6 +169,10 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
+            if (processor.Width < _reflex.MapSize.Width)
+                throw new ArgumentException($"{nameof(FindRelation)}: Ширина карты для выполнения поиска должна быть больше или равна сопоставляемой.", nameof(processor));
+            if (processor.Height < _reflex.MapSize.Height)
+                throw new ArgumentException($"{nameof(FindRelation)}: Высота карты для выполнения поиска должна быть больше или равна сопоставляемой.", nameof(processor));
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
@@ -193,6 +197,8 @@ namespace DynamicMosaic
         {
             get
             {
+                if (_pairs.Count <= 0)
+                    throw new ArgumentException($"{nameof(InitializePairs)}: Количество пар \"Искомое значение - поле для поиска\" должно быть больше ноля.");
                 List<int> counting = new List<int>(_pairs.Count);
                 for (int z = 1; z < _pairs.Count; z++)
                 {
