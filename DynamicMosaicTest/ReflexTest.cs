@@ -101,21 +101,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessor);
 
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
-
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
+            TestingAllMaps(reflex);
 
             Assert.AreEqual(2, reflex.MapSize.Width);
             Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Processor[] processors = { reflex[0], reflex[1], reflex[2] };
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
 
             Reflex r = (Reflex)reflex.Clone();
             Assert.AreNotSame(r, reflex);
@@ -180,21 +169,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessor);
 
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
-
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
+            TestingAllMaps(reflex);
 
             Assert.AreEqual(2, reflex.MapSize.Width);
             Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Processor[] processors = { reflex[0], reflex[1], reflex[2] };
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
 
             Reflex r = (Reflex)reflex.Clone();
             Assert.AreNotSame(r, reflex);
@@ -259,21 +237,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessor);
 
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
-
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
+            TestingAllMaps(reflex);
 
             Assert.AreEqual(2, reflex.MapSize.Width);
             Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Processor[] processors = { reflex[0], reflex[1], reflex[2] };
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "C33b", StringComparison.OrdinalIgnoreCase) == 0));
 
             Reflex r = (Reflex)reflex.Clone();
             Assert.AreNotSame(r, reflex);
