@@ -129,6 +129,78 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
+        public void ReflexCollectionTest2()
+        {
+            SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+
+            Processor main = new Processor(map, "main");
+            Processor procA = new Processor(mapA, "A1a");
+            Processor procB = new Processor(mapB, "B2b");
+
+            {
+                ReflexCollection reflexCollection = new ReflexCollection(new Reflex(new ProcessorContainer(procA, procB)));
+                Assert.AreEqual(false, reflexCollection.FindRelation(main, "A"));
+                reflexCollection.AddPair(new[] { new PairWordValue("A", procA), new PairWordValue("B", procB) });
+                ReflexControl(reflexCollection, main);
+            }
+
+            {
+                ReflexCollection reflexCollection = new ReflexCollection(new Reflex(new ProcessorContainer(procA, procB)));
+                Assert.AreEqual(false, reflexCollection.FindRelation(main, "B"));
+                reflexCollection.AddPair(new[] { new PairWordValue("A", main), new PairWordValue("B", main) });
+                ReflexControl(reflexCollection, main);
+            }
+        }
+
+        static void ReflexControl(ReflexCollection reflexCollection, Processor main)
+        {
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "a"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "b"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "Aa"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "aA"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "Bb"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "bB"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "AA"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "aa"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "BB"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "bb"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "AABBBBAA"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "abbaba"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "BababBBAA"));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "bB"));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "C"));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "c"));
+
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "1A", 1, 2));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "1a", 1, 2));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "2B", 1, 2));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "2b", 1, 2));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "3C", 1, 2));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "3c", 1, 2));
+
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "1A2B", 1, 2));
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "2b1A", 1, 2));
+
+            Assert.AreEqual(true, reflexCollection.FindRelation(main, "1A2b2b1a", 1, 2));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "1Ab22ba1", 1, 2));
+            Assert.AreEqual(false, reflexCollection.FindRelation(main, "1a1c", 1, 2));
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConstructorArgumentNullException()
         {
