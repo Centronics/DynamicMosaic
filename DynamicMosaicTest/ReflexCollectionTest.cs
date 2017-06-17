@@ -120,9 +120,9 @@ namespace DynamicMosaicTest
             Assert.AreEqual(null, r1);
             Assert.AreEqual(null, r2);
             Assert.AreNotSame(r1, r2);
-            Assert.AreEqual(r1.CountProcessor, r2.CountProcessor);
+            Assert.AreEqual(r1.CountProcessors, r2.CountProcessors);
             Assert.AreEqual(r1.CountProcessorsBase, r2.CountProcessorsBase);
-            Assert.AreEqual(0, r1.CountProcessor);
+            Assert.AreEqual(0, r1.CountProcessors);
             Assert.AreEqual(5, r1.CountProcessorsBase);
             Assert.AreEqual(true, r1.IsMapsWord("ABCDE"));
             Assert.AreEqual(true, r2.IsMapsWord("ABCDE"));

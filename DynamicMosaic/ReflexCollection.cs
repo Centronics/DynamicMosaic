@@ -47,7 +47,7 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $@"{nameof(ReflexCollection)}: Начальное значение {nameof(Reflex)} должно быть указано.");
-            if (reflex.CountProcessor < 2)
+            if (reflex.CountProcessors < 2)
                 throw new ArgumentException($@"{nameof(ReflexCollection)}: В изначальном значении {nameof(Reflex)} должно быть хотя бы две карты.", nameof(reflex));
             _startReflex = (Reflex)reflex.Clone();
         }

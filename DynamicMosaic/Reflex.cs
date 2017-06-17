@@ -62,7 +62,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Получает количество карт в контексте.
         /// </summary>
-        public int CountProcessor => _seaProcessors.Count;
+        public int CountProcessors => _seaProcessors.Count;
 
         /// <summary>
         /// Получает размер загруженных карт в текущий экземпляр <see cref="Reflex"/>.
@@ -303,25 +303,18 @@ namespace DynamicMosaic
             if (string.IsNullOrEmpty(word))
                 return false;
             List<char> lstCh = word.Select(char.ToUpper).ToList();
-            return word.All(c =>
-            {
-                if (lstCh.Count <= 0)
-                    return true;
-                for (int k = 0; k < _seaProcessors.Count; k++)
-                    if (_seaProcessors[k].Tag.Any(cd =>
-                    {
-                        bool result = false;
-                        for (int j = 0; j < lstCh.Count; j++)
-                        {
-                            if (lstCh[j] != char.ToUpper(cd)) continue;
-                            lstCh.RemoveAt(j--);
-                            result = true;
-                        }
-                        return result;
-                    }))
+            for (int k = 0; k < _seaProcessors.Count; k++)
+                foreach (char cu in _seaProcessors[k].Tag.Select(char.ToUpper))
+                {
+                    if (lstCh.Count <= 0)
                         return true;
-                return false;
-            });
+                    for (int j = 0; j < lstCh.Count; j++)
+                        if (lstCh[j] == cu)
+                            lstCh.RemoveAt(j--);
+                    if (lstCh.Count <= 0)
+                        return true;
+                }
+            return lstCh.Count <= 0;
         }
 
         /// <summary>
@@ -382,18 +375,16 @@ namespace DynamicMosaic
             for (int y = 0; y < searchResults.Height; y++)
                 for (int x = 0; x < searchResults.Width; x++)
                 {
-                    Processor[] processors = searchResults[x, y].Procs?.Where(pr => pr != null).Where(pr =>
-                        startIndex < pr.Tag.Length && char.ToUpper(pr.Tag[startIndex]) == procName).ToArray();
-                    if ((processors?.Length ?? 0) <= 0)
+                    Processor[] procs = searchResults[x, y].Procs;
+                    if (procs == null)
                         continue;
-                    double percent = searchResults[x, y].Percent;
-                    Point point = new Point(x, y);
-                    lstRegs.AddRange(from pr in processors
-                                     where pr != null
-                                     select new Reg(point)
+                    lstRegs.AddRange(from p in procs
+                                     where startIndex < p.Tag.Length
+                                     where char.ToUpper(p.Tag[startIndex]) == procName
+                                     select new Reg(new Point(x, y))
                                      {
-                                         SelectedProcessor = pr,
-                                         Percent = percent
+                                         Percent = searchResults[x, y].Percent,
+                                         SelectedProcessor = p
                                      });
                 }
             return lstRegs;

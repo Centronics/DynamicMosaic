@@ -65,12 +65,45 @@ namespace DynamicMosaicTest
 
             TestingAllCount(reflex);
 
-            foreach (Processor p in reflex.GetMap("A"))
+            Processor[] procsA = reflex.GetMap("A").ToArray();
+
+            Assert.AreEqual(3, procsA.Length);
+
+            Assert.AreEqual(true, procsA.Any(p =>
             {
                 Assert.AreNotEqual(null, p);
-                Assert.AreEqual(SignValue.MaxValue, p[0, 0]);
-                //продолжить после отладки
-            }
+                if (p[0, 0] != SignValue.MaxValue)
+                    return false;
+                if (p[0, 1] != SignValue.MaxValue)
+                    return false;
+                if (p[1, 0] != SignValue.MinValue)
+                    return false;
+                return p[1, 1] == SignValue.MinValue;
+            }));
+
+            Assert.AreEqual(true, procsA.Any(p =>
+            {
+                Assert.AreNotEqual(null, p);
+                if (p[0, 0] != SignValue.MinValue)
+                    return false;
+                if (p[0, 1] != SignValue.MaxValue)
+                    return false;
+                if (p[1, 0] != SignValue.MaxValue)
+                    return false;
+                return p[1, 1] == SignValue.MinValue;
+            }));
+
+            Assert.AreEqual(true, procsA.Any(p =>
+            {
+                Assert.AreNotEqual(null, p);
+                if (p[0, 0] != SignValue.MaxValue)
+                    return false;
+                if (p[0, 1] != SignValue.MinValue)
+                    return false;
+                if (p[1, 0] != SignValue.MinValue)
+                    return false;
+                return p[1, 1] == SignValue.MinValue;
+            }));
         }
 
         [TestMethod]
@@ -99,7 +132,7 @@ namespace DynamicMosaicTest
             Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC));
 
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessor);
+            Assert.AreEqual(3, reflex.CountProcessors);
 
             TestingAllMaps(reflex);
 
@@ -167,7 +200,7 @@ namespace DynamicMosaicTest
             Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC));
 
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessor);
+            Assert.AreEqual(3, reflex.CountProcessors);
 
             TestingAllMaps(reflex);
 
@@ -235,7 +268,7 @@ namespace DynamicMosaicTest
             Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC));
 
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessor);
+            Assert.AreEqual(3, reflex.CountProcessors);
 
             TestingAllMaps(reflex);
 
@@ -288,7 +321,7 @@ namespace DynamicMosaicTest
         static void TestingAllMaps(Reflex reflex)
         {
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessor);
+            Assert.AreEqual(3, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "A11", StringComparison.OrdinalIgnoreCase) == 0));
             Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "B22a", StringComparison.OrdinalIgnoreCase) == 0));
@@ -307,37 +340,38 @@ namespace DynamicMosaicTest
         static void TestingAllProperties(Reflex reflex)
         {
             Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessor);
+            Assert.AreEqual(5, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "A", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "B", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "C", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "D", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.Processors.Any(p => string.Compare(p.Tag, "E", StringComparison.OrdinalIgnoreCase) == 0));
+            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "A"));
+            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "B"));
+            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "C"));
+            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "D"));
+            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "E"));
 
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "A", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "B", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "C", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "D", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => string.Compare(p.Tag, "E", StringComparison.OrdinalIgnoreCase) == 0));
+            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "A"));
+            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "B"));
+            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "C"));
+            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "D"));
+            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "E"));
 
             Processor[] processors = { reflex[0], reflex[1], reflex[2], reflex[3], reflex[4] };
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "A", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "B", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "C", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "D", StringComparison.OrdinalIgnoreCase) == 0));
-            Assert.AreEqual(true, processors.Any(p => string.Compare(p.Tag, "E", StringComparison.OrdinalIgnoreCase) == 0));
+            Assert.AreEqual(true, processors.Any(p => p.Tag == "A"));
+            Assert.AreEqual(true, processors.Any(p => p.Tag == "B"));
+            Assert.AreEqual(true, processors.Any(p => p.Tag == "C"));
+            Assert.AreEqual(true, processors.Any(p => p.Tag == "D"));
+            Assert.AreEqual(true, processors.Any(p => p.Tag == "E"));
         }
 
         static void TestingAllCount(Reflex reflex)
         {
             int count = 0;
-            Assert.AreNotEqual(true, reflex.CountProcessor > reflex.CountProcessorsBase);
+            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(5, reflex.CountProcessorsBase);
+            Assert.AreEqual(11, reflex.CountProcessors);
             try
             {
                 // ReSharper disable once UnusedVariable
-                Processor p = reflex[reflex.CountProcessor];
+                Processor p = reflex[reflex.CountProcessors];
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -346,7 +380,7 @@ namespace DynamicMosaicTest
             try
             {
                 // ReSharper disable once UnusedVariable
-                Processor p = reflex[reflex.CountProcessor - 1];
+                Processor p = reflex[reflex.CountProcessors - 1];
             }
             catch
             {
@@ -367,12 +401,12 @@ namespace DynamicMosaicTest
         static void TestingAllCount1(Reflex reflex)
         {
             int count = 0;
-            Assert.AreNotEqual(true, reflex.CountProcessor > reflex.CountProcessorsBase);
+            Assert.AreNotEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             try
             {
                 // ReSharper disable once UnusedVariable
-                Processor p = reflex[reflex.CountProcessor];
+                Processor p = reflex[reflex.CountProcessors];
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -381,7 +415,7 @@ namespace DynamicMosaicTest
             try
             {
                 // ReSharper disable once UnusedVariable
-                Processor p = reflex[reflex.CountProcessor - 1];
+                Processor p = reflex[reflex.CountProcessors - 1];
             }
             catch
             {
@@ -408,8 +442,8 @@ namespace DynamicMosaicTest
             Processor procB1 = new Processor(map, "B13");
             Processor procB2 = new Processor(map, "B14");
             Processor procC = new Processor(map, "C1");
-            Processor procC1 = new Processor(map, "C14388");
-            Processor procC2 = new Processor(map, "C15388");
+            Processor procC1 = new Processor(map, "C143a8");
+            Processor procC2 = new Processor(map, "C153A8");
             Processor procD = new Processor(map, "D1");
             Processor procD1 = new Processor(map, "D12");
             Processor procD2 = new Processor(map, "D13");
@@ -432,8 +466,8 @@ namespace DynamicMosaicTest
             Processor[] p3 = reflex.GetMap("C").ToArray();
             Assert.AreEqual(3, p3.Length);
             Assert.AreEqual(true, p3.Any(p => p.IsProcessorName("C1", 0)));
-            Assert.AreEqual(true, p3.Any(p => p.IsProcessorName("C14388", 0)));
-            Assert.AreEqual(true, p3.Any(p => p.IsProcessorName("C15388", 0)));
+            Assert.AreEqual(true, p3.Any(p => p.IsProcessorName("C143A8", 0)));
+            Assert.AreEqual(true, p3.Any(p => p.IsProcessorName("C153a8", 0)));
 
             Processor[] p4 = reflex.GetMap("D").ToArray();
             Assert.AreEqual(3, p4.Length);
@@ -455,14 +489,19 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("B13", 0)));
             Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("B14", 0)));
             Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("C1", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("C143a8", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("C153A8", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("C143A8", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("C153a8", 0)));
             Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("D1", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("D12 ", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("D13 ", 0)));
+            Assert.AreEqual(false, p6.Any(p => p.IsProcessorName("D12 ", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("D12", 0)));
+            Assert.AreEqual(false, p6.Any(p => p.IsProcessorName("D13 ", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("D13", 0)));
             Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("E1", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("E12 ", 0)));
-            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("E13 ", 0)));
+            Assert.AreEqual(false, p6.Any(p => p.IsProcessorName("E12 ", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("E12", 0)));
+            Assert.AreEqual(false, p6.Any(p => p.IsProcessorName("E13 ", 0)));
+            Assert.AreEqual(true, p6.Any(p => p.IsProcessorName("E13", 0)));
+            Assert.AreEqual(false, p6.Any(p => p.IsProcessorName(" E13", 0)));
 
             Processor[] p7 = reflex.GetMap("3a8", 3).ToArray();
             Assert.AreEqual(2, p7.Length);
@@ -483,6 +522,34 @@ namespace DynamicMosaicTest
 
             Processor[] p13 = reflex.GetMap(" ", 3).ToArray();
             Assert.AreEqual(0, p13.Length);
+
+            Processor[] p14 = reflex.GetMap("E13", -3).ToArray();
+            Assert.AreEqual(0, p14.Length);
+
+            Processor[] p15 = reflex.GetMap("e13", -3).ToArray();
+            Assert.AreEqual(0, p15.Length);
+
+            Processor[] p16 = reflex.GetMap("e13").ToArray();
+            Assert.AreEqual(1, p16.Length);
+            Assert.AreEqual(true, p16[0].IsProcessorName("E13", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName(" E13", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName("E13 ", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName(" E13 ", 0));
+            Assert.AreEqual(true, p16[0].IsProcessorName("e13", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName(" e13", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName("e13 ", 0));
+            Assert.AreEqual(false, p16[0].IsProcessorName(" e13 ", 0));
+
+            Processor[] p17 = reflex.GetMap("E13").ToArray();
+            Assert.AreEqual(1, p17.Length);
+            Assert.AreEqual(true, p17[0].IsProcessorName("E13", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName(" E13", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName("E13 ", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName(" E13 ", 0));
+            Assert.AreEqual(true, p17[0].IsProcessorName("e13", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName(" e13", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName("e13 ", 0));
+            Assert.AreEqual(false, p17[0].IsProcessorName(" e13 ", 0));
         }
 
         static void IsMapsWordTest()

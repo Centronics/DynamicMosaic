@@ -30,10 +30,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             reflector.Add("13a", new Processor(new[] { new SignValue(SignValue.MaxValue - 1) }, "t"));
@@ -46,10 +46,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
@@ -78,10 +78,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(true, reflector.IsInitialized);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
@@ -99,10 +99,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(true, reflector.FindRelation(new Processor(new[] { SignValue.MinValue }, "z"), "1"));
             Assert.AreEqual(true, reflector.FindRelation(new Processor(new[] { SignValue.MaxValue }, "b"), "2"));
             Assert.AreEqual(false, reflector.FindRelation(new Processor(new[] { SignValue.MinValue }, "f"), "2"));
@@ -124,16 +124,16 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.SourceReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflex.ProcessorsBase.Count(), reflector.SourceReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflex.Processors.Count(), reflector.SourceReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflex.Processors.Count(), reflector.SourceReflex.CountProcessors);
         }
 
         [TestMethod]
@@ -173,10 +173,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             reflector.Add("A", procA);
@@ -189,10 +189,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
@@ -221,10 +221,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(true, reflector.IsInitialized);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
@@ -242,10 +242,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(true, reflector.FindRelation(main, "a"));
             Assert.AreEqual(true, reflector.FindRelation(main, "b"));
             Assert.AreEqual(false, reflector.FindRelation(main, "B"));
@@ -267,16 +267,16 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.SourceReflex.CountProcessorsBase);
             Assert.AreEqual(2, reflector.SourceReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflex.ProcessorsBase.Count(), reflector.SourceReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflex.Processors.Count(), reflector.SourceReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflex.Processors.Count(), reflector.SourceReflex.CountProcessors);
         }
 
         [TestMethod]
@@ -299,10 +299,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             reflector.Add("1", new Processor(new[] { new SignValue(SignValue.MaxValue - 1) }, "t"));
@@ -315,10 +315,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
@@ -349,10 +349,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             Assert.AreEqual(0, reflector.CountQuery);
@@ -363,10 +363,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessor);
+            Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
