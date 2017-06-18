@@ -313,16 +313,11 @@ namespace DynamicMosaicTest
 
             Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC));
 
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessors);
-
             TestingAllMaps(reflex);
-
-            Assert.AreEqual(2, reflex.MapSize.Width);
-            Assert.AreEqual(2, reflex.MapSize.Height);
 
             Reflex r = (Reflex)reflex.Clone();
             Assert.AreNotSame(r, reflex);
+            TestingAllMaps(r);
 
             Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
             Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
@@ -331,7 +326,7 @@ namespace DynamicMosaicTest
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.FindRelation(main, "11", 1, 2));
             Assert.AreEqual(true, reflex.FindRelation(main, "22", 1, 2));
@@ -340,156 +335,42 @@ namespace DynamicMosaicTest
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.FindRelation(main, "1122", 1, 2));
             Assert.AreEqual(true, reflex.FindRelation(main, "22a", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33B22a33b", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B22A", 1, 3));
             Assert.AreEqual(true, reflex.FindRelation(main, "33b22A", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "33b22A11", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "33b11", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33b22A", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33b", 1, 3));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "33B22a33", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "33B233b", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "223B", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "33BF", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B22a", 1, 3));
+            Assert.AreEqual(false, reflex.FindRelation(main, "33B233", 1, 3));
+            Assert.AreEqual(false, reflex.FindRelation(main, "223", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B", 1, 3));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "223311112233", 1, 2));
-            Assert.AreEqual(false, reflex.FindRelation(main, "1213123", 1, 2));
+            Assert.AreEqual(true, reflex.FindRelation(main, "223311", 1, 2));
+            Assert.AreEqual(false, reflex.FindRelation(main, "121312", 1, 2));
             Assert.AreEqual(true, reflex.FindRelation(main, "332211", 1, 2));
             Assert.AreEqual(true, reflex.FindRelation(main, "112233", 1, 2));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
 
-            TestingAllMaps((Reflex)reflex.Clone());
+            Reflex r1 = (Reflex)reflex.Clone();
+            Assert.AreNotSame(r1, reflex);
+            TestingAllMaps(r1);
 
             TestingAllCount1(reflex);
-        }
-
-        [TestMethod]
-        public void ReflexTest3()
-        {
-            SignValue[,] map = new SignValue[4, 4];
-            map[0, 0] = SignValue.MaxValue;
-            map[2, 0] = SignValue.MaxValue;
-            map[1, 1] = SignValue.MaxValue;
-            map[2, 1] = SignValue.MaxValue;
-            map[0, 2] = SignValue.MaxValue;
-            map[2, 2] = SignValue.MaxValue;
-            map[3, 3] = SignValue.MaxValue;
-            SignValue[,] mapA = new SignValue[2, 2];
-            mapA[0, 0] = SignValue.MaxValue;
-            mapA[0, 1] = SignValue.MaxValue;
-            SignValue[,] mapB = new SignValue[2, 2];
-            mapB[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapC = new SignValue[2, 2];
-            mapC[0, 0] = SignValue.MaxValue;
-            mapC[0, 1] = SignValue.MaxValue;
-            SignValue[,] mapD = new SignValue[2, 2];
-            mapD[0, 0] = SignValue.MaxValue;
-            mapD[0, 1] = SignValue.MaxValue;
-            mapD[1, 0] = SignValue.MaxValue;
-            mapD[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapE = new SignValue[2, 2];
-            Processor main = new Processor(map, "main");
-            Processor procA = new Processor(mapA, "A11");
-            Processor procB = new Processor(mapB, "B22a");
-            Processor procC = new Processor(mapC, "C33b");
-            Processor procD = new Processor(mapD, "D12");
-            Processor procE = new Processor(mapE, "E13");
-
-            Reflex r1 = GetReflex1(procA, procB, procC, procD, procE, main),
-                r2 = GetReflex2(procA, procB, procC, procD, procE, main),
-                r3 = GetReflex3(procA, procB, procC, procD, procE, main);
-
-            //Assert.AreEqual(true, MapsDifference(r1.Processors, r2.Processors.ToArray()));
-            //Assert.AreEqual(true, MapsDifference(r1.Processors, r2.Processors.ToArray()));
-
-            Processor[] p1 = r1.Processors.ToArray();
-            Processor[] p2 = r2.Processors.ToArray();
-            Processor[] p3 = r3.Processors.ToArray();
-        }
-
-        static Reflex GetReflex1(Processor procA, Processor procB, Processor procC, Processor procD, Processor procE, Processor main)
-        {
-            Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE));
-
-            Assert.AreEqual(reflex.CountProcessors, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessors);
-
-            TestingAllMaps(reflex);
-            TestingAllMaps((Reflex)reflex.Clone());
-
-            Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-            return reflex;
-        }
-
-        static Reflex GetReflex2(Processor procA, Processor procB, Processor procC, Processor procD, Processor procE, Processor main)
-        {
-            Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE));
-
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessors);
-
-            Assert.AreEqual(2, reflex.MapSize.Width);
-            Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Reflex r = (Reflex)reflex.Clone();
-            Assert.AreNotSame(r, reflex);
-
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-            return reflex;
-        }
-
-        static Reflex GetReflex3(Processor procA, Processor procB, Processor procC, Processor procD, Processor procE, Processor main)
-        {
-            Reflex reflex = new Reflex(new ProcessorContainer(procA, procB, procC, procD, procE));
-
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessors);
-
-            TestingAllMaps(reflex);
-
-            Assert.AreEqual(2, reflex.MapSize.Width);
-            Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Reflex r = (Reflex)reflex.Clone();
-            Assert.AreNotSame(r, reflex);
-
-            Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-            return reflex;
         }
 
         [TestMethod]
@@ -505,8 +386,8 @@ namespace DynamicMosaicTest
             Assert.AreEqual(2, reflex.MapSize.Width);
             Assert.AreEqual(2, reflex.MapSize.Height);
 
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessors);
+            Assert.AreEqual(3, reflex.CountProcessorsBase);
+            Assert.AreEqual(3, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "A11"));
             Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "B22a"));
@@ -586,9 +467,9 @@ namespace DynamicMosaicTest
         static void TestingAllCount1(Reflex reflex)
         {
             int count = 0;
-            Assert.AreNotEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
+            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessors);
+            Assert.AreEqual(7, reflex.CountProcessors);
             try
             {
                 // ReSharper disable once UnusedVariable
