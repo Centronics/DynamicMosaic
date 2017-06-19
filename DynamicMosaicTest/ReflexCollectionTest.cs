@@ -67,8 +67,8 @@ namespace DynamicMosaicTest
                 new PairWordValue("E", main)
             });
 
-            Assert.AreEqual(5, reflexCollection.CountReflexs);
-            Assert.AreEqual(5, reflexCollection.Reflexs.Count());
+            Assert.AreEqual(1, reflexCollection.CountReflexs);
+            Assert.AreEqual(1, reflexCollection.Reflexs.Count());
 
             {
                 ReflexCollection rx1 = (ReflexCollection)reflexCollection.Clone();
@@ -101,8 +101,9 @@ namespace DynamicMosaicTest
                 new PairWordValue("C", main), new PairWordValue("D", main),
                 new PairWordValue("E", main)
             });
-            Assert.AreEqual(5, reflexCollection.CountReflexs);
-            Assert.AreEqual(5, reflexCollection.Reflexs.Count());
+
+            Assert.AreEqual(1, reflexCollection.CountReflexs);
+            Assert.AreEqual(1, reflexCollection.Reflexs.Count());
 
             {
                 ReflexCollection rx3 = (ReflexCollection)reflexCollection.Clone();
@@ -117,15 +118,30 @@ namespace DynamicMosaicTest
 
         static void ReflexCompare(Reflex r1, Reflex r2)
         {
-            Assert.AreEqual(null, r1);
-            Assert.AreEqual(null, r2);
+            Assert.AreNotEqual(null, r1);
+            Assert.AreNotEqual(null, r2);
             Assert.AreNotSame(r1, r2);
             Assert.AreEqual(r1.CountProcessors, r2.CountProcessors);
             Assert.AreEqual(r1.CountProcessorsBase, r2.CountProcessorsBase);
-            Assert.AreEqual(0, r1.CountProcessors);
+            Assert.AreEqual(5, r1.CountProcessors);
             Assert.AreEqual(5, r1.CountProcessorsBase);
             Assert.AreEqual(true, r1.IsMapsWord("ABCDE"));
             Assert.AreEqual(true, r2.IsMapsWord("ABCDE"));
+            Assert.AreEqual(true, r1.IsMapsWord("EDCBA"));
+            Assert.AreEqual(true, r2.IsMapsWord("EDCBA"));
+            Assert.AreEqual(true, r1.IsMapsWord("ADAAABCDBCDE"));
+            Assert.AreEqual(true, r2.IsMapsWord("ABCDEADBCE"));
+            Assert.AreEqual(false, r1.IsMapsWord("fADAAABCDBCDE"));
+            Assert.AreEqual(false, r2.IsMapsWord("ABCDEADBCEf"));
+
+            Assert.AreEqual(true, r1.IsMapsWord("abcde"));
+            Assert.AreEqual(true, r2.IsMapsWord("aBcCDE"));
+            Assert.AreEqual(true, r1.IsMapsWord("edcba"));
+            Assert.AreEqual(true, r2.IsMapsWord("EdCbA"));
+            Assert.AreEqual(true, r1.IsMapsWord("ADaAAbcdBCDE"));
+            Assert.AreEqual(true, r2.IsMapsWord("ABCdEaDBcE"));
+            Assert.AreEqual(false, r1.IsMapsWord("Fadaaabcdbcde"));
+            Assert.AreEqual(false, r2.IsMapsWord("abcdedadbceF"));
         }
 
         [TestMethod]
