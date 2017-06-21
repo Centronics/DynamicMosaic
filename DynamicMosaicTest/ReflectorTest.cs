@@ -14,7 +14,7 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflectorTest1()
         {
-            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(new[] { SignValue.MinValue }, "1"), new Processor(new[] { SignValue.MaxValue }, "2")));
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(new[] { SignValue.MinValue }, "13a"), new Processor(new[] { SignValue.MaxValue }, "24b")));
             Reflector reflector = new Reflector(reflex);
             Assert.AreEqual(0, reflector.SourceReflexCollection.CountReflexs);
             Assert.AreNotSame(reflector.SourceReflex, reflex);
@@ -28,37 +28,38 @@ namespace DynamicMosaicTest
             Assert.AreEqual(0, reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.Reflexs.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessors);
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(false, reflector.IsInitialized);
             reflector.Add("13a", new Processor(new[] { new SignValue(SignValue.MaxValue - 1) }, "t"));
             reflector.Add("24b", new Processor(new[] { new SignValue(SignValue.MinValue + 1) }, "y"));
-            Assert.AreEqual(0, reflector.CountQuery);
-            Assert.AreEqual(0, reflector.InitializeQuery.Count());
+            Assert.AreEqual(2, reflector.CountQuery);
+            Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(0, reflector.SourceReflexCollection.CountReflexs);
             Assert.AreEqual(0, reflector.SourceReflexCollection.Reflexs.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.Reflexs.Count(), reflector.SourceReflexCollection.CountReflexs);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.CountProcessors);
-            Assert.AreEqual(0, reflector.SourceReflexCollection.StartReflex.Processors.Count());
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count());
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.CountProcessors);
+            Assert.AreEqual(2, reflector.SourceReflexCollection.StartReflex.Processors.Count());
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.ProcessorsBase.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessorsBase);
             Assert.AreEqual(reflector.SourceReflexCollection.StartReflex.Processors.Count(), reflector.SourceReflexCollection.StartReflex.CountProcessors);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
-            reflector.Initialize();
+            reflector.Initialize(); //Добавить проверку полноты инициализации, если все непрошли, то исключение или false.
             Assert.AreEqual(true, reflector.IsInitialized);
             Assert.AreEqual(2, reflector.CountQuery);
             Assert.AreEqual(2, reflector.InitializeQuery.Count());
             Assert.AreEqual(reflector.InitializeQuery.Count(), reflector.CountQuery);
             Assert.AreEqual(true, reflector.FindRelation(new Processor(new[] { SignValue.MinValue }, "z"), "1"));
+            //Необходимо добавить проверку на допустимость запроса с учётом длины запрашиваемой строки либо убрать startIndex и count.
             Assert.AreEqual(true, reflector.FindRelation(new Processor(new[] { SignValue.MaxValue }, "b"), "2"));
             Assert.AreEqual(false, reflector.FindRelation(new Processor(new[] { SignValue.MinValue }, "f"), "2"));
             Assert.AreEqual(false, reflector.FindRelation(new Processor(new[] { SignValue.MinValue }, "p"), "r"));

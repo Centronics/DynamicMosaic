@@ -207,12 +207,12 @@ namespace DynamicMosaic
                     counting.Add(0);
                     for (int k = 1; k < _pairs.Count; k++)
                     {
-                        while (ChangeCount(counting, k) != -1)
+                        do
                         {
                             List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
                             GetWord(counting, lstPairWordValues);
                             yield return lstPairWordValues;
-                        }
+                        } while (ChangeCount(counting, k) != -1);
                     }
                 }
             }
