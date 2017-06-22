@@ -62,11 +62,13 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Добавляет <see cref="Reflex"/> в коллекцию текущего экземпляра <see cref="ReflexCollection"/>.
+        /// В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.
         /// </summary>
         /// <param name="pairs">Поисковые запросы для инициализации текущего экземпляра <see cref="ReflexCollection"/>.</param>
         /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
         /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
-        public void AddPair(IList<PairWordValue> pairs, int startIndex = 0, int count = 1)
+        /// <returns>В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
+        public bool AddPair(IList<PairWordValue> pairs, int startIndex = 0, int count = 1)
         {
             if (pairs == null)
                 throw new ArgumentNullException(nameof(pairs), $"{nameof(AddPair)}: Запросы для выполнения должны быть указаны.");
@@ -89,6 +91,7 @@ namespace DynamicMosaic
             }
             if (res)
                 _reflexs.Add(r);
+            return res;
         }
 
         /// <summary>

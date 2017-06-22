@@ -116,13 +116,17 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Выполняет подготовку к обработке данных в текущем экземпляре <see cref="Reflector"/>.
+        /// Возвращает значение <see langword="true"></see> в случае, если инициализация хотя бы одного из контекстов
+        /// прошла удачно, в противном случае - <see langword="false"></see>.
         /// </summary>
         /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
         /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
-        public void Initialize(int startIndex = 0, int count = 1)
+        /// <returns>Возвращает значение <see langword="true"></see> в случае, если инициализация хотя бы одного из контекстов
+        /// прошла удачно, в противном случае - <see langword="false"></see>.</returns>
+        public bool Initialize(int startIndex = 0, int count = 1)
         {
             if (IsInitialized)
-                return;
+                return true;
             if (startIndex < 0)
                 throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
             if (count <= 0)
@@ -134,7 +138,8 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    _reflexCollection.AddPair(pairs, startIndex, count);
+                    if (_reflexCollection.AddPair(pairs, startIndex, count))
+                        IsInitialized = true;
                 }
                 catch (Exception ex)
                 {
@@ -153,7 +158,7 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            IsInitialized = true;
+            return IsInitialized;
         }
 
         /// <summary>
