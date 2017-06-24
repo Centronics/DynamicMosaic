@@ -328,39 +328,39 @@ namespace DynamicMosaicTest
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "11", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "22", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "112233", 1, 2));
+            Assert.AreEqual(true, reflex.FindRelation(main, "11"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "22"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "112233"));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "1122", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "22a", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33B22A", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33b22A", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33b22A", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33b", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "1122"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "22a"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B22A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33b22A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33b22A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33b"));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "33B22a", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "33B233", 1, 3));
-            Assert.AreEqual(false, reflex.FindRelation(main, "223", 1, 3));
-            Assert.AreEqual(true, reflex.FindRelation(main, "33B", 1, 3));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B22a"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "33B233"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "223"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "33B"));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);
             Assert.AreEqual(7, reflex.CountProcessors);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "223311", 1, 2));
-            Assert.AreEqual(false, reflex.FindRelation(main, "121312", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "332211", 1, 2));
-            Assert.AreEqual(true, reflex.FindRelation(main, "112233", 1, 2));
+            Assert.AreEqual(true, reflex.FindRelation(main, "223311"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "121312"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "332211"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "112233"));
 
             Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
             Assert.AreEqual(3, reflex.CountProcessorsBase);

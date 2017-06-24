@@ -65,26 +65,20 @@ namespace DynamicMosaic
         /// В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.
         /// </summary>
         /// <param name="pairs">Поисковые запросы для инициализации текущего экземпляра <see cref="ReflexCollection"/>.</param>
-        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
-        public bool AddPair(IList<PairWordValue> pairs, int startIndex = 0, int count = 1)
+        public bool AddPair(IList<PairWordValue> pairs)
         {
             if (pairs == null)
                 throw new ArgumentNullException(nameof(pairs), $"{nameof(AddPair)}: Запросы для выполнения должны быть указаны.");
             if (pairs.Count <= 0)
                 throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запросов поиска, должен присутствовать хотя бы один запрос.", nameof(pairs));
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(AddPair)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
-            if (count <= 0)
-                throw new ArgumentException($"{nameof(AddPair)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             Reflex r = StartReflex;
             bool res = true;
             foreach (PairWordValue p in pairs)
             {
                 if (p.IsEmpty)
                     throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запроса поиска все его аргументы должны быть указаны.", nameof(pairs));
-                if (r.FindRelation(p.Field, p.FindString, startIndex, count))
+                if (r.FindRelation(p.Field, p.FindString))
                     continue;
                 res = false;
                 break;
@@ -99,10 +93,8 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
+        public bool FindRelation(Processor processor, string word)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
@@ -110,10 +102,6 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
-            if (count <= 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (CountReflexs <= 0)
                 throw new ArgumentException($@"{nameof(FindRelation)}: Невозможно начать операцию анализа данных по причине отсутствия {nameof(Reflex)
                     }. Используйте метод {nameof(AddPair)} для добавления рефлексов ({nameof(Reflex)}).");
@@ -123,7 +111,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    if (reflex.FindRelation(processor, word, startIndex, count))
+                    if (reflex.FindRelation(processor, word))
                         val = true;
                 }
                 catch (Exception ex)

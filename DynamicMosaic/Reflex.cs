@@ -31,7 +31,7 @@ namespace DynamicMosaic
         public Processor this[int index] => _seaProcessors[index];
 
         /// <summary>
-        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string, int, int)"/>.
+        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string)"/>.
         /// </summary>
         public IEnumerable<Processor> ProcessorsBase
         {
@@ -165,10 +165,8 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения их соответствия указанному слову.</param>
         /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
-        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
+        public bool FindRelation(Processor processor, string word)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindWord)}: Карта для поиска не указана (null).");
@@ -176,26 +174,14 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindWord)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindWord)}: Искомое слово не указано.", nameof(word));
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
-            if (count <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (!IsMapsWord(word))
                 return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            if (!searchResults.FindRelation(word, startIndex, count))
+            if (!searchResults.FindRelation(word))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
-            if (count == 1)
-            {
-                foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults, startIndex)).Where(lstReg => lstReg.Count > 0))
-                    lstRegs.AddRange(lstReg);
-            }
-            else
-            {
-                for (int p = 0, mx = word.Length - count; p <= mx; p++)
-                    lstRegs.AddRange(FindSymbols(word.Substring(p, count), searchResults, startIndex));
-            }
+            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
+                lstRegs.AddRange(lstReg);
             foreach (Registered r in FindWord(lstRegs, word, searchResults).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
@@ -361,15 +347,12 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="procName">Искомая строка.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
-        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
         /// <returns>Возвращает информацию о найденных картах.</returns>
-        static List<Reg> FindSymbols(char procName, SearchResults searchResults, int startIndex)
+        static List<Reg> FindSymbols(char procName, SearchResults searchResults)
         {
             if (searchResults == null)
                 throw new ArgumentNullException(nameof(searchResults),
                     $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindSymbols)}: Стартовый индекс должен быть больше ноля ({startIndex}).", nameof(startIndex));
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0; y < searchResults.Height; y++)
@@ -379,8 +362,7 @@ namespace DynamicMosaic
                     if (procs == null)
                         continue;
                     lstRegs.AddRange(from p in procs
-                                     where startIndex < p.Tag.Length
-                                     where char.ToUpper(p.Tag[startIndex]) == procName
+                                     where char.ToUpper(p.Tag[0]) == procName
                                      select new Reg(new Point(x, y))
                                      {
                                          Percent = searchResults[x, y].Percent,

@@ -7,7 +7,28 @@ using DynamicParser;
 namespace DynamicMosaic
 {
     /// <summary>
-    /// Пара "искомое значение - поле для поиска".
+    /// Описывает коды ошибок, возвращаемые методом <see cref="Reflector.FindRelation"/>.
+    /// </summary>
+    public enum FindRelationErrors
+    {
+        /// <summary>
+        /// Связь обнаружена.
+        /// </summary>
+        OK,
+
+        /// <summary>
+        /// Инициализировать рабочий контекст не удалось.
+        /// </summary>
+        NOTINITIALIZED,
+
+        /// <summary>
+        /// Связь отсутствует.
+        /// </summary>
+        RELATIONNOTFOUND
+    }
+
+    /// <summary>
+    /// Пара "Искомое значение - поле для поиска".
     /// </summary>
     public struct PairWordValue
     {
@@ -70,11 +91,6 @@ namespace DynamicMosaic
         public ReflexCollection SourceReflexCollection => (ReflexCollection)_reflexCollection.Clone();
 
         /// <summary>
-        /// Получает значение, показывающее, инициализирован текущий экземпляр <see cref="Reflector"/> или нет.
-        /// </summary>
-        public bool IsInitialized { get; private set; }
-
-        /// <summary>
         /// Количество поданных запросов для инициализации текущего экземпляра <see cref="Reflector"/>.
         /// </summary>
         public int CountQuery => _pairs.Count;
@@ -111,7 +127,6 @@ namespace DynamicMosaic
             if (!SourceReflex.IsMapsWord(word))
                 throw new ArgumentException($"{nameof(Add)}: Добавляемое слово найти невозможно, т.к. буквы его составляющие отсутствуют в базе {nameof(Reflex)}.", nameof(word));
             _pairs.Add(new PairWordValue(word, processor));
-            IsInitialized = false;
         }
 
         /// <summary>
@@ -119,27 +134,19 @@ namespace DynamicMosaic
         /// Возвращает значение <see langword="true"></see> в случае, если инициализация хотя бы одного из контекстов
         /// прошла удачно, в противном случае - <see langword="false"></see>.
         /// </summary>
-        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>Возвращает значение <see langword="true"></see> в случае, если инициализация хотя бы одного из контекстов
         /// прошла удачно, в противном случае - <see langword="false"></see>.</returns>
-        public bool Initialize(int startIndex = 0, int count = 1)
+        bool Initialize()
         {
-            if (IsInitialized)
-                return true;
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
-            if (count <= 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             _reflexCollection.Clear();
             string errString = string.Empty, errStopped = string.Empty;
-            bool exThrown = false, exStopped = false;
+            bool exThrown = false, exStopped = false, result = false;
             Parallel.ForEach(InitializePairs, (pairs, state) =>
             {
                 try
                 {
-                    if (_reflexCollection.AddPair(pairs, startIndex, count))
-                        IsInitialized = true;
+                    if (_reflexCollection.AddPair(pairs))
+                        result = true;
                 }
                 catch (Exception ex)
                 {
@@ -158,7 +165,7 @@ namespace DynamicMosaic
             });
             if (exThrown)
                 throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            return IsInitialized;
+            return result;
         }
 
         /// <summary>
@@ -167,10 +174,8 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
         /// <param name="word">Проверяемое слово.</param>
-        /// <param name="startIndex">Индекс, с которого необходимо начать поиск в названии карт.</param>
-        /// <param name="count">Количество символов, которое необходимо взять из названия карты для определения соответствия карт указанному слову.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public bool FindRelation(Processor processor, string word, int startIndex = 0, int count = 1)
+        public FindRelationErrors FindRelation(Processor processor, string word)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
@@ -182,17 +187,13 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Индекс начала поиска имеет некорректное значение: {startIndex}.", nameof(startIndex));
-            if (count <= 0)
-                throw new ArgumentException($"{nameof(FindRelation)}: Количество символов поиска задано неверно: {count}.", nameof(count));
             if (!Contains(word))
                 throw new ArgumentException($"{nameof(FindRelation)}: Указанное слово не содержится в коллекции текущего экземпляра: {word}.", nameof(word));
-            if (!IsInitialized)
-                throw new Exception($"{nameof(FindRelation)}: Текущий экземпляр {nameof(Reflector)} не инициализирован.");
-            bool result = _reflexCollection.FindRelation(processor, word, startIndex, count);
+            if (!Initialize())
+                return FindRelationErrors.NOTINITIALIZED;
+            bool result = _reflexCollection.FindRelation(processor, word);
             _pairs.Add(new PairWordValue(word, processor));
-            return result;
+            return result ? FindRelationErrors.OK : FindRelationErrors.RELATIONNOTFOUND;
         }
 
         /// <summary>
