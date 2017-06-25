@@ -24,7 +24,7 @@ namespace DynamicMosaic
         /// <summary>
         /// Связь отсутствует.
         /// </summary>
-        RELATIONNOTFOUND
+        RELATIONNOTFOUND,
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace DynamicMosaic
     public sealed class Reflector
     {
         /// <summary>
-        /// Сохранённые запросы в виде пар "искомое значение - поле для поиска".
+        /// Сохранённые запросы в виде пар "Искомое значение - поле для поиска".
         /// </summary>
         readonly List<PairWordValue> _pairs = new List<PairWordValue>();
 
@@ -126,7 +126,10 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(Add)}: Добавляемое слово должно быть указано.", nameof(word));
             if (!SourceReflex.IsMapsWord(word))
                 throw new ArgumentException($"{nameof(Add)}: Добавляемое слово найти невозможно, т.к. буквы его составляющие отсутствуют в базе {nameof(Reflex)}.", nameof(word));
-            _pairs.Add(new PairWordValue(word, processor));
+            PairWordValue pair = new PairWordValue(word, processor);
+            if (pair.IsEmpty)
+                throw new ArgumentException($"{nameof(Add)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
+            AddWordValuePair(pair);
         }
 
         /// <summary>
@@ -189,11 +192,30 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
             if (!Contains(word))
                 throw new ArgumentException($"{nameof(FindRelation)}: Указанное слово не содержится в коллекции текущего экземпляра: {word}.", nameof(word));
+            PairWordValue pair = new PairWordValue(word, processor);
+            if (pair.IsEmpty)
+                throw new ArgumentException($"{nameof(FindRelation)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
             if (!Initialize())
                 return FindRelationErrors.NOTINITIALIZED;
-            bool result = _reflexCollection.FindRelation(processor, word);
-            _pairs.Add(new PairWordValue(word, processor));
-            return result ? FindRelationErrors.OK : FindRelationErrors.RELATIONNOTFOUND;
+            if (!AddWordValuePair(pair))
+                return FindRelationErrors.OK;
+            return _reflexCollection.FindRelation(processor, word) ? FindRelationErrors.OK : FindRelationErrors.RELATIONNOTFOUND;
+        }
+
+        /// <summary>
+        /// Добавляет пару в коллекцию сохранённых запросов "Искомое значение - поле для поиска", проверяя, существует ли подобная пара.
+        /// Если подобная существует, то новая игнорируется.
+        /// </summary>
+        /// <param name="p">Добавляемая пара.</param>
+        bool AddWordValuePair(PairWordValue p)
+        {
+            if (p.IsEmpty)
+                throw new ArgumentException($"{nameof(AddWordValuePair)}: Попытка добавления пустой пары.", nameof(p));
+            if (_pairs.Where(pair => !pair.IsEmpty && string.Compare(pair.FindString, p.FindString, StringComparison.OrdinalIgnoreCase) == 0).
+                Any(pair => ProcessorHelper.ProcessorCompare(pair.Field, p.Field)))
+                return false;
+            _pairs.Add(p);
+            return true;
         }
 
         /// <summary>
@@ -206,12 +228,12 @@ namespace DynamicMosaic
                 if (_pairs.Count <= 0)
                     throw new ArgumentException($"{nameof(InitializePairs)}: Количество пар \"Искомое значение - поле для поиска\" должно быть больше ноля.");
                 List<int> counting = new List<int>(_pairs.Count);
-                for (int z = 1; z < _pairs.Count; z++)
+                for (int z = 1; z <= _pairs.Count; z++)
                 {
                     for (int k = 0; k < counting.Count; k++)
                         counting[k] = 0;
                     counting.Add(0);
-                    for (int k = 1; k < _pairs.Count; k++)
+                    for (int k = 1; k <= _pairs.Count; k++)
                     {
                         do
                         {

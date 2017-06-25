@@ -83,10 +83,20 @@ namespace DynamicMosaic
                 res = false;
                 break;
             }
-            if (res)
+            if (res && !Contains(r))
                 _reflexs.Add(r);
             return res;
         }
+
+        /// <summary>
+        /// Проверяет, содержит ли текущий экземпляр заданный объект <see cref="Reflex"/>.
+        /// В случае нахождения указанного <see cref="Reflex"/> в текущем экземпляре <see cref="ReflexCollection"/>
+        /// возвращается значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.
+        /// </summary>
+        /// <param name="reflex">Проверяемый <see cref="Reflex"/>.</param>
+        /// <returns>В случае нахождения указанного <see cref="Reflex"/> в текущем экземпляре <see cref="ReflexCollection"/>
+        /// возвращается значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
+        bool Contains(Reflex reflex) => reflex != null && _reflexs.Any(r => r == reflex);
 
         /// <summary>
         /// Находит связь между заданным словом и текущими картами объекта <see cref="ReflexCollection"/>.

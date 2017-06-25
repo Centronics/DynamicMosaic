@@ -9,7 +9,7 @@ using Processor = DynamicParser.Processor;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Предназначен для связывания карт.
+    ///     Предназначен для связывания карт <see cref="Processor"/>.
     /// </summary>
     public sealed class Reflex : ICloneable
     {
@@ -28,7 +28,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="index">Индекс карты.</param>
         /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
-        public Processor this[int index] => _seaProcessors[index];
+        public Processor this[int index] => ProcessorHelper.GetMapClone(_seaProcessors[index]);
 
         /// <summary>
         /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string)"/>.
@@ -38,7 +38,7 @@ namespace DynamicMosaic
             get
             {
                 for (int k = 0; k < _seaMaps.Count; k++)
-                    yield return _seaMaps[k];
+                    yield return ProcessorHelper.GetMapClone(_seaMaps[k]);
             }
         }
 
@@ -55,7 +55,7 @@ namespace DynamicMosaic
             get
             {
                 for (int k = 0; k < _seaProcessors.Count; k++)
-                    yield return _seaProcessors[k];
+                    yield return ProcessorHelper.GetMapClone(_seaProcessors[k]);
             }
         }
 
@@ -177,7 +177,7 @@ namespace DynamicMosaic
             if (!IsMapsWord(word))
                 return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            if (!searchResults.FindRelation(word))
+            if (!searchResults.FindRelation(word, 0, word.Length))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
             foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
@@ -378,5 +378,96 @@ namespace DynamicMosaic
         /// </summary>
         /// <returns>Возвращает неполную копию текущего экземпляра.</returns>
         public object Clone() => new Reflex(_seaMaps);
+
+        /// <summary>
+        /// Выполняет операцию сравнения двух экземпляров объекта <see cref="Reflex"/>.
+        /// Возвращает значение <see langword="true"></see> в случае равенства, <see langword="false"></see> в противном случае.
+        /// </summary>
+        /// <param name="one">Первый сопоставляемый экземпляр.</param>
+        /// <param name="two">Второй сопоставляемый экземпляр.</param>
+        /// <returns>Возвращает значение <see langword="true"></see> в случае равенства, <see langword="false"></see> в противном случае.</returns>
+        public static bool operator ==(Reflex one, Reflex two)
+        {
+            return Compare(one, two);
+        }
+
+        /// <summary>
+        /// Выполняет операцию сравнения двух экземпляров объекта <see cref="Reflex"/>.
+        /// Возвращает значение <see langword="true"></see> в случае неравенства, <see langword="false"></see> в противном случае.
+        /// </summary>
+        /// <param name="one">Первый сопоставляемый экземпляр.</param>
+        /// <param name="two">Второй сопоставляемый экземпляр.</param>
+        /// <returns>Возвращает значение <see langword="true"></see> в случае неравенства, <see langword="false"></see> в противном случае.</returns>
+        public static bool operator !=(Reflex one, Reflex two)
+        {
+            return !Compare(one, two);
+        }
+
+        /// <summary>
+        /// Сравнивает два экземпляра <see cref="Reflex"/>. Сопоставляются все карты, которые есть в наличии (<see cref="Reflex.Processors"/>).
+        /// В случае равенства возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.
+        /// </summary>
+        /// <param name="reflex1">Первый сопоставляемый экземпляр <see cref="Reflex"/>.</param>
+        /// <param name="reflex2">Второй сопоставляемый экземпляр <see cref="Reflex"/>.</param>
+        /// <returns>В случае равенства возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
+        static bool Compare(Reflex reflex1, Reflex reflex2)
+        {
+            if ((object)reflex1 == null && (object)reflex2 == null)
+                return true;
+            if ((object)reflex1 != null && (object)reflex2 == null)
+                return false;
+            if ((object)reflex1 == null)
+                return false;
+            if (reflex1.CountProcessors != reflex2.CountProcessors)
+                return false;
+            for (int k = 0; k < reflex1._seaProcessors.Count; k++)
+            {
+                bool res = false;
+                for (int j = 0; j < reflex2._seaProcessors.Count; j++)
+                {
+                    if (!ProcessorHelper.ProcessorCompare(reflex1[k], reflex2[j]))
+                        continue;
+                    res = true;
+                    break;
+                }
+                if (!res)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Определяет, равен ли заданный объект текущему объекту.
+        /// </summary>
+        /// <param name="other">Объект, который требуется сравнить с текущим объектом.</param>
+        /// <returns>Значение <see langword="true"/>, если указанный объект равен текущему объекту, в противном случае — значение <see langword="false"/>.</returns>
+        bool Equals(Reflex other) => Equals(_seaProcessors, other._seaProcessors) && Equals(_seaMaps, other._seaMaps);
+
+        /// <summary>
+        /// Определяет, равен ли заданный объект текущему объекту.
+        /// </summary>
+        /// <param name="obj">Объект, который требуется сравнить с текущим объектом.</param>
+        /// <returns>Значение <see langword="true"/>, если указанный объект равен текущему объекту, в противном случае — значение <see langword="false"/>.</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            Reflex a = obj as Reflex;
+            return a != null && Equals(a);
+        }
+
+        /// <summary>
+        /// Получает хеш-код текущего экземпляра <see cref="Reflex"/>.
+        /// </summary>
+        /// <returns>Возвращает хеш-код текущего экземпляра <see cref="Reflex"/>.</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((_seaProcessors != null ? _seaProcessors.GetHashCode() : 0) * 397) ^ (_seaMaps != null ? _seaMaps.GetHashCode() : 0);
+            }
+        }
     }
 }
