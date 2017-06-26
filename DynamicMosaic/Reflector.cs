@@ -233,7 +233,7 @@ namespace DynamicMosaic
                     for (int k = 0; k < counting.Count; k++)
                         counting[k] = 0;
                     counting.Add(0);
-                    for (int k = 1; k <= _pairs.Count; k++)
+                    for (int k = 1; k < _pairs.Count; k++)
                     {
                         do
                         {

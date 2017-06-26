@@ -213,7 +213,7 @@ namespace DynamicMosaic
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    if (region.Contains(pp.SelectedProcessor.GetProcessorName(0, 1), 0))
+                    if (region.Contains(pp.SelectedProcessor.Tag, 0))
                         continue;
                     Rectangle rect = new Rectangle(pp.Position, searchResults.MapSize);
                     if (region.IsConflict(rect))
@@ -243,9 +243,7 @@ namespace DynamicMosaic
         {
             if (region == null)
                 throw new ArgumentNullException(nameof(region), $@"{nameof(GetProcessorsFromRegion)}: Регион для получения карт должен быть указан.");
-            if ((from c in word from r in region.Elements where char.ToUpper(r.Register.SelectedProcessor.Tag[0]) != char.ToUpper(c) select c).Any())
-                return null;
-            return from r in region.Elements where r != null select r;
+            return from r in region.Elements.Where(r => r?.Register.SelectedProcessor?.IsProcessorName(word, 0) ?? false) select r;
         }
 
         /// <summary>
