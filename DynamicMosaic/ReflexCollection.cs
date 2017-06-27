@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DynamicParser;
 
 namespace DynamicMosaic
 {
@@ -97,52 +95,6 @@ namespace DynamicMosaic
         /// <returns>В случае нахождения указанного <see cref="Reflex"/> в текущем экземпляре <see cref="ReflexCollection"/>
         /// возвращается значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
         bool Contains(Reflex reflex) => reflex != null && _reflexs.Any(r => r == reflex);
-
-        /// <summary>
-        /// Находит связь между заданным словом и текущими картами объекта <see cref="ReflexCollection"/>.
-        /// </summary>
-        /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
-        /// <param name="word">Искомое слово.</param>
-        /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public bool FindRelation(Processor processor, string word)
-        {
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
-            if (word == null)
-                throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
-            if (word == string.Empty)
-                throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
-            if (CountReflexs <= 0)
-                throw new ArgumentException($@"{nameof(FindRelation)}: Невозможно начать операцию анализа данных по причине отсутствия {nameof(Reflex)
-                    }. Используйте метод {nameof(AddPair)} для добавления рефлексов ({nameof(Reflex)}).");
-            string errString = string.Empty, errStopped = string.Empty;
-            bool exThrown = false, exStopped = false, val = false;
-            Parallel.ForEach(_reflexs, (reflex, state) =>
-            {
-                try
-                {
-                    if (reflex.FindRelation(processor, word))
-                        val = true;
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        errString = ex.Message;
-                        exThrown = true;
-                        state.Stop();
-                    }
-                    catch (Exception ex1)
-                    {
-                        errStopped = ex1.Message;
-                        exStopped = true;
-                    }
-                }
-            });
-            if (exThrown)
-                throw new Exception(exStopped ? $@"{errString}{Environment.NewLine}{errStopped}" : errString);
-            return val;
-        }
 
         /// <summary>
         /// Создаёт неполную копию текущего экземпляра <see cref="ReflexCollection"/>.

@@ -178,7 +178,7 @@ namespace DynamicMosaic
         /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
         /// <param name="word">Проверяемое слово.</param>
         /// <returns>В случае нахождения связи возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public FindRelationErrors FindRelation(Processor processor, string word)
+        public bool FindRelation(Processor processor, string word)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
@@ -195,11 +195,8 @@ namespace DynamicMosaic
             PairWordValue pair = new PairWordValue(word, processor);
             if (pair.IsEmpty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
-            if (!Initialize())
-                return FindRelationErrors.NOTINITIALIZED;
-            if (!AddWordValuePair(pair))
-                return FindRelationErrors.OK;
-            return _reflexCollection.FindRelation(processor, word) ? FindRelationErrors.OK : FindRelationErrors.RELATIONNOTFOUND;
+            AddWordValuePair(pair);
+            return Initialize();
         }
 
         /// <summary>
@@ -207,15 +204,14 @@ namespace DynamicMosaic
         /// Если подобная существует, то новая игнорируется.
         /// </summary>
         /// <param name="p">Добавляемая пара.</param>
-        bool AddWordValuePair(PairWordValue p)
+        void AddWordValuePair(PairWordValue p)
         {
             if (p.IsEmpty)
                 throw new ArgumentException($"{nameof(AddWordValuePair)}: Попытка добавления пустой пары.", nameof(p));
             if (_pairs.Where(pair => !pair.IsEmpty && string.Compare(pair.FindString, p.FindString, StringComparison.OrdinalIgnoreCase) == 0).
                 Any(pair => ProcessorHelper.ProcessorCompare(pair.Field, p.Field)))
-                return false;
+                return;
             _pairs.Add(p);
-            return true;
         }
 
         /// <summary>
