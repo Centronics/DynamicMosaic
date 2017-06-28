@@ -224,20 +224,17 @@ namespace DynamicMosaic
                 if (_pairs.Count <= 0)
                     throw new ArgumentException($"{nameof(InitializePairs)}: Количество пар \"Искомое значение - поле для поиска\" должно быть больше ноля.");
                 List<int> counting = new List<int>(_pairs.Count);
-                for (int z = 1; z <= _pairs.Count; z++)
+                for (int z = 1, p = _pairs.Count - 1; z <= _pairs.Count; z++)
                 {
-                    for (int k = 0; k < counting.Count; k++)
-                        counting[k] = 0;
+                    for (int j = 0; j < counting.Count; j++)
+                        counting[j] = 0;
                     counting.Add(0);
-                    for (int k = 1; k < _pairs.Count; k++)
+                    do
                     {
-                        do
-                        {
-                            List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
-                            GetWord(counting, lstPairWordValues);
-                            yield return lstPairWordValues;
-                        } while (ChangeCount(counting, k) != -1);
-                    }
+                        List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
+                        GetWord(counting, lstPairWordValues);
+                        yield return lstPairWordValues;
+                    } while (ChangeCount(counting, p) != -1);
                 }
             }
         }
