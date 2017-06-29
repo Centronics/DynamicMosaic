@@ -28,7 +28,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="index">Индекс карты.</param>
         /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
-        public Processor this[int index] => ProcessorHelper.GetMapClone(_seaProcessors[index]);
+        public Processor this[int index] => _seaProcessors[index].GetMapClone();
 
         /// <summary>
         /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string)"/>.
@@ -38,7 +38,7 @@ namespace DynamicMosaic
             get
             {
                 for (int k = 0; k < _seaMaps.Count; k++)
-                    yield return ProcessorHelper.GetMapClone(_seaMaps[k]);
+                    yield return _seaMaps[k].GetMapClone();
             }
         }
 
@@ -55,7 +55,7 @@ namespace DynamicMosaic
             get
             {
                 for (int k = 0; k < _seaProcessors.Count; k++)
-                    yield return ProcessorHelper.GetMapClone(_seaProcessors[k]);
+                    yield return _seaProcessors[k].GetMapClone();
             }
         }
 
@@ -97,7 +97,7 @@ namespace DynamicMosaic
         {
             for (int k = 0; k < _seaProcessors.Count; k++)
                 if (_seaProcessors[k].IsProcessorName(name, startIndex))
-                    yield return _seaProcessors[k];
+                    yield return _seaProcessors[k].GetMapClone();
         }
 
         /// <summary>
@@ -288,16 +288,13 @@ namespace DynamicMosaic
                 return false;
             List<char> lstCh = word.Select(char.ToUpper).ToList();
             for (int k = 0; k < _seaProcessors.Count; k++)
-                foreach (char cu in _seaProcessors[k].Tag.Select(char.ToUpper))
-                {
-                    if (lstCh.Count <= 0)
-                        return true;
-                    for (int j = 0; j < lstCh.Count; j++)
-                        if (lstCh[j] == cu)
-                            lstCh.RemoveAt(j--);
-                    if (lstCh.Count <= 0)
-                        return true;
-                }
+            {
+                for (int j = 0; j < lstCh.Count; j++)
+                    if (lstCh[j] == char.ToUpper(_seaProcessors[k].Tag[0]))
+                        lstCh.RemoveAt(j--);
+                if (lstCh.Count <= 0)
+                    return true;
+            }
             return lstCh.Count <= 0;
         }
 
@@ -423,7 +420,7 @@ namespace DynamicMosaic
                 bool res = false;
                 for (int j = 0; j < reflex2._seaProcessors.Count; j++)
                 {
-                    if (!ProcessorHelper.ProcessorCompare(reflex1[k], reflex2[j]))
+                    if (!reflex1[k].ProcessorCompare(reflex2[j]))
                         continue;
                     res = true;
                     break;

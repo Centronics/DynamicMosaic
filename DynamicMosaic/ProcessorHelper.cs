@@ -14,7 +14,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="processor">Клонируемый экземпляр <see cref="DynamicParser.Processor"/>.</param>
         /// <returns>Возвращает полную копию указанного экземпляра объекта <see cref="DynamicParser.Processor"/>.</returns>
-        public static Processor GetMapClone(Processor processor)
+        public static Processor GetMapClone(this Processor processor)
         {
             if (processor == null)
                 return null;
@@ -32,7 +32,7 @@ namespace DynamicMosaic
         /// <param name="processor1">Первая сопоставляемая карта.</param>
         /// <param name="processor2">Вторая сопоставляемая карта.</param>
         /// <returns>В случае совпадения возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
-        public static bool ProcessorCompare(Processor processor1, Processor processor2)
+        public static bool ProcessorCompare(this Processor processor1, Processor processor2)
         {
             if (processor1 == null)
                 throw new ArgumentNullException(nameof(processor1), $"{nameof(ProcessorCompare)}: Сопоставляемая карта отсутствует.");

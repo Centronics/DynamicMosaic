@@ -7,27 +7,6 @@ using DynamicParser;
 namespace DynamicMosaic
 {
     /// <summary>
-    /// Описывает коды ошибок, возвращаемые методом <see cref="Reflector.FindRelation"/>.
-    /// </summary>
-    public enum FindRelationErrors
-    {
-        /// <summary>
-        /// Связь обнаружена.
-        /// </summary>
-        OK,
-
-        /// <summary>
-        /// Инициализировать рабочий контекст не удалось.
-        /// </summary>
-        NOTINITIALIZED,
-
-        /// <summary>
-        /// Связь отсутствует.
-        /// </summary>
-        RELATIONNOTFOUND,
-    }
-
-    /// <summary>
     /// Пара "Искомое значение - поле для поиска".
     /// </summary>
     public struct PairWordValue
@@ -124,8 +103,6 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(Add)}: Карта для поиска должна быть указана.");
             if (string.IsNullOrWhiteSpace(word))
                 throw new ArgumentException($"{nameof(Add)}: Добавляемое слово должно быть указано.", nameof(word));
-            if (!SourceReflex.IsMapsWord(word))
-                throw new ArgumentException($"{nameof(Add)}: Добавляемое слово найти невозможно, т.к. буквы его составляющие отсутствуют в базе {nameof(Reflex)}.", nameof(word));
             PairWordValue pair = new PairWordValue(word, processor);
             if (pair.IsEmpty)
                 throw new ArgumentException($"{nameof(Add)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
@@ -190,11 +167,10 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
-            if (!Contains(word))
-                throw new ArgumentException($"{nameof(FindRelation)}: Указанное слово не содержится в коллекции текущего экземпляра: {word}.", nameof(word));
             PairWordValue pair = new PairWordValue(word, processor);
             if (pair.IsEmpty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
+            //сделать проверку _reflexCollection на возможность поиска данного слова
             AddWordValuePair(pair);
             return Initialize();
         }
@@ -209,7 +185,7 @@ namespace DynamicMosaic
             if (p.IsEmpty)
                 throw new ArgumentException($"{nameof(AddWordValuePair)}: Попытка добавления пустой пары.", nameof(p));
             if (_pairs.Where(pair => !pair.IsEmpty && string.Compare(pair.FindString, p.FindString, StringComparison.OrdinalIgnoreCase) == 0).
-                Any(pair => ProcessorHelper.ProcessorCompare(pair.Field, p.Field)))
+                Any(pair => pair.Field.ProcessorCompare(p.Field)))
                 return;
             _pairs.Add(p);
         }
@@ -238,13 +214,6 @@ namespace DynamicMosaic
                 }
             }
         }
-
-        /// <summary>
-        /// Получает значение, показывающее, содержится ли указанное слово в коллекции.
-        /// </summary>
-        /// <param name="word">Проверяемое слово.</param>
-        /// <returns>Возвращает значение, показывающее, содержится ли указанное слово в коллекции.</returns>
-        public bool Contains(string word) => !string.IsNullOrEmpty(word) && _pairs.Any(p => string.Compare(word, p.FindString, StringComparison.OrdinalIgnoreCase) == 0);
 
         /// <summary>
         ///     Увеличивает значение старших разрядов счётчика букв, если это возможно.
