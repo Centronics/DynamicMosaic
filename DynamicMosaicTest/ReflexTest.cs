@@ -62,175 +62,7 @@ namespace DynamicMosaicTest
 
             for (int k = 0; k < 50; k++)
             {
-                TestingAllCount(reflex);
-
-                Processor[] procsA = reflex.GetMap("A").ToArray();
-
-                Assert.AreEqual(3, procsA.Length);
-
-                Assert.AreEqual(true, procsA.Any(p => p.Tag == "A"));
-                Assert.AreEqual(true, procsA.Any(p => p.Tag == "A0"));
-                Assert.AreEqual(true, procsA.Any(p => p.Tag == "A00"));
-
-                Assert.AreEqual(true, procsA.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MaxValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MinValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
-
-                Assert.AreEqual(true, procsA.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MinValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MaxValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
-
-                Assert.AreEqual(true, procsA.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MinValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
-
-                Processor[] procsB = reflex.GetMap("B").ToArray();
-
-                Assert.AreEqual(2, procsB.Length);
-
-                Assert.AreEqual(true, procsB.Any(p => p.Tag == "B"));
-                Assert.AreEqual(true, procsB.Any(p => p.Tag == "B0"));
-
-                Assert.AreEqual(true, procsB.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MinValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MinValue)
-                        return false;
-                    return p[1, 1] == SignValue.MaxValue;
-                }));
-
-                Assert.AreEqual(true, procsB.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MinValue)
-                        return false;
-                    return p[1, 1] == SignValue.MaxValue;
-                }));
-
-                Processor[] procsC = reflex.GetMap("C").ToArray();
-
-                Assert.AreEqual(3, procsC.Length);
-
-                Assert.AreEqual(true, procsC.Any(p => p.Tag == "C"));
-                Assert.AreEqual(true, procsC.Any(p => p.Tag == "C0"));
-                Assert.AreEqual(true, procsC.Any(p => p.Tag == "C00"));
-
-                Assert.AreEqual(true, procsC.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
-
-                Assert.AreEqual(true, procsC.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MinValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
-
-                Assert.AreEqual(true, procsC.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MaxValue;
-                }));
-
-                Processor[] procsD = reflex.GetMap("D").ToArray();
-
-                Assert.AreEqual(2, procsD.Length);
-
-                Assert.AreEqual(true, procsD.Any(p => p.Tag == "D"));
-                Assert.AreEqual(true, procsD.Any(p => p.Tag == "D0"));
-
-                Assert.AreEqual(true, procsD.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MinValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MaxValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MaxValue;
-                }));
-
-                Assert.AreEqual(true, procsD.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MaxValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MaxValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MaxValue)
-                        return false;
-                    return p[1, 1] == SignValue.MaxValue;
-                }));
-
-                Processor[] procsE = reflex.GetMap("E").ToArray();
-
-                Assert.AreEqual(1, procsE.Length);
-
-                Assert.AreEqual(true, procsE.Any(p => p.Tag == "E"));
-
-                Assert.AreEqual(true, procsE.Any(p =>
-                {
-                    Assert.AreNotEqual(null, p);
-                    if (p[0, 0] != SignValue.MinValue)
-                        return false;
-                    if (p[0, 1] != SignValue.MinValue)
-                        return false;
-                    if (p[1, 0] != SignValue.MinValue)
-                        return false;
-                    return p[1, 1] == SignValue.MinValue;
-                }));
+                //TestingAllCount(reflex);
 
                 Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
                 Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
@@ -324,18 +156,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
             Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
 
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(7, reflex.CountProcessors);
-
             Assert.AreEqual(true, reflex.FindRelation(main, "11"));
             Assert.AreEqual(true, reflex.FindRelation(main, "22"));
             Assert.AreEqual(true, reflex.FindRelation(main, "33"));
             Assert.AreEqual(true, reflex.FindRelation(main, "112233"));
-
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(7, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.FindRelation(main, "1122"));
             Assert.AreEqual(true, reflex.FindRelation(main, "22a"));
@@ -344,33 +168,21 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, reflex.FindRelation(main, "33b22A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "33b"));
 
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(7, reflex.CountProcessors);
-
             Assert.AreEqual(true, reflex.FindRelation(main, "33B22a"));
             Assert.AreEqual(false, reflex.FindRelation(main, "33B233"));
             Assert.AreEqual(false, reflex.FindRelation(main, "223"));
             Assert.AreEqual(true, reflex.FindRelation(main, "33B"));
-
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(7, reflex.CountProcessors);
 
             Assert.AreEqual(true, reflex.FindRelation(main, "223311"));
             Assert.AreEqual(false, reflex.FindRelation(main, "121312"));
             Assert.AreEqual(true, reflex.FindRelation(main, "332211"));
             Assert.AreEqual(true, reflex.FindRelation(main, "112233"));
 
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(7, reflex.CountProcessors);
-
             Reflex r1 = (Reflex)reflex.Clone();
             Assert.AreNotSame(r1, reflex);
             TestingAllMaps(r1);
 
-            TestingAllCount1(reflex);
+            //TestingAllCount1(reflex);
         }
 
         [TestMethod]
@@ -385,55 +197,15 @@ namespace DynamicMosaicTest
         {
             Assert.AreEqual(2, reflex.MapSize.Width);
             Assert.AreEqual(2, reflex.MapSize.Height);
-
-            Assert.AreEqual(3, reflex.CountProcessorsBase);
-            Assert.AreEqual(3, reflex.CountProcessors);
-
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "A11"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "B22a"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "C33b"));
-
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "A11"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "B22a"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "C33b"));
-
-            Processor[] processors = { reflex[0], reflex[1], reflex[2] };
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "A11"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "B22a"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "C33b"));
         }
 
         static void TestingAllProperties(Reflex reflex)
         {
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessors);
-
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "A"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "B"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "C"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "D"));
-            Assert.AreEqual(true, reflex.Processors.Any(p => p.Tag == "E"));
-
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "A"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "B"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "C"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "D"));
-            Assert.AreEqual(true, reflex.ProcessorsBase.Any(p => p.Tag == "E"));
-
-            Processor[] processors = { reflex[0], reflex[1], reflex[2], reflex[3], reflex[4] };
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "A"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "B"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "C"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "D"));
-            Assert.AreEqual(true, processors.Any(p => p.Tag == "E"));
         }
 
-        static void TestingAllCount(Reflex reflex)
+        /*static void TestingAllCount(Reflex reflex)
         {
             int count = 0;
-            Assert.AreEqual(true, reflex.CountProcessors > reflex.CountProcessorsBase);
-            Assert.AreEqual(5, reflex.CountProcessorsBase);
-            Assert.AreEqual(11, reflex.CountProcessors);
             try
             {
                 // ReSharper disable once UnusedVariable
@@ -618,7 +390,7 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, p17[0].IsProcessorName(" e13", 0));
             Assert.AreEqual(false, p17[0].IsProcessorName("e13 ", 0));
             Assert.AreEqual(false, p17[0].IsProcessorName(" e13 ", 0));
-        }
+        }*/
 
         [TestMethod]
         public void IsMapsWordTest()

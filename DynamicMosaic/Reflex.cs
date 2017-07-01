@@ -24,47 +24,6 @@ namespace DynamicMosaic
         readonly ProcessorContainer _seaMaps;
 
         /// <summary>
-        /// Получает карту, поиск которой производится при каждом запросе поиска слова.
-        /// </summary>
-        /// <param name="index">Индекс карты.</param>
-        /// <returns>Возвращает карту, поиск которой производится при каждом запросе поиска слова.</returns>
-        public Processor this[int index] => _seaProcessors[index].GetMapClone();
-
-        /// <summary>
-        /// Предоставляет доступ к картам, загруженным в текущий контекст изначально, т.е. до вызова метода <see cref="FindRelation(Processor, string)"/>.
-        /// </summary>
-        public IEnumerable<Processor> ProcessorsBase
-        {
-            get
-            {
-                for (int k = 0; k < _seaMaps.Count; k++)
-                    yield return _seaMaps[k].GetMapClone();
-            }
-        }
-
-        /// <summary>
-        /// Получает количество карт, с которыми был инициализирован текущий контекст <see cref="Reflex"/>.
-        /// </summary>
-        public int CountProcessorsBase => _seaMaps.Count;
-
-        /// <summary>
-        /// Получает все карты контекста <see cref="Reflex"/>.
-        /// </summary>
-        public IEnumerable<Processor> Processors
-        {
-            get
-            {
-                for (int k = 0; k < _seaProcessors.Count; k++)
-                    yield return _seaProcessors[k].GetMapClone();
-            }
-        }
-
-        /// <summary>
-        /// Получает количество карт в контексте.
-        /// </summary>
-        public int CountProcessors => _seaProcessors.Count;
-
-        /// <summary>
         /// Получает размер загруженных карт в текущий экземпляр <see cref="Reflex"/>.
         /// </summary>
         public Size MapSize => new Size(_seaMaps[0].Width, _seaMaps[0].Height);
@@ -77,27 +36,13 @@ namespace DynamicMosaic
         {
             if (processors == null)
                 throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
-            if (processors.Count <= 0)
-                throw new ArgumentException($"{nameof(Reflex)}: Карты должны присутствовать в контексте (Count = 0).");
+            if (processors.Count < 2)
+                throw new ArgumentException($"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(processors.Count)} = {processors.Count}).");
             Processor[] procs = new Processor[processors.Count];
             for (int k = 0; k < procs.Length; k++)
-                procs[k] = processors[k];
+                procs[k] = processors[k].GetMapClone();
             _seaProcessors = new ProcessorContainer(procs);
             _seaMaps = new ProcessorContainer(procs);
-        }
-
-        /// <summary>
-        /// Получает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.
-        /// Поиск производится без учёта регистра.
-        /// </summary>
-        /// <param name="name">Искомая строка.</param>
-        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
-        /// <returns>Возвращает <see cref="Processor"/>, поле <see cref="Processor.Tag"/> которых начинается указанным символом.</returns>
-        public IEnumerable<Processor> GetMap(string name, int startIndex = 0)
-        {
-            for (int k = 0; k < _seaProcessors.Count; k++)
-                if (_seaProcessors[k].IsProcessorName(name, startIndex))
-                    yield return _seaProcessors[k].GetMapClone();
         }
 
         /// <summary>
@@ -399,7 +344,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Сравнивает два экземпляра <see cref="Reflex"/>. Сопоставляются все карты, которые есть в наличии (<see cref="Reflex.Processors"/>).
+        /// Сравнивает два экземпляра <see cref="Reflex"/>. Сопоставляются все карты, которые есть в наличии.
         /// В случае равенства возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.
         /// </summary>
         /// <param name="reflex1">Первый сопоставляемый экземпляр <see cref="Reflex"/>.</param>
@@ -413,14 +358,14 @@ namespace DynamicMosaic
                 return false;
             if ((object)reflex1 == null)
                 return false;
-            if (reflex1.CountProcessors != reflex2.CountProcessors)
+            if (reflex1._seaProcessors.Count != reflex2._seaProcessors.Count)
                 return false;
             for (int k = 0; k < reflex1._seaProcessors.Count; k++)
             {
                 bool res = false;
                 for (int j = 0; j < reflex2._seaProcessors.Count; j++)
                 {
-                    if (!reflex1[k].ProcessorCompare(reflex2[j]))
+                    if (!reflex1._seaProcessors[k].ProcessorCompare(reflex2._seaProcessors[j]))
                         continue;
                     res = true;
                     break;

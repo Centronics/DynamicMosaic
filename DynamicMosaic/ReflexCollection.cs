@@ -8,7 +8,7 @@ namespace DynamicMosaic
     /// <summary>
     /// Представляет концепцию всеобъёмлющего анализа входных данных с помощью класса <see cref="Reflex"/>.
     /// </summary>
-    public sealed class ReflexCollection : ICloneable
+    public sealed class ReflexCollection
     {
         /// <summary>
         /// Внутреннее хранилище ранее загруженных данных.
@@ -21,20 +21,10 @@ namespace DynamicMosaic
         readonly Reflex _startReflex;
 
         /// <summary>
-        /// Получает коллекцию <see cref="Reflex"/> из текущего экземпляра.
-        /// </summary>
-        public IEnumerable<Reflex> Reflexs => _reflexs.Select(r => (Reflex)r.Clone());
-
-        /// <summary>
-        /// Получает количество объектов <see cref="Reflex"/> в текущем экземпляре.
-        /// </summary>
-        public int CountReflexs => _reflexs.Count;
-
-        /// <summary>
         /// Получает клон <see cref="Reflex"/>, который изначально был загружен в текущий экземпляр <see cref="ReflexCollection"/>.
-        /// Использует метод <see cref="Clone"/>.
+        /// Использует метод <see cref="Reflex.Clone"/>.
         /// </summary>
-        public Reflex StartReflex => (Reflex)_startReflex.Clone();
+        Reflex StartReflex => (Reflex)_startReflex.Clone();
 
         /// <summary>
         /// Инициализирует начальным значением типа <see cref="Reflex"/>.
@@ -45,8 +35,6 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $@"{nameof(ReflexCollection)}: Начальное значение {nameof(Reflex)} должно быть указано.");
-            if (reflex.CountProcessors < 2)
-                throw new ArgumentException($@"{nameof(ReflexCollection)}: В изначальном значении {nameof(Reflex)} должно быть хотя бы две карты.", nameof(reflex));
             _startReflex = (Reflex)reflex.Clone();
         }
 
@@ -57,6 +45,13 @@ namespace DynamicMosaic
         {
             _reflexs = new ConcurrentBag<Reflex>();
         }
+
+        /// <summary>
+        /// Позволяет выяснить, содержит ли текущий контекст достаточное количество карт для составления указанного слова.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
+        public bool IsMapsWord(string word) => _startReflex.IsMapsWord(word);
 
         /// <summary>
         /// Добавляет <see cref="Reflex"/> в коллекцию текущего экземпляра <see cref="ReflexCollection"/>.
@@ -95,12 +90,5 @@ namespace DynamicMosaic
         /// <returns>В случае нахождения указанного <see cref="Reflex"/> в текущем экземпляре <see cref="ReflexCollection"/>
         /// возвращается значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
         bool Contains(Reflex reflex) => reflex != null && _reflexs.Any(r => r == reflex);
-
-        /// <summary>
-        /// Создаёт неполную копию текущего экземпляра <see cref="ReflexCollection"/>.
-        /// Копируется только изначальное значение текущего экземпляра <see cref="ReflexCollection"/>.
-        /// </summary>
-        /// <returns>Возвращает неполную копию текущего экземпляра <see cref="ReflexCollection"/>.</returns>
-        public object Clone() => new ReflexCollection(StartReflex);
     }
 }

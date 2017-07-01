@@ -49,35 +49,9 @@ namespace DynamicMosaic
         readonly List<PairWordValue> _pairs = new List<PairWordValue>();
 
         /// <summary>
-        /// Исходное значение <see cref="Reflex"/>.
-        /// </summary>
-        readonly Reflex _reflex;
-
-        /// <summary>
-        /// Исходное значение <see cref="Reflex"/>.
-        /// Используется метод <see cref="Reflex.Clone"/>.
-        /// </summary>
-        public Reflex SourceReflex => (Reflex)_reflex.Clone();
-
-        /// <summary>
         /// Анализирует входные данные.
         /// </summary>
         readonly ReflexCollection _reflexCollection;
-
-        /// <summary>
-        /// Получает исходную <see cref="ReflexCollection"/>, используя метод <see cref="ReflexCollection.Clone"/>.
-        /// </summary>
-        public ReflexCollection SourceReflexCollection => (ReflexCollection)_reflexCollection.Clone();
-
-        /// <summary>
-        /// Количество поданных запросов для инициализации текущего экземпляра <see cref="Reflector"/>.
-        /// </summary>
-        public int CountQuery => _pairs.Count;
-
-        /// <summary>
-        /// Получает содержимое запросов, предназначенных для инициализации текущего экземпляра <see cref="Reflector"/>.
-        /// </summary>
-        public IEnumerable<PairWordValue> InitializeQuery => _pairs;
 
         /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
@@ -87,8 +61,7 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $@"{nameof(Reflector)}: Начальное значение {nameof(Reflex)} должно быть указано.");
-            _reflex = (Reflex)reflex.Clone();
-            _reflexCollection = new ReflexCollection(SourceReflex);
+            _reflexCollection = new ReflexCollection((Reflex)reflex.Clone());
         }
 
         /// <summary>
@@ -159,10 +132,6 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
-            if (processor.Width < _reflex.MapSize.Width)
-                throw new ArgumentException($"{nameof(FindRelation)}: Ширина карты для выполнения поиска должна быть больше или равна сопоставляемой.", nameof(processor));
-            if (processor.Height < _reflex.MapSize.Height)
-                throw new ArgumentException($"{nameof(FindRelation)}: Высота карты для выполнения поиска должна быть больше или равна сопоставляемой.", nameof(processor));
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
@@ -170,7 +139,8 @@ namespace DynamicMosaic
             PairWordValue pair = new PairWordValue(word, processor);
             if (pair.IsEmpty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
-            //сделать проверку _reflexCollection на возможность поиска данного слова
+            if (!_reflexCollection.IsMapsWord(word))
+                return false;
             AddWordValuePair(pair);
             return Initialize();
         }
