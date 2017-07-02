@@ -112,7 +112,7 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflectorTest3()
         {
-            SignValue[,] map = new SignValue[4, 4];//упростить
+            SignValue[,] map = new SignValue[4, 4];
             map[0, 0] = SignValue.MaxValue;
             map[2, 0] = SignValue.MaxValue;
             map[1, 1] = SignValue.MaxValue;
@@ -120,6 +120,34 @@ namespace DynamicMosaicTest
             map[0, 2] = SignValue.MaxValue;
             map[2, 2] = SignValue.MaxValue;
             map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+
+            Processor main = new Processor(map, "main");
+
+            Reflector reflector = new Reflector(new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"))));
+
+            Assert.AreEqual(true, reflector.FindRelation(main, "a"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "b"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aa"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bb"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aA"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bB"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aB"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bA"));
+        }
+
+        [TestMethod]
+        public void ReflectorTest4()
+        {
+            SignValue[,] map = new SignValue[1, 1];//Сделать тесты для разных размеров карт
+            map[0, 0] = SignValue.MaxValue - new SignValue(10);
             SignValue[,] mapA = new SignValue[2, 2];
             mapA[0, 0] = SignValue.MaxValue;
             mapA[0, 1] = SignValue.MaxValue;
