@@ -65,24 +65,6 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Добавляет пару в коллекцию.
-        /// </summary>
-        /// <param name="word">Искомое слово.</param>
-        /// <param name="processor">Карта, на которой необходимо выполнить поиск.</param>
-        /// <returns>В случае нахождения этой позиции возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        public void Add(string word, Processor processor)
-        {
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $@"{nameof(Add)}: Карта для поиска должна быть указана.");
-            if (string.IsNullOrWhiteSpace(word))
-                throw new ArgumentException($"{nameof(Add)}: Добавляемое слово должно быть указано.", nameof(word));
-            PairWordValue pair = new PairWordValue(word, processor);
-            if (pair.IsEmpty)
-                throw new ArgumentException($"{nameof(Add)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
-            AddWordValuePair(pair);
-        }
-
-        /// <summary>
         /// Выполняет подготовку к обработке данных в текущем экземпляре <see cref="Reflector"/>.
         /// Возвращает значение <see langword="true"></see> в случае, если инициализация хотя бы одного из контекстов
         /// прошла удачно, в противном случае - <see langword="false"></see>.
@@ -146,7 +128,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Добавляет пару в коллекцию сохранённых запросов "Искомое значение - поле для поиска", проверяя, существует ли подобная пара.
+        /// Добавляет пару в коллекцию сохранённых запросов <see cref="PairWordValue"/> "Искомое значение - поле для поиска", проверяя, существует ли подобная пара.
         /// Если подобная существует, то новая игнорируется.
         /// </summary>
         /// <param name="p">Добавляемая пара.</param>

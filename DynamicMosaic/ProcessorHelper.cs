@@ -38,6 +38,8 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(processor1), $"{nameof(ProcessorCompare)}: Сопоставляемая карта отсутствует.");
             if (processor2 == null)
                 throw new ArgumentNullException(nameof(processor2), $"{nameof(ProcessorCompare)}: Сопоставляемая карта отсутствует.");
+            if (processor1 == processor2)
+                return true;
             if (processor1.Width != processor2.Width || processor1.Height != processor2.Height)
                 return false;
             for (int y = 0; y < processor1.Height; y++)
