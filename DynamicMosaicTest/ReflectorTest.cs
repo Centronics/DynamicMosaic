@@ -124,8 +124,8 @@ namespace DynamicMosaicTest
             mapA[0, 0] = SignValue.MaxValue;
             mapA[0, 1] = SignValue.MaxValue;
             SignValue[,] mapB = new SignValue[2, 2];
-            mapA[0, 0] = SignValue.MaxValue;
-            mapA[0, 1] = SignValue.MaxValue;
+            mapB[0, 0] = SignValue.MaxValue;
+            mapB[0, 1] = SignValue.MaxValue;
 
             Processor main = new Processor(map, "main");
 
@@ -152,8 +152,8 @@ namespace DynamicMosaicTest
             mapA[0, 0] = SignValue.MaxValue;
             mapA[0, 1] = SignValue.MaxValue;
             SignValue[,] mapB = new SignValue[2, 2];
-            mapA[0, 0] = SignValue.MaxValue;
-            mapA[0, 1] = SignValue.MaxValue;
+            mapB[0, 0] = SignValue.MaxValue;
+            mapB[0, 1] = SignValue.MaxValue;
 
             Processor main = new Processor(map, "main");
 
@@ -169,6 +169,39 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, reflector.FindRelation(main, "bB"));
             Assert.AreEqual(true, reflector.FindRelation(main, "aB"));
             Assert.AreEqual(true, reflector.FindRelation(main, "bA"));
+        }
+
+        [TestMethod]
+        public void ReflectorTest5()
+        {
+            SignValue[,] map = new SignValue[1, 1];
+            map[0, 0] = SignValue.MaxValue - new SignValue(10);
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = SignValue.MinValue;
+
+            Reflector reflector = new Reflector(new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"))));
+            Processor main = new Processor(map, "main");
+            Assert.AreEqual(true, reflector.FindRelation(main, "a"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "b"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aa"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bb"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aA"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bB"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "aB"));
+            Assert.AreEqual(true, reflector.FindRelation(main, "bA"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ReflectorTest6()
+        {
+            Reflector reflector = new Reflector(new Reflex(new ProcessorContainer(new Processor(new SignValue[2, 2], "A"))));
+            reflector.FindRelation(new Processor(new SignValue[1, 1], "main"), "a");
         }
 
         [TestMethod]

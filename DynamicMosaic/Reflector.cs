@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using DynamicParser;
@@ -52,6 +53,11 @@ namespace DynamicMosaic
         /// Анализирует входные данные.
         /// </summary>
         readonly ReflexCollection _reflexCollection;
+
+        /// <summary>
+        /// Получает размер загруженных карт.
+        /// </summary>
+        public Size MapSize => _reflexCollection.MapSize;
 
         /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
@@ -114,6 +120,12 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
+            if (processor.Width < MapSize.Width)
+                throw new ArgumentException($@"{nameof(FindRelation)}: Ширина подаваемой карты на вход ({processor.Width
+                    }) должна быть больше ширины загруженных карт ({MapSize.Width}).", nameof(processor));
+            if (processor.Height < MapSize.Height)
+                throw new ArgumentException($@"{nameof(FindRelation)}: Высота подаваемой карты на вход ({processor.Height
+                    }) должна быть больше высоты загруженных карт ({MapSize.Height}).", nameof(processor));
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)

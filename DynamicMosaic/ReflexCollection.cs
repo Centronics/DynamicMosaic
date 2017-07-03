@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace DynamicMosaic
@@ -19,6 +20,11 @@ namespace DynamicMosaic
         /// Содержит первоначальный экземпляр <see cref="Reflex"/>.
         /// </summary>
         readonly Reflex _startReflex;
+
+        /// <summary>
+        /// Получает размер загруженных карт.
+        /// </summary>
+        public Size MapSize => _startReflex.MapSize;
 
         /// <summary>
         /// Получает клон <see cref="Reflex"/>, который изначально был загружен в текущий экземпляр <see cref="ReflexCollection"/>.
@@ -64,7 +70,16 @@ namespace DynamicMosaic
             if (pairs == null)
                 throw new ArgumentNullException(nameof(pairs), $"{nameof(AddPair)}: Запросы для выполнения должны быть указаны.");
             if (pairs.Count <= 0)
-                throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запросов поиска, должен присутствовать хотя бы один запрос.", nameof(pairs));
+                throw new ArgumentException($"{nameof(AddPair)}: Для выполнения запросов поиска должен присутствовать хотя бы один запрос.", nameof(pairs));
+            foreach (PairWordValue p in pairs)
+            {
+                if (p.Field.Width < _startReflex.MapSize.Width)
+                    throw new ArgumentException($@"{nameof(AddPair)}: Ширина подаваемой карты ({p.Field.Width
+                        }) должна быть больше или равна ширине загруженных карт ({_startReflex.MapSize.Width}).", nameof(pairs));
+                if (p.Field.Height < _startReflex.MapSize.Height)
+                    throw new ArgumentException($@"{nameof(AddPair)}: Высота подаваемой карты ({p.Field.Height
+                        }) должна быть больше или равна высоте загруженных карт ({_startReflex.MapSize.Height}).", nameof(pairs));
+            }
             Reflex r = StartReflex;
             bool res = true;
             foreach (PairWordValue p in pairs)
