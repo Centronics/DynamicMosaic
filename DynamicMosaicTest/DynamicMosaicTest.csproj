@@ -60,11 +60,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="PairWordValueTest.cs" />
     <Compile Include="ProcessorHelperTest.cs" />
     <Compile Include="ReflectorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflexCollectionTest.cs" />
     <Compile Include="ReflexTest.cs" />
   </ItemGroup>
   <ItemGroup>

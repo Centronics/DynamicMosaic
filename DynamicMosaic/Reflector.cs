@@ -8,56 +8,56 @@ using DynamicParser;
 namespace DynamicMosaic
 {
     /// <summary>
-    /// Пара "Искомое значение - поле для поиска".
-    /// </summary>
-    public struct PairWordValue
-    {
-        /// <summary>
-        /// Искомая строка.
-        /// </summary>
-        public string FindString { get; }
-
-        /// <summary>
-        /// Поле для поиска указанной строки.
-        /// </summary>
-        public Processor Field { get; }
-
-        /// <summary>
-        /// Получает статус заполнения текущего экземпляра допустимыми значениями.
-        /// </summary>
-        public bool IsEmpty => string.IsNullOrEmpty(FindString) || Field == null || Field.Length <= 0;
-
-        /// <summary>
-        /// Инициализарует пару.
-        /// </summary>
-        /// <param name="findString">Искомая строка.</param>
-        /// <param name="field">Поле для поиска.</param>
-        public PairWordValue(string findString, Processor field)
-        {
-            FindString = findString;
-            Field = field;
-        }
-    }
-
-    /// <summary>
     /// Предназначен для совмещения нескольких потоков данных.
     /// </summary>
     public sealed class Reflector
     {
+        /// <summary>
+        /// Пара "Искомое значение - поле для поиска".
+        /// </summary>
+        struct PairWordValue
+        {
+            /// <summary>
+            /// Искомая строка.
+            /// </summary>
+            public string FindString { get; }
+
+            /// <summary>
+            /// Поле для поиска указанной строки.
+            /// </summary>
+            public Processor Field { get; }
+
+            /// <summary>
+            /// Получает статус заполнения текущего экземпляра допустимыми значениями.
+            /// </summary>
+            public bool IsEmpty => string.IsNullOrEmpty(FindString) || Field == null || Field.Length <= 0;
+
+            /// <summary>
+            /// Инициализарует пару.
+            /// </summary>
+            /// <param name="findString">Искомая строка.</param>
+            /// <param name="field">Поле для поиска.</param>
+            public PairWordValue(string findString, Processor field)
+            {
+                FindString = findString;
+                Field = field;
+            }
+        }
+
         /// <summary>
         /// Сохранённые запросы в виде пар "Искомое значение - поле для поиска".
         /// </summary>
         readonly List<PairWordValue> _pairs = new List<PairWordValue>();
 
         /// <summary>
-        /// Анализирует входные данные.
+        /// Содержит изначальный экземпляр класса <see cref="Reflex"/>.
         /// </summary>
-        readonly ReflexCollection _reflexCollection;
+        readonly Reflex _currentReflex;
 
         /// <summary>
-        /// Получает размер загруженных карт.
+        /// Получает размер загруженной карты.
         /// </summary>
-        public Size MapSize => _reflexCollection.MapSize;
+        public Size MapSize => _currentReflex.MapSize;
 
         /// <summary>
         /// Инициализирует текущий экземпляр объектом <see cref="Reflex"/>.
@@ -67,7 +67,7 @@ namespace DynamicMosaic
         {
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex), $@"{nameof(Reflector)}: Начальное значение {nameof(Reflex)} должно быть указано.");
-            _reflexCollection = new ReflexCollection((Reflex)reflex.Clone());
+            _currentReflex = (Reflex)reflex.Clone();
         }
 
         /// <summary>
@@ -79,14 +79,13 @@ namespace DynamicMosaic
         /// прошла удачно, в противном случае - <see langword="false"></see>.</returns>
         bool Initialize()
         {
-            _reflexCollection.Clear();
             string errString = string.Empty, errStopped = string.Empty;
             bool exThrown = false, exStopped = false, result = false;
             Parallel.ForEach(InitializePairs, (pairs, state) =>
             {
                 try
                 {
-                    if (_reflexCollection.AddPair(pairs))
+                    if (CheckPairs(pairs))
                         result = true;
                 }
                 catch (Exception ex)
@@ -133,10 +132,45 @@ namespace DynamicMosaic
             PairWordValue pair = new PairWordValue(word, processor);
             if (pair.IsEmpty)
                 throw new ArgumentException($"{nameof(FindRelation)}: Параметры пары \"Искомое значение - поле для поиска\" заданы некорректно.");
-            if (!_reflexCollection.IsMapsWord(word))
+            if (!_currentReflex.IsMapsWord(word))
                 return false;
             AddWordValuePair(pair);
             return Initialize();
+        }
+
+        /// <summary>
+        /// Добавляет <see cref="Reflex"/> в коллекцию текущего экземпляра <see cref="Reflector"/>.
+        /// В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.
+        /// </summary>
+        /// <param name="pairs">Поисковые запросы для инициализации текущего экземпляра <see cref="Reflector"/>.</param>
+        /// <returns>В случае успешной инициализации возвращает значение <see langword="true"></see>, в противном случае - <see langword="false"></see>.</returns>
+        bool CheckPairs(IList<PairWordValue> pairs)
+        {
+            if (pairs == null)
+                throw new ArgumentNullException(nameof(pairs), $"{nameof(CheckPairs)}: Запросы для выполнения должны быть указаны.");
+            if (pairs.Count <= 0)
+                throw new ArgumentException($"{nameof(CheckPairs)}: Для выполнения запросов поиска должен присутствовать хотя бы один запрос.", nameof(pairs));
+            Reflex startReflex = (Reflex)_currentReflex.Clone();
+            foreach (PairWordValue p in pairs)
+            {
+                if (p.Field.Width < startReflex.MapSize.Width)
+                    throw new ArgumentException($@"{nameof(CheckPairs)}: Ширина подаваемой карты ({p.Field.Width
+                        }) должна быть больше или равна ширине загруженных карт ({startReflex.MapSize.Width}).", nameof(pairs));
+                if (p.Field.Height < startReflex.MapSize.Height)
+                    throw new ArgumentException($@"{nameof(CheckPairs)}: Высота подаваемой карты ({p.Field.Height
+                        }) должна быть больше или равна высоте загруженных карт ({startReflex.MapSize.Height}).", nameof(pairs));
+                if (startReflex.IsMapsWord(p.FindString))
+                    return false;
+            }
+            Reflex r = (Reflex)startReflex.Clone();
+            foreach (PairWordValue p in pairs)
+            {
+                if (p.IsEmpty)
+                    throw new ArgumentException($"{nameof(CheckPairs)}: Для выполнения запроса поиска все его аргументы должны быть указаны.", nameof(pairs));
+                if (!r.FindRelation(p.Field, p.FindString))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -155,7 +189,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Получает коллекцию <see cref="PairWordValue"/>, предназначенную для инициализации <see cref="ReflexCollection"/>.
+        /// Получает коллекцию <see cref="PairWordValue"/>, предназначенную для инициализации <see cref="Reflector"/>.
         /// </summary>
         IEnumerable<IList<PairWordValue>> InitializePairs
         {
@@ -163,19 +197,14 @@ namespace DynamicMosaic
             {
                 if (_pairs.Count <= 0)
                     throw new ArgumentException($"{nameof(InitializePairs)}: Количество пар \"Искомое значение - поле для поиска\" должно быть больше ноля.");
-                List<int> counting = new List<int>(_pairs.Count);
-                for (int z = 1, p = _pairs.Count - 1; z <= _pairs.Count; z++)
+                int[] counting = new int[_pairs.Count];
+                int p = _pairs.Count - 1;
+                do
                 {
-                    for (int j = 0; j < counting.Count; j++)
-                        counting[j] = 0;
-                    counting.Add(0);
-                    do
-                    {
-                        List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
-                        GetWord(counting, lstPairWordValues);
-                        yield return lstPairWordValues;
-                    } while (ChangeCount(counting, p) != -1);
-                }
+                    List<PairWordValue> lstPairWordValues = new List<PairWordValue>();
+                    GetWord(counting, lstPairWordValues);
+                    yield return lstPairWordValues;
+                } while (ChangeCount(counting, p) != -1);
             }
         }
 
