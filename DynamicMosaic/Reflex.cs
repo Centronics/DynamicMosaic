@@ -11,22 +11,12 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт <see cref="Processor"/>.
     /// </summary>
-    public sealed class Reflex : ICloneable
+    public sealed class Reflex
     {
         /// <summary>
         /// Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
         readonly ProcessorContainer _seaProcessors;
-
-        /// <summary>
-        /// Карты, изначально загруженные в текущий экземпляр <see cref="Reflex"/> и предназначенные для клонирования текущего экземпляра <see cref="Reflex"/>.
-        /// </summary>
-        readonly ProcessorContainer _seaMaps;
-
-        /// <summary>
-        /// Получает размер загруженных карт в текущий экземпляр <see cref="Reflex"/>.
-        /// </summary>
-        public Size MapSize => new Size(_seaMaps[0].Width, _seaMaps[0].Height);
 
         /// <summary>
         /// Инициализирует текущий контекст указанными картами.
@@ -40,9 +30,8 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(processors.Count)} = {processors.Count}).");
             Processor[] procs = new Processor[processors.Count];
             for (int k = 0; k < procs.Length; k++)
-                procs[k] = processors[k].GetMapClone();
+                procs[k] = processors[k];
             _seaProcessors = new ProcessorContainer(procs);
-            _seaMaps = new ProcessorContainer(procs);
         }
 
         /// <summary>
@@ -60,10 +49,10 @@ namespace DynamicMosaic
             SignValue[,] values = AddMap(registered, processor);
             if (values == null)
                 return;
-            string s = registered.Register.SelectedProcessor.Tag;
-            while (_seaProcessors.ContainsTag(s))
-                s += '0';
-            _seaProcessors.Add(new Processor(values, s));
+            string tag = registered.Register.SelectedProcessor.Tag;
+            while (_seaProcessors.ContainsTag(tag))
+                tag += '0';
+            _seaProcessors.Add(new Processor(values, tag));
         }
 
         /// <summary>
@@ -115,20 +104,16 @@ namespace DynamicMosaic
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(FindWord)}: Карта для поиска не указана (null).");
-            if (processor.Width < MapSize.Width)
-                throw new ArgumentException($@"{nameof(FindRelation)}: Ширина подаваемой карты на вход ({processor.Width
-                    }) должна быть больше ширины загруженных карт ({MapSize.Width}).", nameof(processor));
-            if (processor.Height < MapSize.Height)
-                throw new ArgumentException($@"{nameof(FindRelation)}: Высота подаваемой карты на вход ({processor.Height
-                    }) должна быть больше высоты загруженных карт ({MapSize.Height}).", nameof(processor));
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindWord)}: Искомое слово равно null.");
             if (word == string.Empty)
                 throw new ArgumentException($"{nameof(FindWord)}: Искомое слово не указано.", nameof(word));
+            if (processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height)
+                return false;
             if (!IsMapsWord(word))
                 return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            if (!searchResults.FindRelation(word, 0, word.Length))
+            if (!searchResults.FindRelation(word))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
             foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
@@ -194,7 +179,15 @@ namespace DynamicMosaic
         {
             if (region == null)
                 throw new ArgumentNullException(nameof(region), $@"{nameof(GetProcessorsFromRegion)}: Регион для получения карт должен быть указан.");
-            return from r in region.Elements.Where(r => r?.Register.SelectedProcessor?.IsProcessorName(word, 0) ?? false) select r;
+            string w = word.ToUpper();
+            return from r in region.Elements.Where(r =>
+            {
+                if (r == null)
+                    return false;
+                char c = char.ToUpper(r.Register.SelectedProcessor.Tag[0]);
+                return w.Any(symb => symb == c);
+            })
+                   select r;
         }
 
         /// <summary>
@@ -233,7 +226,7 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
         /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
-        public bool IsMapsWord(string word)
+        bool IsMapsWord(string word)
         {
             if (string.IsNullOrEmpty(word))
                 return false;
@@ -247,44 +240,6 @@ namespace DynamicMosaic
                     return true;
             }
             return lstCh.Count <= 0;
-        }
-
-        /// <summary>
-        ///     Находит карты в результатах поиска, поля <see cref="Processor.Tag" /> которых по указанной позиции соответствуют
-        ///     указанной строке.
-        /// </summary>
-        /// <param name="procName">Искомая строка.</param>
-        /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
-        /// <param name="startIndex">Стартовый индекс позиции, с которой необходимо начать анализ поля <see cref="Processor.Tag"/> карты.</param>
-        /// <returns>Возвращает информацию о найденных картах.</returns>
-        static List<Reg> FindSymbols(string procName, SearchResults searchResults, int startIndex)
-        {
-            if (procName == null)
-                throw new ArgumentNullException(nameof(procName), $"{nameof(FindSymbols)}: Искомая строка не может быть равна null.");
-            if (procName == string.Empty)
-                throw new ArgumentException($"{nameof(FindSymbols)}: Искомая строка не может быть пустой.", nameof(procName));
-            if (searchResults == null)
-                throw new ArgumentNullException(nameof(searchResults), $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
-            if (startIndex < 0)
-                throw new ArgumentException($"{nameof(FindSymbols)}: Стартовый индекс должен быть больше ноля ({startIndex}).", nameof(startIndex));
-            List<Reg> lstRegs = new List<Reg>();
-            for (int y = 0; y < searchResults.Height; y++)
-                for (int x = 0; x < searchResults.Width; x++)
-                {
-                    Processor[] processors = searchResults[x, y].Procs?.Where(pr => pr != null).Where(pr => pr.IsProcessorName(procName, startIndex)).ToArray();
-                    if ((processors?.Length ?? 0) <= 0)
-                        continue;
-                    double percent = searchResults[x, y].Percent;
-                    Point point = new Point(x, y);
-                    lstRegs.AddRange(from pr in processors
-                                     where pr != null
-                                     select new Reg(point)
-                                     {
-                                         SelectedProcessor = pr,
-                                         Percent = percent
-                                     });
-                }
-            return lstRegs;
         }
 
         /// <summary>
@@ -316,104 +271,6 @@ namespace DynamicMosaic
                                      });
                 }
             return lstRegs;
-        }
-
-        /// <summary>
-        /// Создаёт неполную копию текущего экземпляра.
-        /// Копируются только изначальные значения текущего экземпляра <see cref="Reflex"/>.
-        /// </summary>
-        /// <returns>Возвращает неполную копию текущего экземпляра.</returns>
-        public object Clone() => new Reflex(_seaMaps);
-
-        /// <summary>
-        /// Выполняет операцию сравнения двух экземпляров объекта <see cref="Reflex"/>.
-        /// Возвращает значение <see langword="true"></see> в случае равенства, <see langword="false"></see> в противном случае.
-        /// </summary>
-        /// <param name="one">Первый сопоставляемый экземпляр.</param>
-        /// <param name="two">Второй сопоставляемый экземпляр.</param>
-        /// <returns>Возвращает значение <see langword="true"></see> в случае равенства, <see langword="false"></see> в противном случае.</returns>
-        public static bool operator ==(Reflex one, Reflex two)
-        {
-            return Compare(one, two);
-        }
-
-        /// <summary>
-        /// Выполняет операцию сравнения двух экземпляров объекта <see cref="Reflex"/>.
-        /// Возвращает значение <see langword="true"></see> в случае неравенства, <see langword="false"></see> в противном случае.
-        /// </summary>
-        /// <param name="one">Первый сопоставляемый экземпляр.</param>
-        /// <param name="two">Второй сопоставляемый экземпляр.</param>
-        /// <returns>Возвращает значение <see langword="true"></see> в случае неравенства, <see langword="false"></see> в противном случае.</returns>
-        public static bool operator !=(Reflex one, Reflex two)
-        {
-            return !Compare(one, two);
-        }
-
-        /// <summary>
-        /// Сравнивает два экземпляра <see cref="Reflex"/>. Сопоставляются все карты, которые есть в наличии.
-        /// В случае равенства возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.
-        /// </summary>
-        /// <param name="reflex1">Первый сопоставляемый экземпляр <see cref="Reflex"/>.</param>
-        /// <param name="reflex2">Второй сопоставляемый экземпляр <see cref="Reflex"/>.</param>
-        /// <returns>В случае равенства возвращается значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        static bool Compare(Reflex reflex1, Reflex reflex2)
-        {
-            if ((object)reflex1 == null && (object)reflex2 == null)
-                return true;
-            if ((object)reflex1 != null && (object)reflex2 == null)
-                return false;
-            if ((object)reflex1 == null)
-                return false;
-            if (reflex1._seaProcessors.Count != reflex2._seaProcessors.Count)
-                return false;
-            for (int k = 0; k < reflex1._seaProcessors.Count; k++)
-            {
-                bool res = false;
-                for (int j = 0; j < reflex2._seaProcessors.Count; j++)
-                {
-                    if (!reflex1._seaProcessors[k].ProcessorCompare(reflex2._seaProcessors[j]))
-                        continue;
-                    res = true;
-                    break;
-                }
-                if (!res)
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Определяет, равен ли заданный объект текущему объекту.
-        /// </summary>
-        /// <param name="other">Объект, который требуется сравнить с текущим объектом.</param>
-        /// <returns>Значение <see langword="true"/>, если указанный объект равен текущему объекту, в противном случае — значение <see langword="false"/>.</returns>
-        bool Equals(Reflex other) => Equals(_seaProcessors, other._seaProcessors) && Equals(_seaMaps, other._seaMaps);
-
-        /// <summary>
-        /// Определяет, равен ли заданный объект текущему объекту.
-        /// </summary>
-        /// <param name="obj">Объект, который требуется сравнить с текущим объектом.</param>
-        /// <returns>Значение <see langword="true"/>, если указанный объект равен текущему объекту, в противном случае — значение <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            Reflex a = obj as Reflex;
-            return a != null && Equals(a);
-        }
-
-        /// <summary>
-        /// Получает хеш-код текущего экземпляра <see cref="Reflex"/>.
-        /// </summary>
-        /// <returns>Возвращает хеш-код текущего экземпляра <see cref="Reflex"/>.</returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((_seaProcessors != null ? _seaProcessors.GetHashCode() : 0) * 397) ^ (_seaMaps != null ? _seaMaps.GetHashCode() : 0);
-            }
         }
     }
 }
