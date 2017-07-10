@@ -150,7 +150,7 @@ namespace DynamicMosaic
                 foreach (Reg pp in regsCounting)
                 {
                     if (region.Contains(pp.SelectedProcessor.Tag, 0))
-                        continue;
+                        throw new Exception($"{nameof(FindWord)}: Наложение регионов по неизвестной причине.");
                     Rectangle rect = new Rectangle(pp.Position, searchResults.MapSize);
                     if (region.IsConflict(rect))
                     {
@@ -161,6 +161,7 @@ namespace DynamicMosaic
                 }
                 if (result)
                     yield return GetProcessorsFromRegion(region, word);
+                //Сделать возможность возвращать только уникальные значения, содержащие все буквы слова.
                 if ((counter = ChangeCount(counting, regs.Count)) < 0)
                     yield break;
                 region.Clear();
