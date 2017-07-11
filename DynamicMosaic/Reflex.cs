@@ -144,13 +144,13 @@ namespace DynamicMosaic
             DynamicParser.Region region = new DynamicParser.Region(searchResults.Width, searchResults.Height);
             for (int counter = word.Length - 1; counter >= 0;)
             {
+                if ((counter = ChangeCount(counting, regs.Count)) < 0)
+                    yield break;
                 bool result = true;
                 for (int k = 0; k < counting.Length; k++)
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    if (region.Contains(pp.SelectedProcessor.Tag, 0))
-                        throw new Exception($"{nameof(FindWord)}: Наложение регионов по неизвестной причине.");
                     Rectangle rect = new Rectangle(pp.Position, searchResults.MapSize);
                     if (region.IsConflict(rect))
                     {
@@ -160,35 +160,9 @@ namespace DynamicMosaic
                     region.Add(rect, pp.SelectedProcessor, pp.Percent);
                 }
                 if (result)
-                    yield return GetProcessorsFromRegion(region, word);
-                //Сделать возможность возвращать только уникальные значения, содержащие все буквы слова.
-                if ((counter = ChangeCount(counting, regs.Count)) < 0)
-                    yield break;
+                    yield return region.Elements;
                 region.Clear();
             }
-        }
-
-        /// <summary>
-        ///     Генерирует <see cref="Processor" /> из <see cref="Processor.GetProcessorName" />.
-        /// </summary>
-        /// <param name="region"><see cref="DynamicParser.Region" />, из которого требуется получить <see cref="WordSearcher" />.</param>
-        /// <param name="word">Искомое слово.</param>
-        /// <returns>
-        ///     Возвращает <see cref="Processor" /> из первых букв названия (<see cref="Processor.Tag" />) объектов <see cref="DynamicParser.Region" />.
-        /// </returns>
-        static IEnumerable<Registered> GetProcessorsFromRegion(DynamicParser.Region region, string word)
-        {
-            if (region == null)
-                throw new ArgumentNullException(nameof(region), $@"{nameof(GetProcessorsFromRegion)}: Регион для получения карт должен быть указан.");
-            string w = word.ToUpper();
-            return from r in region.Elements.Where(r =>
-            {
-                if (r == null)
-                    return false;
-                char c = char.ToUpper(r.Register.SelectedProcessor.Tag[0]);
-                return w.Any(symb => symb == c);
-            })
-                   select r;
         }
 
         /// <summary>
@@ -202,24 +176,33 @@ namespace DynamicMosaic
         static int ChangeCount(IList<int> count, int maxCount)
         {
             if (count == null)
-                throw new ArgumentNullException(nameof(count),
-                    $"{nameof(ChangeCount)}: Массив-счётчик не указан или его длина некорректна (null).");
+                throw new ArgumentNullException(nameof(count), $"{nameof(ChangeCount)}: Массив-счётчик не указан (null).");
             if (count.Count <= 0)
-                throw new ArgumentException(
-                    $"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Count}).",
-                    nameof(count));
+                throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Count}).", nameof(count));
             if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(maxCount),
-                    $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
+                throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
             for (int k = count.Count - 1, mc = maxCount - 1; k >= 0; k--)
             {
                 if (count[k] >= mc) continue;
                 count[k]++;
                 for (int x = k + 1; x < count.Count; x++)
                     count[x] = 0;
-                return k;
+                if (!NumberRepeat(count))
+                    return k;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// В случае обнаружения повторяющихся значений в массиве возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
+        /// </summary>
+        /// <param name="count">Проверяемый массив.</param>
+        /// <returns>В случае обнаружения повторяющихся значений в массиве возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
+        static bool NumberRepeat(IList<int> count)
+        {
+            if (count == null)
+                throw new ArgumentNullException(nameof(count), $"{nameof(NumberRepeat)}: Проверяемый массив должен быть указан.");
+            return count.Where((element, k) => count.Where((t, j) => j != k).Any(t => t == element)).Any();
         }
 
         /// <summary>
