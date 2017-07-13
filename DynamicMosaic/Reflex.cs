@@ -10,6 +10,8 @@ namespace DynamicMosaic
 {
     /// <summary>
     ///     Предназначен для связывания карт <see cref="Processor"/>.
+    /// Служит для поиска данных на карте и сохранения результатов поиска для последующих вызовов.
+    /// Они позволят системе лучше ориентиоваться при поиске данных, сопоставляя каждую новую карту с тем, что она уже обрабатывала.
     /// </summary>
     public sealed class Reflex
     {
@@ -19,9 +21,11 @@ namespace DynamicMosaic
         readonly ProcessorContainer _seaProcessors;
 
         /// <summary>
-        /// Инициализирует текущий контекст указанными картами.
+        /// Инициализирует текущий контекст указанными картами. Карты предназначены для поиска запрашиваемых данных.
+        /// Нужны для вызова <see cref="Processor.GetEqual(ProcessorContainer)"/>. Этот список невозможно изменить вручную в процессе работы с классом.
         /// </summary>
-        /// <param name="processors">Карты, которые необходимо добавить в контекст.</param>
+        /// <param name="processors">Карты, которые необходимо добавить в контекст <see cref="Reflex"/>.
+        /// С помощью них будет проводиться поиск запрашиваемых данных.</param>
         public Reflex(ProcessorContainer processors)
         {
             if (processors == null)
@@ -35,11 +39,10 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Получает карту из целевой карты по указанным координатам.
+        /// Получает карту из целевой карты по указанным координатам, копируя данные карты в массив карт для поиска <see cref="_seaProcessors"/>.
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Информация о получаемой карте.</param>
-        /// <returns>Возвращает карту по указанным координатам целевой карты.</returns>
         void GetMap(Processor processor, Registered registered)
         {
             if (processor == null)
@@ -57,7 +60,8 @@ namespace DynamicMosaic
 
         /// <summary>
         /// Определяет, содержит ли текущий экземпляр <see cref="Reflex"/> карту с совпадающим содержимым или нет.
-        /// В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
+        /// В случае нахождения карт с совпадающим содержимым, метод возвращает значение <see langword="null"/>, в противном случае -
+        /// массив данных, который указан в параметре <see cref="Registered"/>.
         /// </summary>
         /// <param name="registered">Информация о получаемой карте.</param>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
@@ -94,12 +98,14 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Производит поиск слова в имеющихся картах.
-        /// Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.
+        /// Производит поиск слова в текущем контексте <see cref="Reflex"/>.
+        /// Возвращает значение <see langword="true"/> в случае нахождения указанного слова на карте, в противном случае - <see langword="false"/>.
         /// </summary>
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает <see cref="Reflex"/>, который так или иначе связан с указанным словом или <see langword="null"/>, если связи нет.</returns>
+        /// <returns>
+        /// Возвращает значение <see langword="true"/> в случае нахождения указанного слова на карте, в противном случае - <see langword="false"/>.
+        /// </returns>
         public bool FindRelation(Processor processor, string word)
         {
             if (processor == null)
@@ -118,30 +124,29 @@ namespace DynamicMosaic
             List<Reg> lstRegs = new List<Reg>();
             foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
                 lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, word, searchResults).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(lstRegs, word, searchResults.MapSize).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
         }
 
         /// <summary>
-        ///     Получает значение true в случае нахождения искомого слова, в противном случае - false.
+        ///     Получает массив карт, представляющих заданное слово, т.е. искомое слово можно составить из первых букв названий карт.
         /// </summary>
         /// <param name="regs">Список обрабатываемых карт.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <param name="searchResults">Поле результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
+        /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, SearchResults searchResults)
+        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize)
         {
             if (regs == null)
-                throw new ArgumentNullException(nameof(regs),
-                    $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
-            if (searchResults == null)
-                throw new ArgumentException($@"{nameof(FindWord)}: Поле результатов поиска отсутствует.", nameof(searchResults));
+                throw new ArgumentNullException(nameof(regs), $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
+            if (string.IsNullOrEmpty(word))
+                throw new ArgumentException($"{nameof(FindWord)}: Искомое слово должно быть указано.", nameof(word));
             if (regs.Count <= 0)
                 yield break;
             int[] counting = new int[word.Length];
             Reg[] regsCounting = new Reg[word.Length];
-            DynamicParser.Region region = new DynamicParser.Region(searchResults.Width, searchResults.Height);
+            DynamicParser.Region region = new DynamicParser.Region(mapSize.Width, mapSize.Height);
             for (int counter = word.Length - 1; counter >= 0;)
             {
                 if ((counter = ChangeCount(counting, regs.Count)) < 0)
@@ -151,7 +156,7 @@ namespace DynamicMosaic
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    Rectangle rect = new Rectangle(pp.Position, searchResults.MapSize);
+                    Rectangle rect = new Rectangle(pp.Position, mapSize);
                     if (region.IsConflict(rect))
                     {
                         result = false;
@@ -167,6 +172,7 @@ namespace DynamicMosaic
 
         /// <summary>
         ///     Увеличивает значение старших разрядов счётчика букв, если это возможно.
+        ///     Возвращаются только случаи без совпадающих значений в различных разрядах.
         ///     Если увеличение было произведено, возвращается номер позиции, на которой произошло изменение, в противном случае
         ///     -1.
         /// </summary>
@@ -227,8 +233,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Находит карты в результатах поиска, поля <see cref="Processor.Tag" /> которых по указанной позиции соответствуют
-        ///     указанной строке.
+        ///     Находит карты в результатах поиска, поля <see cref="Processor.Tag" /> которых по первому символу соответствуют указанному символу.
         /// </summary>
         /// <param name="procName">Искомая строка.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>

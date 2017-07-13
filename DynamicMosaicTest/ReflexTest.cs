@@ -12,7 +12,7 @@ namespace DynamicMosaicTest
     {
         [TestMethod]
         public void ReflexTest1()
-        {
+        {//ДОБАВИТЬ ТЕСТ С ПРОВЕРКОЙ НА СЛУЧАЙ С НЕСКОЛЬКИМИ СЛУЧАЯМИ FALSE ПЕРЕД TRUE (В МЕТОДЕ FINDRELATION)
             SignValue[,] minmap = new SignValue[1, 1];
             SignValue[,] map = new SignValue[4, 4];
             map[0, 0] = SignValue.MaxValue;
@@ -938,6 +938,75 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
             Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
             Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+        }
+
+        [TestMethod]
+        public void ReflexTest10()
+        {
+            SignValue[,] m1 = new SignValue[1, 1];
+            m1[0, 0] = SignValue.MaxValue;
+            SignValue[,] m2 = new SignValue[1, 1];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(m1, "1"), new Processor(m2, "2")));
+
+            SignValue[,] p1 = new SignValue[1, 1];
+            p1[0, 0] = new SignValue(SignValue.MaxValue.Value / 2);
+
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p1, "p1"), "1"));
+
+            SignValue[,] p2 = new SignValue[1, 1];
+            p2[0, 0] = new SignValue(p1[0, 0].Value - 10000);
+
+            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+
+            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+        }
+
+        [TestMethod]
+        public void ReflexTest10_1()
+        {
+            SignValue[,] m1 = new SignValue[1, 1];
+            m1[0, 0] = SignValue.MaxValue;
+            SignValue[,] m2 = new SignValue[1, 1];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(m1, "1"), new Processor(m2, "2")));
+
+            SignValue[,] p1 = new SignValue[1, 1];
+            p1[0, 0] = new SignValue(SignValue.MaxValue.Value / 2);
+
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p1, "p1"), "2"));
+
+            SignValue[,] p2 = new SignValue[1, 1];
+            p2[0, 0] = new SignValue(p1[0, 0].Value + 10000);
+
+            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+
+            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+        }
+
+        [TestMethod]
+        public void ReflexTest11()
+        {
+            SignValue average = new SignValue(SignValue.MaxValue.Value / 2);
+            ProcessorContainer pc = new ProcessorContainer(new Processor(new SignValue[1], "a"), new Processor(new[] { average }, "b"));
+
+            Reflex reflex = new Reflex(pc);
+            Processor p = new Processor(new[] { average }, "c");
+
+            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
+            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(p, "f"));
+
+            Processor pf = new Processor(new[] { average }, "f");
+            pc.Add(pf);
+
+            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
+            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(p, "f"));
         }
 
         [TestMethod]
