@@ -124,7 +124,8 @@ namespace DynamicMosaic
             List<Reg> lstRegs = new List<Reg>();
             foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
                 lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, word, searchResults.MapSize).Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(lstRegs, word, new Size(searchResults.Width, searchResults.Height), searchResults.MapSize).
+                Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
         }
@@ -135,8 +136,9 @@ namespace DynamicMosaic
         /// <param name="regs">Список обрабатываемых карт.</param>
         /// <param name="word">Искомое слово.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
+        /// <param name="searchSize">Размер искомых карт.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize)
+        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize, Size searchSize)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs), $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
@@ -156,7 +158,7 @@ namespace DynamicMosaic
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    Rectangle rect = new Rectangle(pp.Position, mapSize);
+                    Rectangle rect = new Rectangle(pp.Position, searchSize);
                     if (region.IsConflict(rect))
                     {
                         result = false;

@@ -12,7 +12,7 @@ namespace DynamicMosaicTest
     {
         [TestMethod]
         public void ReflexTest1()
-        {//ДОБАВИТЬ ТЕСТ С ПРОВЕРКОЙ НА СЛУЧАЙ С НЕСКОЛЬКИМИ СЛУЧАЯМИ FALSE ПЕРЕД TRUE (В МЕТОДЕ FINDRELATION)
+        {
             SignValue[,] minmap = new SignValue[1, 1];
             SignValue[,] map = new SignValue[4, 4];
             map[0, 0] = SignValue.MaxValue;
@@ -1007,6 +1007,1005 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, reflex.FindRelation(p, "a"));
             Assert.AreEqual(true, reflex.FindRelation(p, "b"));
             Assert.AreEqual(false, reflex.FindRelation(p, "f"));
+        }
+
+        [TestMethod]
+        public void ReflexTest11_1()
+        {
+            SignValue average = new SignValue(SignValue.MaxValue.Value / 2);
+            ProcessorContainer pc = new ProcessorContainer(new Processor(new SignValue[1], "a"), new Processor(new[] { average }, "b"),
+                new Processor(new[] { average }, "f"));
+
+            Reflex reflex = new Reflex(pc);
+            Processor p = new Processor(new[] { average }, "c");
+
+            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
+            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
+            Assert.AreEqual(true, reflex.FindRelation(p, "f"));
+        }
+
+        [TestMethod]
+        public void ReflexTest12()
+        {
+            SignValue[,] minmap = new SignValue[1, 1];
+            SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"),
+                new Processor(mapD, "D"), new Processor(mapE, "E")));
+
+            {
+                Processor minProcessor = new Processor(minmap, "main");
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                int c = 0;
+                try
+                {
+                    reflex.FindRelation(minProcessor, null);
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(null, "W");
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(minProcessor, string.Empty);
+                }
+                catch (ArgumentException)
+                {
+                    c++;
+                }
+
+                Assert.AreEqual(3, c);
+            }
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+            {
+                Processor minProcessor = new Processor(minmap, "main");
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                int c = 0;
+                try
+                {
+                    reflex.FindRelation(minProcessor, null);
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(null, "W");
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(minProcessor, string.Empty);
+                }
+                catch (ArgumentException)
+                {
+                    c++;
+                }
+
+                Assert.AreEqual(3, c);
+            }
+
+            for (int k = 0; k < 50; k++)
+            {
+                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ReflexTest13()
+        {
+            SignValue[,] minmap = new SignValue[1, 1];
+            SignValue[,] map = new SignValue[2, 2];
+            map[0, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "AV"), new Processor(mapB, "BW"), new Processor(mapC, "CF"),
+                new Processor(mapD, "DP"), new Processor(mapE, "EQ")));
+
+            {
+                Processor minProcessor = new Processor(minmap, "main");
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                int c = 0;
+                try
+                {
+                    reflex.FindRelation(minProcessor, null);
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(null, "W");
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(minProcessor, string.Empty);
+                }
+                catch (ArgumentException)
+                {
+                    c++;
+                }
+
+                Assert.AreEqual(3, c);
+            }
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+            Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+            Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+            {
+                Processor minProcessor = new Processor(minmap, "main");
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "WW"));
+
+                int c = 0;
+                try
+                {
+                    reflex.FindRelation(minProcessor, null);
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(null, "W");
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(minProcessor, string.Empty);
+                }
+                catch (ArgumentException)
+                {
+                    c++;
+                }
+
+                Assert.AreEqual(3, c);
+            }
+
+            for (int k = 0; k < 50; k++)
+            {
+                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                {
+                    Processor minProcessor = new Processor(minmap, "main");
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+
+                    int c = 0;
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, null);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(null, "W");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        c++;
+                    }
+
+                    try
+                    {
+                        reflex.FindRelation(minProcessor, string.Empty);
+                    }
+                    catch (ArgumentException)
+                    {
+                        c++;
+                    }
+
+                    Assert.AreEqual(3, c);
+                }
+            }
         }
 
         [TestMethod]
