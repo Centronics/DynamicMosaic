@@ -49,7 +49,15 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
                 throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Информация о получаемой карте должна быть указана.");
-            SignValue[,] values = AddMap(registered, processor);
+            if (registered.X < 0)
+                throw new ArgumentException($"{nameof(GetMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).", nameof(registered));
+            if (registered.Y < 0)
+                throw new ArgumentException($"{nameof(GetMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).", nameof(registered));
+            if (registered.Right > processor.Width)
+                throw new ArgumentException($"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.", nameof(registered));
+            if (registered.Bottom > processor.Height)
+                throw new ArgumentException($"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.", nameof(registered));
+            SignValue[,] values = AddMap(processor, registered);
             if (values == null)
                 return;
             string tag = registered.Register.SelectedProcessor.Tag;
@@ -63,15 +71,23 @@ namespace DynamicMosaic
         /// В случае нахождения карт с совпадающим содержимым, метод возвращает значение <see langword="null"/>, в противном случае -
         /// массив данных, который указан в параметре <see cref="Registered"/>.
         /// </summary>
-        /// <param name="registered">Информация о получаемой карте.</param>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
+        /// <param name="registered">Данные о получаемой карте.</param>
         /// <returns>В случае нахождения карты с совпадающим содержимым возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        SignValue[,] AddMap(Registered registered, Processor processor)
+        SignValue[,] AddMap(Processor processor, Registered registered)
         {
-            if (registered == null)
-                throw new ArgumentNullException(nameof(registered), $"{nameof(AddMap)}: Информация о получаемой карте должна присутствовать.");
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor), $"{nameof(AddMap)}: Карта, из которой необходимо получить целевую карту, должна быть указана.");
+            if (registered == null)
+                throw new ArgumentNullException(nameof(registered), $"{nameof(AddMap)}: Информация о получаемой карте должна присутствовать.");
+            if (registered.X < 0)
+                throw new ArgumentException($"{nameof(AddMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).", nameof(registered));
+            if (registered.Y < 0)
+                throw new ArgumentException($"{nameof(AddMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).", nameof(registered));
+            if (registered.Right > processor.Width)
+                throw new ArgumentException($"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.", nameof(registered));
+            if (registered.Bottom > processor.Height)
+                throw new ArgumentException($"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.", nameof(registered));
             for (int k = 0; k < _seaProcessors.Count; k++)
             {
                 Processor p = _seaProcessors[k];
@@ -122,10 +138,9 @@ namespace DynamicMosaic
             if (!searchResults.FindRelation(word))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
-            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)).Where(lstReg => lstReg.Count > 0))
+            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)))
                 lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, word, new Size(searchResults.Width, searchResults.Height), searchResults.MapSize).
-                Where(lstProcs => lstProcs != null).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(lstRegs, word.Length, searchResults.ResultSize).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
         }
@@ -134,25 +149,32 @@ namespace DynamicMosaic
         ///     Получает массив карт, представляющих заданное слово, т.е. искомое слово можно составить из первых букв названий карт.
         /// </summary>
         /// <param name="regs">Список обрабатываемых карт.</param>
-        /// <param name="word">Искомое слово.</param>
+        /// <param name="wordLength">Искомое слово.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
-        /// <param name="searchSize">Размер искомых карт.</param>
         /// <returns>Возвращает <see cref="WordSearcher" />, который позволяет выполнить поиск требуемого слова.</returns>
-        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize, Size searchSize)
+        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, int wordLength, Size mapSize)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs), $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
-            if (string.IsNullOrEmpty(word))
-                throw new ArgumentException($"{nameof(FindWord)}: Искомое слово должно быть указано.", nameof(word));
             if (regs.Count <= 0)
-                yield break;
-            int[] counting = new int[word.Length];
-            Reg[] regsCounting = new Reg[word.Length];
+                throw new ArgumentException($"{nameof(FindWord)}: Количество обрабатываемых карт должно быть больше ноля ({regs.Count}).", nameof(regs));
+            if (wordLength <= 0)
+                throw new ArgumentException($"{nameof(FindWord)}: Длина искомого слова должна быть указана.", nameof(wordLength));
+            Size searchSize = regs[0].SelectedProcessor.Size;
+            if (mapSize.Height < searchSize.Height)
+                throw new ArgumentException(
+                    $"{nameof(FindWord)}: Высота поля результатов поиска должна быть больше или равна высоте искомых карт.", nameof(mapSize));
+            if (mapSize.Width < searchSize.Width)
+                throw new ArgumentException(
+                    $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.", nameof(mapSize));
+            int[] counting = new int[wordLength];
+            Reg[] regsCounting = new Reg[wordLength];
             DynamicParser.Region region = new DynamicParser.Region(mapSize.Width, mapSize.Height);
-            for (int counter = word.Length - 1; counter >= 0;)
-            {
-                if ((counter = ChangeCount(counting, regs.Count)) < 0)
+            if (counting.Length > 1)
+                if (ChangeCount(counting, regs.Count) < 0)
                     yield break;
+            do
+            {
                 bool result = true;
                 for (int k = 0; k < counting.Length; k++)
                     regsCounting[k] = regs[counting[k]];
@@ -169,7 +191,7 @@ namespace DynamicMosaic
                 if (result)
                     yield return region.Elements;
                 region.Clear();
-            }
+            } while (ChangeCount(counting, regs.Count) >= 0);
         }
 
         /// <summary>
@@ -247,17 +269,15 @@ namespace DynamicMosaic
                     $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
-            for (int y = 0; y < searchResults.Height; y++)
-                for (int x = 0; x < searchResults.Width; x++)
+            for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
+                for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
                 {
-                    Processor[] procs = searchResults[x, y].Procs;
-                    if (procs == null)
-                        continue;
-                    lstRegs.AddRange(from p in procs
+                    ProcPerc pp = searchResults[x, y];
+                    lstRegs.AddRange(from p in pp.Procs
                                      where char.ToUpper(p.Tag[0]) == procName
                                      select new Reg(new Point(x, y))
                                      {
-                                         Percent = searchResults[x, y].Percent,
+                                         Percent = pp.Percent,
                                          SelectedProcessor = p
                                      });
                 }
