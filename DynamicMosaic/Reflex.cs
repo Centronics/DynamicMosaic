@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DynamicParser;
 using System.Drawing;
+using System.Text;
 using DynamicProcessor;
 using Processor = DynamicParser.Processor;
 
@@ -132,15 +133,16 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(FindWord)}: Искомое слово не указано.", nameof(word));
             if (processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height)
                 return false;
-            if (!IsMapsWord(word))
+            string w = StripString(word);
+            if (!IsMapsWord(w))
                 return false;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            if (!searchResults.FindRelation(word))
+            if (!searchResults.FindRelation(w))
                 return false;
             List<Reg> lstRegs = new List<Reg>();
-            foreach (List<Reg> lstReg in word.Select(c => FindSymbols(c, searchResults)))
+            foreach (List<Reg> lstReg in w.Select(c => FindSymbols(c, searchResults)))
                 lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, word.Length, searchResults.ResultSize).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(lstRegs, w.Length, searchResults.ResultSize).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
         }
@@ -211,14 +213,33 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Count}).", nameof(count));
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
-            for (int k = count.Count - 1, mc = maxCount - 1; k >= 0; k--)
+            if (count.Count > maxCount)
+                throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива ({count.Count}) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
+            if (count.Count == maxCount)
             {
-                if (count[k] >= mc) continue;
-                count[k]++;
-                for (int x = k + 1; x < count.Count; x++)
-                    count[x] = 0;
+                bool res = false;
+                for (int k = 0; k < count.Count; k++)
+                {
+                    if (count[k] != k)
+                        res = true;
+                    count[k] = k;
+                }
+                return res ? 0 : -1;
+            }
+            if (count.All(i => i == 0))
+            {
+                int max = count.Count - 1;
+                for (int k = 0; k < max; k++)
+                    count[k] = k;
+                count[max] = 0;
+                return max;
+            }
+            int mx = count.Count - 1;
+            while (count[mx] < maxCount)
+            {
+                count[mx]++;
                 if (!NumberRepeat(count))
-                    return k;
+                    return mx;
             }
             return -1;
         }
@@ -233,6 +254,26 @@ namespace DynamicMosaic
             if (count == null)
                 throw new ArgumentNullException(nameof(count), $"{nameof(NumberRepeat)}: Проверяемый массив должен быть указан.");
             return count.Where((element, k) => count.Where((t, j) => j != k).Any(t => t == element)).Any();
+        }
+
+        /// <summary>
+        /// Удаляет из строки совпадающие символы.
+        /// Без учёта регистра.
+        /// </summary>
+        /// <param name="str">Анализируемая строка.</param>
+        /// <returns>Возвращает новую строку.</returns>
+        static string StripString(string str)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(str), $"{nameof(StripString)}: Искомое слово равно null.");
+            if (str == string.Empty)
+                throw new ArgumentException($"{nameof(StripString)}: Искомое слово не указано.", nameof(str));
+            StringBuilder sb = new StringBuilder(str);
+            for (int k = 0; k < sb.Length; k++)
+                for (int j = 0; j < sb.Length; j++)
+                    if (j != k && sb[j] == sb[k])
+                        sb.Remove(j--, 0);
+            return sb.ToString();
         }
 
         /// <summary>
