@@ -215,31 +215,16 @@ namespace DynamicMosaic
                 throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
             if (count.Count > maxCount)
                 throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива ({count.Count}) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
-            if (count.Count == maxCount)
-            {
-                bool res = false;
-                for (int k = 0; k < count.Count; k++)
-                {
-                    if (count[k] != k)
-                        res = true;
-                    count[k] = k;
-                }
-                return res ? 0 : -1;
-            }
+            int maxPosition = count.Count - 1;
             if (count.All(i => i == 0))
-            {
-                int max = count.Count - 1;
-                for (int k = 0; k < max; k++)
+                for (int k = 1; k < maxPosition; k++)
                     count[k] = k;
-                count[max] = 0;
-                return max;
-            }
-            int mx = count.Count - 1;
-            while (count[mx] < maxCount)
+            int mc = maxCount - 1;
+            while (count[maxPosition] < mc)
             {
-                count[mx]++;
+                count[maxPosition]++;
                 if (!NumberRepeat(count))
-                    return mx;
+                    return maxPosition;
             }
             return -1;
         }
@@ -268,11 +253,13 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(str), $"{nameof(StripString)}: Искомое слово равно null.");
             if (str == string.Empty)
                 throw new ArgumentException($"{nameof(StripString)}: Искомое слово не указано.", nameof(str));
+            if (str.Length == 1)
+                return str;
             StringBuilder sb = new StringBuilder(str);
             for (int k = 0; k < sb.Length; k++)
                 for (int j = 0; j < sb.Length; j++)
                     if (j != k && sb[j] == sb[k])
-                        sb.Remove(j--, 0);
+                        sb.Remove(j--, 1);
             return sb.ToString();
         }
 
