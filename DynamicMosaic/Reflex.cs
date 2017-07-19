@@ -169,13 +169,10 @@ namespace DynamicMosaic
             if (mapSize.Width < searchSize.Width)
                 throw new ArgumentException(
                     $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.", nameof(mapSize));
-            int[] counting = new int[wordLength];
+            int[] counting = null;
             Reg[] regsCounting = new Reg[wordLength];
             DynamicParser.Region region = new DynamicParser.Region(mapSize.Width, mapSize.Height);
-            if (counting.Length > 1)
-                if (ChangeCount(counting, regs.Count) < 0)
-                    yield break;
-            do
+            while (ChangeCount(ref counting, wordLength, regs.Count) >= 0)
             {
                 bool result = true;
                 for (int k = 0; k < counting.Length; k++)
@@ -193,7 +190,7 @@ namespace DynamicMosaic
                 if (result)
                     yield return region.Elements;
                 region.Clear();
-            } while (ChangeCount(counting, regs.Count) >= 0);
+            }
         }
 
         /// <summary>
@@ -203,45 +200,38 @@ namespace DynamicMosaic
         ///     -1.
         /// </summary>
         /// <param name="count">Массив-счётчик.</param>
+        /// <param name="counter">Количество элементов в массиве "count".</param>
         /// <param name="maxCount">Максимальное значение счётчика.</param>
         /// <returns>Возвращается номер позиции, на которой произошло изменение, в противном случае -1.</returns>
-        static int ChangeCount(IList<int> count, int maxCount)
+        static int ChangeCount(ref int[] count, int counter, int maxCount)
         {
-            if (count == null)
-                throw new ArgumentNullException(nameof(count), $"{nameof(ChangeCount)}: Массив-счётчик не указан (null).");
-            if (count.Count <= 0)
-                throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Count}).", nameof(count));
+            if (counter <= 0)
+                throw new ArgumentException($"{nameof(ChangeCount)}: Количество элементов в массиве-счётчике \"count\" должно быть больше ноля.", nameof(counter));
             if (maxCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
-            if (count.Count > maxCount)
-                throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива ({count.Count}) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
-            int maxPosition = count.Count - 1;
-            if (count.All(i => i == 0))
+            if (count != null)
             {
-                for (int k = 1; k < count.Count; k++)
+                if (count.Length != counter)
+                    throw new ArgumentException($@"{nameof(ChangeCount)}: Количество элементов, указанных в параметре {nameof(counter)
+                        } ({counter}), не соответствует количеству элементов массива-счётчика {nameof(count)} ({count.Length}).", nameof(counter));
+                if (count.Length <= 0)
+                    throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Length}).", nameof(count));
+                if (count.Length > maxCount)
+                    throw new ArgumentException($@"{nameof(ChangeCount)}: Длина массива-счётчика ({count.Length
+                        }) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
+            }
+            int maxPosition = counter - 1;
+            if (count == null)
+            {
+                count = new int[counter];
+                for (int k = 1; k < count.Length; k++)
                     count[k] = k;
                 return maxPosition;
             }
-            int mc = maxCount - 1;
-            while (count[maxPosition] < mc)
-            {
-                count[maxPosition]++;
-                if (!NumberRepeat(count))
-                    return maxPosition;
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// В случае обнаружения повторяющихся значений в массиве возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.
-        /// </summary>
-        /// <param name="count">Проверяемый массив.</param>
-        /// <returns>В случае обнаружения повторяющихся значений в массиве возвращает значение <see langword="true"/>, в противном случае - <see langword="false"/>.</returns>
-        static bool NumberRepeat(IList<int> count)
-        {
-            if (count == null)
-                throw new ArgumentNullException(nameof(count), $"{nameof(NumberRepeat)}: Проверяемый массив должен быть указан.");
-            return count.Where((element, k) => count.Where((t, j) => j != k).Any(t => t == element)).Any();
+            if (count[maxPosition] >= maxCount - 1)
+                return -1;
+            count[maxPosition]++;
+            return maxPosition;
         }
 
         /// <summary>
