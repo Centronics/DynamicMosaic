@@ -2009,6 +2009,31 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
+        public void ReflexTest14()
+        {
+            SignValue[,] map = new SignValue[2, 2];
+            map[0, 0] = SignValue.MaxValue;
+            map[1, 0] = SignValue.MinValue;
+            map[0, 1] = new SignValue(11000);
+            map[1, 1] = new SignValue(116000);
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = SignValue.MinValue;
+            SignValue[,] mapC = new SignValue[1, 1];
+            mapC[0, 0] = new SignValue(11000);
+            SignValue[,] mapD = new SignValue[1, 1];
+            mapD[0, 0] = new SignValue(116000);
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"), new Processor(mapD, "D")));
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "ABCD"));
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void ReflexArgumentException1()
         {

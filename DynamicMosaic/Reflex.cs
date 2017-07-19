@@ -217,8 +217,11 @@ namespace DynamicMosaic
                 throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива ({count.Count}) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
             int maxPosition = count.Count - 1;
             if (count.All(i => i == 0))
-                for (int k = 1; k < maxPosition; k++)
+            {
+                for (int k = 1; k < count.Count; k++)
                     count[k] = k;
+                return maxPosition;
+            }
             int mc = maxCount - 1;
             while (count[maxPosition] < mc)
             {
