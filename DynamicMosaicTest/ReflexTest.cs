@@ -2031,6 +2031,97 @@ namespace DynamicMosaicTest
             Processor main = new Processor(map, "main");
 
             Assert.AreEqual(true, reflex.FindRelation(main, "ABCD"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "dADDDbbBBDDbBacccaCccccaaabbcDddd"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "ABC"));
+        }
+
+        [TestMethod]
+        public void ReflexTest15()
+        {
+            SignValue[,] map = new SignValue[6, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"),
+                new Processor(mapC, "C"), new Processor(mapD, "D"), new Processor(mapE, "E")));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(map, "main"), "ABC"));
+        }
+
+        [TestMethod]
+        public void ReflexTest16()
+        {
+            SignValue[,] map = new SignValue[6, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[6, 4];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[2, 0] = SignValue.MaxValue;
+            mapA[1, 1] = SignValue.MaxValue;
+            mapA[2, 1] = SignValue.MaxValue;
+            mapA[0, 2] = SignValue.MaxValue;
+            mapA[2, 2] = SignValue.MaxValue;
+            mapA[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[6, 4];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[6, 4];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[6, 4];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[6, 4];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"),
+                new Processor(mapC, "C"), new Processor(mapD, "D"), new Processor(mapE, "E")));
+            Assert.AreEqual(true, reflex.FindRelation(new Processor(map, "main"), "A"));
+        }
+
+        [TestMethod]
+        public void ReflexTest17()
+        {
+            SignValue[,] map = new SignValue[2, 1];
+            map[0, 0] = SignValue.MaxValue;
+            map[1, 0] = SignValue.MinValue;
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = SignValue.MinValue;
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A1"), new Processor(mapB, "A2")));
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
         }
 
         [TestMethod]

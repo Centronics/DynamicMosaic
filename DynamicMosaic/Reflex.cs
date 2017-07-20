@@ -228,24 +228,37 @@ namespace DynamicMosaic
                     count[k] = k;
                 return maxPosition;
             }
-            if (count[maxPosition] >= maxCount - 1)
-                return -1;
-            count[maxPosition]++;
-            return maxPosition;
+            for (int k = count.Length - 1, mc = maxCount - 1; k >= 0; k--)
+            {
+                if (count[k] >= mc)
+                    continue;
+                count[k]++;
+                for (int x = k + 1; x < count.Length; x++)
+                {
+                    int t = count[x - 1];
+                    if (t >= mc)
+                        return -1;
+                    count[x] = t + 1;
+                }
+                return k;
+            }
+            return -1;
         }
 
         /// <summary>
         /// Удаляет из строки совпадающие символы.
         /// Без учёта регистра.
+        /// Возвращает новую строку в верхнем регистре.
         /// </summary>
         /// <param name="str">Анализируемая строка.</param>
-        /// <returns>Возвращает новую строку.</returns>
+        /// <returns>Возвращает новую строку в верхнем регистре.</returns>
         static string StripString(string str)
         {
             if (str == null)
                 throw new ArgumentNullException(nameof(str), $"{nameof(StripString)}: Искомое слово равно null.");
             if (str == string.Empty)
                 throw new ArgumentException($"{nameof(StripString)}: Искомое слово не указано.", nameof(str));
+            str = str.ToUpper();
             if (str.Length == 1)
                 return str;
             StringBuilder sb = new StringBuilder(str);
