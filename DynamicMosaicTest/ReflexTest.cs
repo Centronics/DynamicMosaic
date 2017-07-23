@@ -13,7 +13,6 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest1()
         {
-            SignValue[,] minmap = new SignValue[1, 1];
             SignValue[,] map = new SignValue[4, 4];
             map[0, 0] = SignValue.MaxValue;
             map[2, 0] = SignValue.MaxValue;
@@ -41,6 +40,7 @@ namespace DynamicMosaicTest
                 new Processor(mapD, "D"), new Processor(mapE, "E")));
 
             {
+                SignValue[,] minmap = new SignValue[1, 1];
                 Processor minProcessor = new Processor(minmap, "main");
 
                 Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
