@@ -359,7 +359,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest5()
+        public void ReflexTest4()
         {
             SignValue[,] mapA = new SignValue[2, 2];
             mapA[0, 0] = SignValue.MaxValue;
@@ -535,7 +535,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest5_1()
+        public void ReflexTest4_1()
         {
             SignValue[,] mapA = new SignValue[2, 2];
             mapA[0, 0] = SignValue.MaxValue;
@@ -711,7 +711,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest6()
+        public void ReflexTest5()
         {
             SignValue[,] map = new SignValue[4, 4];
             map[0, 0] = SignValue.MaxValue;
@@ -806,7 +806,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest7()
+        public void ReflexTest6()
         {
             SignValue[,] map = new SignValue[2, 2];
             map[0, 0] = SignValue.MaxValue;
@@ -855,7 +855,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest8()
+        public void ReflexTest7()
         {
             SignValue[,] m1 = new SignValue[1, 1];
             m1[0, 0] = SignValue.MaxValue;
@@ -879,7 +879,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest8_1()
+        public void ReflexTest7_1()
         {
             SignValue[,] m1 = new SignValue[1, 1];
             m1[0, 0] = SignValue.MaxValue;
@@ -903,7 +903,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest9()
+        public void ReflexTest8()
         {
             SignValue average = new SignValue(SignValue.MaxValue.Value / 2);
             ProcessorContainer pc = new ProcessorContainer(new Processor(new SignValue[1], "a"), new Processor(new[] { average }, "b"));
@@ -924,7 +924,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest9_1()
+        public void ReflexTest8_1()
         {
             SignValue average = new SignValue(SignValue.MaxValue.Value / 2);
             ProcessorContainer pc = new ProcessorContainer(new Processor(new SignValue[1], "a"), new Processor(new[] { average }, "b"),
@@ -939,7 +939,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest10()
+        public void ReflexTest9()
         {
             SignValue[,] minmap = new SignValue[1, 1];
             SignValue[,] map = new SignValue[4, 4];
@@ -1322,7 +1322,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest11()
+        public void ReflexTest10()
         {
             SignValue[,] minmap = new SignValue[1, 1];
             SignValue[,] map = new SignValue[2, 2];
@@ -1402,14 +1402,14 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "D"));
             Assert.AreEqual(false, reflex.FindRelation(main, "E"));
             Assert.AreEqual(false, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
             Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
             Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
             Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
@@ -1487,11 +1487,11 @@ namespace DynamicMosaicTest
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
@@ -1572,18 +1572,18 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
                 Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
                 Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
@@ -1659,18 +1659,18 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
@@ -1749,15 +1749,15 @@ namespace DynamicMosaicTest
                 Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
                 Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
@@ -1923,7 +1923,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest12()
+        public void ReflexTest11()
         {
             SignValue[,] map = new SignValue[2, 2];
             map[0, 0] = SignValue.MaxValue;
@@ -1950,7 +1950,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest13()
+        public void ReflexTest12()
         {
             SignValue[,] map = new SignValue[6, 4];
             map[0, 0] = SignValue.MaxValue;
@@ -1981,7 +1981,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest14()
+        public void ReflexTest13()
         {
             SignValue[,] map = new SignValue[6, 4];
             map[0, 0] = SignValue.MaxValue;
@@ -2017,7 +2017,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest15()
+        public void ReflexTest14()
         {
             SignValue[,] map = new SignValue[2, 1];
             map[0, 0] = SignValue.MaxValue;
@@ -2039,7 +2039,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16()
+        public void ReflexTest15()
         {
             Processor main;
             Reflex reflex;
@@ -2052,7 +2052,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_1()
+        public void ReflexTest15_1()
         {
             Processor main;
             Reflex reflex;
@@ -2067,7 +2067,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_2()
+        public void ReflexTest15_2()
         {
             Processor main;
             Reflex reflex;
@@ -2080,7 +2080,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_3()
+        public void ReflexTest15_3()
         {
             Processor main;
             Reflex reflex;
@@ -2095,27 +2095,12 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_4()
+        public void ReflexTest15_4()
         {
             Processor main;
             Reflex reflex;
 
             GetReflexProcessor(out reflex, out main);
-
-            Check_AC(reflex, main);
-
-            Check_AB3(reflex, main);
-        }
-
-        [TestMethod]
-        public void ReflexTest16_5()
-        {
-            Processor main;
-            Reflex reflex;
-
-            GetReflexProcessor(out reflex, out main);
-
-            Check_AB3(reflex, main);
 
             Check_AC(reflex, main);
 
@@ -2123,7 +2108,22 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_6()
+        public void ReflexTest15_5()
+        {
+            Processor main;
+            Reflex reflex;
+
+            GetReflexProcessor(out reflex, out main);
+
+            Check_AB3(reflex, main);
+
+            Check_AC(reflex, main);
+
+            Check_AB3(reflex, main);
+        }
+
+        [TestMethod]
+        public void ReflexTest15_6()
         {
             Processor main;
             Reflex reflex;
@@ -2136,7 +2136,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_7()
+        public void ReflexTest15_7()
         {
             Processor main;
             Reflex reflex;
@@ -2151,7 +2151,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_8()
+        public void ReflexTest15_8()
         {
             Processor main;
             Reflex reflex;
@@ -2164,7 +2164,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_9()
+        public void ReflexTest15_9()
         {
             Processor main;
             Reflex reflex;
@@ -2179,7 +2179,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_10()
+        public void ReflexTest15_10()
         {
             Processor main;
             Reflex reflex;
@@ -2192,7 +2192,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexTest16_11()
+        public void ReflexTest15_11()
         {
             Processor main;
             Reflex reflex;
@@ -2226,13 +2226,13 @@ namespace DynamicMosaicTest
         {
             Assert.AreEqual(true, reflex.FindRelation(main, "A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ac"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ac"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "aC"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "Ac"));
 
             Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
             Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
@@ -2242,8 +2242,8 @@ namespace DynamicMosaicTest
 
         static void Check_AC1(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
             Assert.AreEqual(true, reflex.FindRelation(main, "A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "a"));
 
@@ -2252,10 +2252,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
             Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ac"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ac"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "aC"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "Ac"));
         }
 
         static void Check_All(Reflex reflex, Processor main)
@@ -2268,8 +2268,8 @@ namespace DynamicMosaicTest
 
         static void Check_AB1(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
             Assert.AreEqual(true, reflex.FindRelation(main, "A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "a"));
             Check_All(reflex, main);
@@ -2290,8 +2290,8 @@ namespace DynamicMosaicTest
             Check_All(reflex, main);
             Assert.AreEqual(true, reflex.FindRelation(main, "A"));
             Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
             Check_All(reflex, main);
         }
 
@@ -2302,10 +2302,10 @@ namespace DynamicMosaicTest
             Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
             Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
             Check_All(reflex, main);
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
             Assert.AreEqual(true, reflex.FindRelation(main, "a"));
             Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
             Check_All(reflex, main);
         }
 
@@ -2349,7 +2349,7 @@ namespace DynamicMosaicTest
         public void ReflexArgumentException2()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new Reflex(new ProcessorContainer(new Processor(new SignValue[0], "tag")));
+            new Reflex(new ProcessorContainer(new Processor(new SignValue[1], "tag")));
         }
 
         [TestMethod]
