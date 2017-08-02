@@ -2523,6 +2523,211 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
+        public void CheckMultipleSizes3()
+        {
+            Reflex reflex = new Reflex(MapsForMultipleSizes);
+
+            {
+                Processor main = Map1ForMultipleSizesMain;
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "D"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
+            }
+
+            Processor main1 = Map2ForMultipleSizesMain;
+
+            Assert.AreEqual(false, reflex.FindRelation(main1, "C"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "D"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
+            Assert.AreEqual(true, reflex.FindRelation(main1, "A"));
+            Assert.AreEqual(true, reflex.FindRelation(main1, "B"));
+
+            Assert.AreEqual(true, reflex.FindRelation(main1, "AA"));
+            Assert.AreEqual(true, reflex.FindRelation(main1, "BB"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "CC"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "DD"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+
+            Assert.AreEqual(true, reflex.FindRelation(main1, "AB"));
+            Assert.AreEqual(true, reflex.FindRelation(main1, "BA"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "AC"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "CA"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "AD"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "DA"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
+            Assert.AreEqual(false, reflex.FindRelation(main1, "AW"));
+        }
+
+        [TestMethod]
+        public void CheckMultipleSizes4()
+        {
+            Reflex reflex = new Reflex(MapsForMultipleSizes);
+
+            {
+                Processor main1 = Map2ForMultipleSizesMain;
+
+                Assert.AreEqual(true, reflex.FindRelation(main1, "C"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "D"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "A"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "B"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AA"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "BB"));
+                Assert.AreEqual(true, reflex.FindRelation(main1, "CC"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "DD"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AB"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "BA"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AC"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "CA"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AD"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "DA"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
+                Assert.AreEqual(false, reflex.FindRelation(main1, "AW"));
+            }
+
+            Processor main = Map1ForMultipleSizesMain;
+
+            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+
+            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+
+            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
+        }
+
+        static Processor Map1ForMultipleSizesMain
+        {
+            get
+            {
+                SignValue[,] bmap = new SignValue[5, 7];
+                bmap[0, 0] = SignValue.MaxValue;
+                bmap[2, 0] = SignValue.MaxValue;
+                bmap[1, 1] = SignValue.MaxValue;
+                bmap[2, 1] = SignValue.MaxValue;
+                bmap[0, 2] = SignValue.MaxValue;
+                bmap[2, 2] = SignValue.MaxValue;
+                bmap[3, 3] = SignValue.MaxValue;
+                bmap[4, 4] = SignValue.MaxValue;
+                bmap[4, 6] = SignValue.MaxValue;
+                bmap[2, 6] = SignValue.MaxValue;
+
+                return new Processor(bmap, "bigmain");
+            }
+        }
+
+        static Processor Map2ForMultipleSizesMain
+        {
+            get
+            {
+                SignValue[,] mmap = new SignValue[4, 6];
+                mmap[1, 1] = SignValue.MaxValue;
+                mmap[2, 2] = SignValue.MaxValue;
+                mmap[2, 1] = SignValue.MaxValue;
+                mmap[1, 2] = SignValue.MaxValue;
+                mmap[3, 5] = SignValue.MaxValue;
+                mmap[1, 5] = SignValue.MaxValue;
+                mmap[3, 4] = SignValue.MaxValue;
+                mmap[3, 2] = SignValue.MaxValue;
+                mmap[2, 4] = SignValue.MaxValue;
+
+                return new Processor(mmap, "main");
+            }
+        }
+
+        static ProcessorContainer MapsForMultipleSizes
+        {
+            get
+            {
+                SignValue[,] mapA = new SignValue[3, 3];
+                mapA[0, 0] = SignValue.MaxValue;
+                mapA[1, 0] = SignValue.MaxValue;
+                mapA[2, 0] = SignValue.MaxValue;
+                mapA[0, 2] = SignValue.MaxValue;
+                mapA[2, 1] = SignValue.MaxValue;
+                mapA[1, 2] = SignValue.MaxValue;
+
+                SignValue[,] mapB = new SignValue[3, 3];
+                mapA[2, 2] = SignValue.MaxValue;
+                mapA[1, 0] = SignValue.MaxValue;
+                mapA[0, 1] = SignValue.MaxValue;
+                mapA[0, 2] = SignValue.MaxValue;
+                mapA[2, 1] = SignValue.MaxValue;
+                mapA[1, 2] = SignValue.MaxValue;
+
+                SignValue[,] mapC = new SignValue[3, 3];
+                mapA[1, 1] = SignValue.MaxValue;
+                mapA[1, 0] = SignValue.MaxValue;
+                mapA[2, 0] = SignValue.MaxValue;
+                mapA[0, 1] = SignValue.MaxValue;
+                mapA[2, 1] = SignValue.MaxValue;
+                mapA[1, 2] = SignValue.MaxValue;
+
+                SignValue[,] mapD = new SignValue[3, 3];
+                mapA[2, 2] = SignValue.MaxValue;
+                mapA[1, 1] = SignValue.MaxValue;
+                mapA[0, 0] = SignValue.MaxValue;
+                mapA[0, 1] = SignValue.MaxValue;
+                mapA[1, 0] = SignValue.MaxValue;
+                mapA[1, 2] = SignValue.MaxValue;
+
+                SignValue[,] mapE = new SignValue[3, 3];
+                mapA[0, 0] = SignValue.MaxValue;
+                mapA[1, 0] = SignValue.MaxValue;
+                mapA[2, 0] = SignValue.MaxValue;
+                mapA[0, 1] = SignValue.MaxValue;
+                mapA[1, 1] = SignValue.MaxValue;
+                mapA[2, 1] = SignValue.MaxValue;
+                mapA[0, 2] = SignValue.MaxValue;
+
+                return new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"), new Processor(mapD, "D"),
+                    new Processor(mapE, "E"));
+            }
+        }
+
+        [TestMethod]
         public void ReflexCopyTest1()
         {
             SignValue[,] bmap = new SignValue[4, 4];
