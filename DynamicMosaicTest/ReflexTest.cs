@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using DynamicMosaic;
 using DynamicParser;
 using DynamicProcessor;
@@ -2725,6 +2728,110 @@ namespace DynamicMosaicTest
                 return new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"), new Processor(mapD, "D"),
                     new Processor(mapE, "E"));
             }
+        }
+
+        [TestMethod]
+        public void ReflexTest17()
+        {
+            SignValue[,] map = new SignValue[8, 8];
+            map[0, 0] = SignValue.MaxValue;
+            map[1, 0] = SignValue.MinValue;
+            map[5, 4] = new SignValue(1000);
+            map[5, 5] = new SignValue(10900);
+            map[4, 4] = new SignValue(1605000);
+            map[3, 2] = new SignValue(700060);
+            map[3, 3] = new SignValue(1000);
+            map[2, 5] = new SignValue(900);
+            map[3, 4] = new SignValue(35000);
+            map[7, 2] = new SignValue(50000);
+            map[2, 7] = new SignValue(10000);
+
+            map[7, 7] = SignValue.MaxValue;
+            map[6, 7] = SignValue.MinValue;
+            map[6, 4] = new SignValue(1000);
+            map[6, 5] = new SignValue(10900);
+            map[6, 4] = new SignValue(1605000);
+            map[6, 2] = new SignValue(700060);
+            map[5, 3] = new SignValue(1000);
+            map[5, 1] = new SignValue(900);
+            map[2, 4] = new SignValue(35000);
+            map[2, 2] = new SignValue(50000);
+            map[5, 7] = new SignValue(10000);
+
+            SignValue[,] m1 = new SignValue[2, 2];
+            m1[0, 0] = SignValue.MaxValue;
+            m1[1, 0] = SignValue.MinValue;
+            SignValue[,] m2 = new SignValue[2, 2];
+            m2[1, 1] = new SignValue(1000);
+            m2[0, 1] = new SignValue(10900);
+            m2[0, 0] = new SignValue(50000);
+            SignValue[,] m3 = new SignValue[2, 2];
+            m3[0, 0] = new SignValue(35000);
+            m3[1, 0] = new SignValue(10000);
+            m3[1, 1] = new SignValue(1605000);
+            SignValue[,] m4 = new SignValue[2, 2];
+            m4[0, 0] = new SignValue(700060);
+            m4[1, 1] = new SignValue(1000);
+            m4[1, 0] = new SignValue(900);
+            m4[0, 1] = SignValue.MaxValue;
+
+            Processor pA = new Processor(m1, "A"),
+                pB = new Processor(m2, "B"),
+                pC = new Processor(m3, "C"),
+                pD = new Processor(m4, "D");
+
+            Processor main = new Processor(map, "main");
+            ProcessorContainer pc = new ProcessorContainer(pA, pB, pC, pD);
+
+            foreach (string s in GetWordsSequental("ABCD"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+        }
+
+        static IEnumerable<string> GetWordsSequental(string word)
+        {
+            int[] count = new int[word.Length];
+            for (int counter = word.Length - 1; counter >= 0;)
+            {
+                yield return GetWord(count, word);
+                if ((counter = ChangeCount(count)) < 0)
+                    yield break;
+            }
+        }
+
+        static int ChangeCount(int[] count)
+        {
+            if (count == null || count.Length <= 0)
+                throw new ArgumentException(
+                    $"{nameof(ChangeCount)}: Массив-счётчик не указан или его длина некорректна ({count?.Length}).",
+                    nameof(count));
+            for (int k = count.Length - 1; k >= 0; k--)
+            {
+                if (count[k] >= count.Length - 1) continue;
+                count[k]++;
+                for (int x = k + 1; x < count.Length; x++)
+                    count[x] = 0;
+                return k;
+            }
+            return -1;
+        }
+
+        static string GetWord(IList<int> count, string word)
+        {
+            if (count == null)
+                throw new ArgumentNullException(nameof(count), $"{nameof(GetWord)}: Массив данных равен null.");
+            if (count.Count <= 0)
+                throw new ArgumentException(
+                    $"{nameof(GetWord)}: Длина массива данных должна совпадать с количеством хранимых слов.",
+                    nameof(count));
+            StringBuilder sb = new StringBuilder(count.Count);
+            foreach (int c in count.TakeWhile(c => sb.Length < count.Count))
+                sb.Append(word[c]);
+            if (sb.Length < count.Count)
+                return null;
+            string result = sb.ToString();
+            if (sb.Length > count.Count)
+                result = result.Substring(0, count.Count);
+            return result;
         }
 
         [TestMethod]
