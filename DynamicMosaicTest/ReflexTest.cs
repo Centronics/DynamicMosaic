@@ -1957,68 +1957,53 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest12()
         {
-            SignValue[,] map = new SignValue[6, 4];
-            map[0, 0] = SignValue.MaxValue;
-            map[2, 0] = SignValue.MaxValue;
-            map[1, 1] = SignValue.MaxValue;
-            map[2, 1] = SignValue.MaxValue;
-            map[0, 2] = SignValue.MaxValue;
-            map[2, 2] = SignValue.MaxValue;
-            map[3, 3] = SignValue.MaxValue;
-            SignValue[,] mapA = new SignValue[2, 2];
-            mapA[0, 0] = SignValue.MaxValue;
-            mapA[0, 1] = SignValue.MaxValue;
-            SignValue[,] mapB = new SignValue[2, 2];
-            mapB[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapC = new SignValue[2, 2];
-            mapC[0, 0] = SignValue.MaxValue;
-            mapC[1, 0] = SignValue.MaxValue;
-            SignValue[,] mapD = new SignValue[2, 2];
-            mapD[0, 0] = SignValue.MaxValue;
-            mapD[0, 1] = SignValue.MaxValue;
-            mapD[1, 0] = SignValue.MaxValue;
-            mapD[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapE = new SignValue[2, 2];
+            SignValue[,] map;
+            Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
+        }
 
-            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"),
-                new Processor(mapC, "C"), new Processor(mapD, "D"), new Processor(mapE, "E")));
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(map, "main"), "ABC"));
+        [TestMethod]
+        public void ReflexTest12_1()
+        {
+            SignValue[,] map;
+            Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
         }
 
         [TestMethod]
         public void ReflexTest13()
         {
-            SignValue[,] map = new SignValue[6, 4];
-            map[0, 0] = SignValue.MaxValue;
-            map[2, 0] = SignValue.MaxValue;
-            map[1, 1] = SignValue.MaxValue;
-            map[2, 1] = SignValue.MaxValue;
-            map[0, 2] = SignValue.MaxValue;
-            map[2, 2] = SignValue.MaxValue;
-            map[3, 3] = SignValue.MaxValue;
-            SignValue[,] mapA = new SignValue[6, 4];
-            mapA[0, 0] = SignValue.MaxValue;
-            mapA[2, 0] = SignValue.MaxValue;
-            mapA[1, 1] = SignValue.MaxValue;
-            mapA[2, 1] = SignValue.MaxValue;
-            mapA[0, 2] = SignValue.MaxValue;
-            mapA[2, 2] = SignValue.MaxValue;
-            mapA[3, 3] = SignValue.MaxValue;
-            SignValue[,] mapB = new SignValue[6, 4];
-            mapB[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapC = new SignValue[6, 4];
-            mapC[0, 0] = SignValue.MaxValue;
-            mapC[1, 0] = SignValue.MaxValue;
-            SignValue[,] mapD = new SignValue[6, 4];
-            mapD[0, 0] = SignValue.MaxValue;
-            mapD[0, 1] = SignValue.MaxValue;
-            mapD[1, 0] = SignValue.MaxValue;
-            mapD[1, 1] = SignValue.MaxValue;
-            SignValue[,] mapE = new SignValue[6, 4];
+            SignValue[,] map;
+            Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
+        }
 
-            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"),
-                new Processor(mapC, "C"), new Processor(mapD, "D"), new Processor(mapE, "E")));
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(map, "main"), "A"));
+        [TestMethod]
+        public void ReflexTest13_1()
+        {
+            SignValue[,] map;
+            Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+        }
+
+        static Reflex GetMapsForTest_12_13(out SignValue[,] map, bool register)
+        {
+            map = new SignValue[5, 1];
+            map[0, 0] = new SignValue(1000);
+            map[1, 0] = new SignValue(3000);
+            map[2, 0] = new SignValue(5000);
+            map[3, 0] = new SignValue(7000);
+            map[4, 0] = new SignValue(9000);
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = new SignValue(1000);
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = new SignValue(3000);
+            SignValue[,] mapC = new SignValue[1, 1];
+            mapC[0, 0] = new SignValue(5000);
+            SignValue[,] mapD = new SignValue[1, 1];
+            mapD[0, 0] = new SignValue(7000);
+            SignValue[,] mapE = new SignValue[1, 1];
+            mapE[0, 0] = new SignValue(9000);
+
+            return new Reflex(new ProcessorContainer(new Processor(mapA, register ? "A" : "a"), new Processor(mapB, register ? "B" : "b"),
+                new Processor(mapC, register ? "C" : "c"), new Processor(mapD, register ? "D" : "d"), new Processor(mapE, register ? "E" : "e")));
         }
 
         [TestMethod]
