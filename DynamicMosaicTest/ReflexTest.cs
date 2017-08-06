@@ -1959,6 +1959,7 @@ namespace DynamicMosaicTest
         {
             SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
+            Assert.AreEqual(true, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
         }
 
         [TestMethod]
@@ -1966,6 +1967,7 @@ namespace DynamicMosaicTest
         {
             SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreEqual(true, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
         }
 
         [TestMethod]
@@ -1973,6 +1975,7 @@ namespace DynamicMosaicTest
         {
             SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
+            Assert.AreEqual(true, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
         }
 
         [TestMethod]
@@ -1980,6 +1983,7 @@ namespace DynamicMosaicTest
         {
             SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreEqual(true, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
         }
 
         static Reflex GetMapsForTest_12_13(out SignValue[,] map, bool register)
@@ -2004,6 +2008,51 @@ namespace DynamicMosaicTest
 
             return new Reflex(new ProcessorContainer(new Processor(mapA, register ? "A" : "a"), new Processor(mapB, register ? "B" : "b"),
                 new Processor(mapC, register ? "C" : "c"), new Processor(mapD, register ? "D" : "d"), new Processor(mapE, register ? "E" : "e")));
+        }
+
+        static Reflex GetMapsForTest_121_131(out SignValue[,] map, bool register)
+        {
+            map = new SignValue[10, 1];
+            map[0, 0] = new SignValue(1000);
+            map[1, 0] = new SignValue(3000);
+            map[2, 0] = new SignValue(5000);
+            map[3, 0] = new SignValue(7000);
+            map[4, 0] = new SignValue(9000);
+            map[5, 0] = new SignValue(11000);
+            map[6, 0] = new SignValue(13000);
+            map[7, 0] = new SignValue(15000);
+            map[8, 0] = new SignValue(17000);
+            map[9, 0] = new SignValue(19000);
+
+            SignValue[,] mapA0 = new SignValue[1, 1];
+            mapA0[0, 0] = new SignValue(1000);
+            SignValue[,] mapA1 = new SignValue[1, 1];
+            mapA1[0, 0] = new SignValue(3000);
+            SignValue[,] mapB2 = new SignValue[1, 1];
+            mapB2[0, 0] = new SignValue(5000);
+            SignValue[,] mapB3 = new SignValue[1, 1];
+            mapB3[0, 0] = new SignValue(7000);
+
+            SignValue[,] mapC4 = new SignValue[1, 1];
+            mapC4[0, 0] = new SignValue(9000);
+            SignValue[,] mapC5 = new SignValue[1, 1];
+            mapC5[0, 0] = new SignValue(1000);
+            SignValue[,] mapD6 = new SignValue[1, 1];
+            mapD6[0, 0] = new SignValue(3000);
+            SignValue[,] mapD7 = new SignValue[1, 1];
+            mapD7[0, 0] = new SignValue(5000);
+
+            SignValue[,] mapE8 = new SignValue[1, 1];
+            mapE8[0, 0] = new SignValue(7000);
+            SignValue[,] mapE9 = new SignValue[1, 1];
+            mapE9[0, 0] = new SignValue(9000);
+
+            return new Reflex(new ProcessorContainer(
+                new Processor(mapA0, register ? "A0" : "a0"), new Processor(mapA1, register ? "A1" : "a1"),
+                new Processor(mapB2, register ? "B2" : "b2"), new Processor(mapB3, register ? "B3" : "b3"),
+                new Processor(mapC4, register ? "C4" : "c4"), new Processor(mapC5, register ? "C5" : "c5"),
+                new Processor(mapD6, register ? "D6" : "d6"), new Processor(mapD7, register ? "D7" : "d7"),
+                new Processor(mapE8, register ? "E8" : "e8"), new Processor(mapE9, register ? "E9" : "e9")));
         }
 
         [TestMethod]
