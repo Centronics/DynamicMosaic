@@ -1960,30 +1960,16 @@ namespace DynamicMosaicTest
             SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
             Assert.AreEqual(true, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
-        }
-
-        [TestMethod]
-        public void ReflexTest12_1()
-        {
-            SignValue[,] map;
-            Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
-            Assert.AreEqual(true, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreEqual(true, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "abcde"));
         }
 
         [TestMethod]
         public void ReflexTest13()
         {
             SignValue[,] map;
-            Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
-            Assert.AreEqual(true, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
-        }
-
-        [TestMethod]
-        public void ReflexTest13_1()
-        {
-            SignValue[,] map;
             Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
             Assert.AreEqual(true, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreEqual(true, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "ABCDE"));
         }
 
         static Reflex GetMapsForTest_12_13(out SignValue[,] map, bool register)
@@ -2053,6 +2039,51 @@ namespace DynamicMosaicTest
                 new Processor(mapC4, register ? "C4" : "c4"), new Processor(mapC5, register ? "C5" : "c5"),
                 new Processor(mapD6, register ? "D6" : "d6"), new Processor(mapD7, register ? "D7" : "d7"),
                 new Processor(mapE8, register ? "E8" : "e8"), new Processor(mapE9, register ? "E9" : "e9")));
+        }
+
+        static Reflex GetMapsForTest_122_132(out SignValue[,] map)
+        {
+            map = new SignValue[10, 1];
+            map[0, 0] = new SignValue(1000);
+            map[1, 0] = new SignValue(3000);
+            map[2, 0] = new SignValue(5000);
+            map[3, 0] = new SignValue(7000);
+            map[4, 0] = new SignValue(9000);
+            map[5, 0] = new SignValue(11000);
+            map[6, 0] = new SignValue(13000);
+            map[7, 0] = new SignValue(15000);
+            map[8, 0] = new SignValue(17000);
+            map[9, 0] = new SignValue(19000);
+
+            SignValue[,] mapA0 = new SignValue[1, 1];
+            mapA0[0, 0] = new SignValue(1000);
+            SignValue[,] mapA1 = new SignValue[1, 1];
+            mapA1[0, 0] = new SignValue(3000);
+            SignValue[,] mapB2 = new SignValue[1, 1];
+            mapB2[0, 0] = new SignValue(5000);
+            SignValue[,] mapB3 = new SignValue[1, 1];
+            mapB3[0, 0] = new SignValue(7000);
+
+            SignValue[,] mapC4 = new SignValue[1, 1];
+            mapC4[0, 0] = new SignValue(9000);
+            SignValue[,] mapC5 = new SignValue[1, 1];
+            mapC5[0, 0] = new SignValue(1000);
+            SignValue[,] mapD6 = new SignValue[1, 1];
+            mapD6[0, 0] = new SignValue(3000);
+            SignValue[,] mapD7 = new SignValue[1, 1];
+            mapD7[0, 0] = new SignValue(5000);
+
+            SignValue[,] mapE8 = new SignValue[1, 1];
+            mapE8[0, 0] = new SignValue(7000);
+            SignValue[,] mapE9 = new SignValue[1, 1];
+            mapE9[0, 0] = new SignValue(9000);
+
+            return new Reflex(new ProcessorContainer(
+                new Processor(mapA0, "a0"), new Processor(mapA1, "A1"),
+                new Processor(mapB2, "B2"), new Processor(mapB3, "b3"),
+                new Processor(mapC4, "c4"), new Processor(mapC5, "C5"),
+                new Processor(mapD6, "D6"), new Processor(mapD7, "d7"),
+                new Processor(mapE8, "e8"), new Processor(mapE9, "E9")));
         }
 
         [TestMethod]
@@ -2767,6 +2798,65 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest17()
         {
+            ProcessorContainer pc;
+            Processor main;
+
+            GetTest17_18_19_20(out pc, out main);
+
+            foreach (string s in GetWordsSequental("ABCD"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+
+            foreach (string s in GetWordsSequental("DCBA"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+        }
+
+        [TestMethod]
+        public void ReflexTest18()
+        {
+            ProcessorContainer pc;
+            Processor main;
+
+            GetTest17_18_19_20(out pc, out main);
+
+            foreach (string s in GetWordsSequental("DCBA"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+
+            foreach (string s in GetWordsSequental("ABCD"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+        }
+
+        [TestMethod]
+        public void ReflexTest19()
+        {
+            ProcessorContainer pc;
+            Processor main;
+
+            GetTest17_18_19_20(out pc, out main);
+
+            foreach (string s in GetWordsSequental("abcd"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+
+            foreach (string s in GetWordsSequental("dcba"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+        }
+
+        [TestMethod]
+        public void ReflexTest20()
+        {
+            ProcessorContainer pc;
+            Processor main;
+
+            GetTest17_18_19_20(out pc, out main);
+
+            foreach (string s in GetWordsSequental("dcba"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+
+            foreach (string s in GetWordsSequental("abcd"))
+                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+        }
+
+        static void GetTest17_18_19_20(out ProcessorContainer pc, out Processor main)
+        {
             SignValue[,] map = new SignValue[8, 8];
             map[0, 0] = SignValue.MaxValue;
             map[1, 0] = SignValue.MinValue;
@@ -2814,11 +2904,8 @@ namespace DynamicMosaicTest
                 pC = new Processor(m3, "C"),
                 pD = new Processor(m4, "D");
 
-            Processor main = new Processor(map, "main");
-            ProcessorContainer pc = new ProcessorContainer(pA, pB, pC, pD);
-
-            foreach (string s in GetWordsSequental("ABCD"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+            main = new Processor(map, "main");
+            pc = new ProcessorContainer(pA, pB, pC, pD);
         }
 
         static IEnumerable<string> GetWordsSequental(string word)
@@ -2866,6 +2953,238 @@ namespace DynamicMosaicTest
             if (sb.Length > count.Count)
                 result = result.Substring(0, count.Count);
             return result;
+        }
+
+        [TestMethod]
+        public void ReflexTest21()
+        {
+            SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"),
+                new Processor(mapD, "D"), new Processor(mapE, "E")));
+
+            {
+                SignValue[,] minmap = new SignValue[1, 1];
+                Processor minProcessor = new Processor(minmap, "main");
+
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "a"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "b"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "c"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "d"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "e"));
+                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "w"));
+
+                int c = 0;
+                try
+                {
+                    reflex.FindRelation(minProcessor, null);
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(null, "w");
+                }
+                catch (ArgumentNullException)
+                {
+                    c++;
+                }
+
+                try
+                {
+                    reflex.FindRelation(minProcessor, string.Empty);
+                }
+                catch (ArgumentException)
+                {
+                    c++;
+                }
+
+                Assert.AreEqual(3, c);
+            }
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "c"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "d"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "e"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "w"));
+
+            for (int k = 0; k < 50; k++)
+            {
+                Assert.AreEqual(true, reflex.FindRelation(main, "aa"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ad"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "da"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "da"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ad"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "ea"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+            }
+        }
+
+        [TestMethod]
+        public void ReflexTest22()
+        {
+            SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A"), new Processor(mapB, "B"), new Processor(mapC, "C"),
+                new Processor(mapD, "D"), new Processor(mapE, "E")));
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreEqual(true, reflex.FindRelation(main, "c"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(true, reflex.FindRelation(main, "d"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "e"));
+            Assert.AreEqual(false, reflex.FindRelation(main, "w"));
+
+            for (int k = 0; k < 50; k++)
+            {
+                Assert.AreEqual(true, reflex.FindRelation(main, "aa"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ad"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "da"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+
+                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "da"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ad"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+
+                Assert.AreEqual(false, reflex.FindRelation(main, "ea"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+            }
         }
 
         [TestMethod]
