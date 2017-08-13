@@ -128,7 +128,7 @@ namespace DynamicMosaic
         /// свойства <see cref="Processor.Tag"/> каждой искомой карты (хранящейся внутри экземпляра класса <see cref="Reflex"/>),
         /// остальные буквы свойства <see cref="Processor.Tag"/> предназначены для случая, когда необходимо искать несколько вариантов одной и той же карты.
         /// Поиск указанного слова производится без учёта регистра.
-        /// Этот метод работает как связка <see cref="Processor.GetEqual(Processor[])"/> и <see cref="SearchResults.FindRelation(string,int,int)"/>.
+        /// Этот метод работает как связка <see cref="Processor.GetEqual(ProcessorContainer)"/> и <see cref="SearchResults.FindRelation(string,int,int)"/>.
         /// Таким образом, результаты всех последующих вызовов зависят от результатов предыдущих вызовов,
         /// в том числе от того, какое слово и на какой карте искалось, так же важна последовательность этих вызовов.
         /// Возвращает значение <see langword="true"/> в случае нахождения указанного слова на карте, в противном случае - <see langword="false"/>.
@@ -162,12 +162,13 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Получает массив карт, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно составить из первых букв названий карт.
+        ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно составить из первых букв свойств
+        /// <see cref="Processor.Tag"/> карт.
         /// </summary>
         /// <param name="regs">Список обрабатываемых карт.</param>
         /// <param name="wordLength">Длина искомого слова.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
-        /// <returns>Возвращает массив карт, позволяющих выполнить поиск требуемого слова.</returns>
+        /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
         static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, int wordLength, Size mapSize)
         {
             if (regs == null)
@@ -233,29 +234,31 @@ namespace DynamicMosaic
                     throw new ArgumentException($@"{nameof(ChangeCount)}: Длина массива-счётчика ({count.Length
                         }) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
             }
-            int maxPosition = counter - 1;
             if (count == null)
             {
                 count = new int[counter];
                 for (int k = 1; k < count.Length; k++)
                     count[k] = k;
-                return maxPosition;
+                return counter - 1;
             }
-            for (int k = count.Length - 1, mc = maxCount - 1; k >= 0; k--)
+            int? j = count.Length - 1;
+            for (; j >= 0; j--)
             {
-                if (count[k] >= mc)
+                int h = maxCount - count[j.Value];
+                if (h > count.Length - j && h > 1)
+                    break;
+                if (j > 0)
                     continue;
-                count[k]++;
-                for (int x = k + 1; x < count.Length; x++)
-                {
-                    int t = count[x - 1];
-                    if (t >= mc)
-                        return -1;
-                    count[x] = t + 1;
-                }
-                return k;
+                j = null;
+                break;
             }
-            return -1;
+            if (j == null)
+                return -1;
+            int x = j.Value;
+            count[x++]++;
+            for (; x < count.Length; x++)
+                count[x] = count[x - 1] + 1;
+            return j.Value;
         }
 
         /// <summary>
