@@ -222,7 +222,7 @@ namespace DynamicMosaic
             if (counter <= 0)
                 throw new ArgumentException($"{nameof(ChangeCount)}: Количество элементов в массиве-счётчике \"count\" должно быть больше ноля.", nameof(counter));
             if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение счётчика меньше или равно нолю ({maxCount}).");
+                throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение каждого разряда меньше или равно нолю ({maxCount}).");
             if (count != null)
             {
                 if (count.Length != counter)
@@ -232,7 +232,7 @@ namespace DynamicMosaic
                     throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Length}).", nameof(count));
                 if (count.Length > maxCount)
                     throw new ArgumentException($@"{nameof(ChangeCount)}: Длина массива-счётчика ({count.Length
-                        }) должна быть меньше или равна максимальному значению счётчика ({maxCount}).");
+                        }) должна быть меньше или равна максимальному значению каждого разряда ({maxCount}).");
             }
             if (count == null)
             {
