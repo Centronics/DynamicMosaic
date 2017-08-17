@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using DynamicParser;
 using System.Drawing;
+using System.Linq;
 using System.Text;
+using DynamicParser;
 using DynamicProcessor;
 using Processor = DynamicParser.Processor;
 using Region = DynamicParser.Region;
@@ -11,30 +11,35 @@ using Region = DynamicParser.Region;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Предназначен для связывания карт <see cref="Processor"/>.
-    /// Служит для поиска данных на карте и сохранения результатов поиска для последующих вызовов.
-    /// Это позволяет системе лучше ориентироваться при поиске данных, сопоставляя каждую новую карту с тем, что она уже обрабатывала.
+    ///     Предназначен для связывания карт <see cref="Processor" />.
+    ///     Служит для поиска данных на карте и сохранения результатов поиска для последующих вызовов.
+    ///     Это позволяет системе лучше ориентироваться при поиске данных, сопоставляя каждую новую карту с тем, что она уже
+    ///     обрабатывала.
     /// </summary>
     public sealed class Reflex
     {
         /// <summary>
-        /// Карты, с помощью которых производится поиск запрашиваемых данных.
+        ///     Карты, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
         readonly ProcessorContainer _seaProcessors;
 
         /// <summary>
-        /// Инициализирует текущий экземпляр <see cref="Reflex"/> указанными картами.
-        /// Карты предназначены для вызова <see cref="Processor.GetEqual(ProcessorContainer)"/>.
-        /// Этот список невозможно изменить вручную, в процессе работы с классом.
+        ///     Инициализирует текущий экземпляр <see cref="Reflex" /> указанными картами.
+        ///     Карты предназначены для вызова <see cref="Processor.GetEqual(ProcessorContainer)" />.
+        ///     Этот список невозможно изменить вручную, в процессе работы с классом.
         /// </summary>
-        /// <param name="processors">Карты, которые необходимо добавить в текущий экземпляр <see cref="Reflex"/>.
-        /// С помощью них будет проводиться поиск запрашиваемых данных.</param>
+        /// <param name="processors">
+        ///     Карты, которые необходимо добавить в текущий экземпляр <see cref="Reflex" />.
+        ///     С помощью них будет проводиться поиск запрашиваемых данных.
+        /// </param>
         public Reflex(ProcessorContainer processors)
         {
             if (processors == null)
-                throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
+                throw new ArgumentNullException(nameof(processors),
+                    $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
             if (processors.Count < 2)
-                throw new ArgumentException($"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(processors.Count)} = {processors.Count}).");
+                throw new ArgumentException(
+                    $"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(processors.Count)} = {processors.Count}).");
             Processor[] procs = new Processor[processors.Count];
             for (int k = 0; k < procs.Length; k++)
                 procs[k] = processors[k];
@@ -42,24 +47,35 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Получает карту из целевой карты по указанным координатам, копируя часть указанной карты в массив карт для поиска <see cref="_seaProcessors"/>.
+        ///     Получает карту из целевой карты по указанным координатам, копируя часть указанной карты в массив карт для поиска
+        ///     <see cref="_seaProcessors" />.
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Сведения о получаемой карте.</param>
         void GetMap(Processor processor, Registered registered)
         {
             if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
+                throw new ArgumentNullException(nameof(processor),
+                    $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
             if (registered == null)
-                throw new ArgumentNullException(nameof(registered), $@"{nameof(GetMap)}: Сведения о получаемой карте должны присутствовать.");
+                throw new ArgumentNullException(nameof(registered),
+                    $@"{nameof(GetMap)}: Сведения о получаемой карте должны присутствовать.");
             if (registered.X < 0)
-                throw new ArgumentException($"{nameof(GetMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(GetMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).",
+                    nameof(registered));
             if (registered.Y < 0)
-                throw new ArgumentException($"{nameof(GetMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(GetMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).",
+                    nameof(registered));
             if (registered.Right > processor.Width)
-                throw new ArgumentException($"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.",
+                    nameof(registered));
             if (registered.Bottom > processor.Height)
-                throw new ArgumentException($"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.",
+                    nameof(registered));
             SignValue[,] values = AddMap(processor, registered);
             if (values == null)
                 return;
@@ -70,77 +86,104 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Определяет, содержит ли текущий экземпляр <see cref="Reflex"/> карту с подобным содержимым или нет.
-        /// В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null"/>, в противном случае -
-        /// массив данных, сведения о котором указаны в параметре <see cref="Registered"/>.
+        ///     Определяет, содержит ли текущий экземпляр <see cref="Reflex" /> карту с подобным содержимым или нет.
+        ///     В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null" />, в противном
+        ///     случае -
+        ///     массив данных, сведения о котором указаны в параметре <see cref="Registered" />.
         /// </summary>
         /// <param name="processor">Карта, из которой необходимо получить целевую карту.</param>
         /// <param name="registered">Сведения о получаемой карте.</param>
-        /// <returns>В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null"/>, в противном случае -
-        /// массив данных, сведения о котором указаны в параметре <see cref="Registered"/>.</returns>
+        /// <returns>
+        ///     В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null" />, в противном
+        ///     случае -
+        ///     массив данных, сведения о котором указаны в параметре <see cref="Registered" />.
+        /// </returns>
         SignValue[,] AddMap(Processor processor, Registered registered)
         {
             if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $"{nameof(AddMap)}: Карта, из которой необходимо получить целевую карту, должна быть указана.");
+                throw new ArgumentNullException(nameof(processor),
+                    $"{nameof(AddMap)}: Карта, из которой необходимо получить целевую карту, должна быть указана.");
             if (registered == null)
-                throw new ArgumentNullException(nameof(registered), $"{nameof(AddMap)}: Сведения о получаемой карте должны присутствовать.");
+                throw new ArgumentNullException(nameof(registered),
+                    $"{nameof(AddMap)}: Сведения о получаемой карте должны присутствовать.");
             if (registered.X < 0)
-                throw new ArgumentException($"{nameof(AddMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(AddMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).",
+                    nameof(registered));
             if (registered.Y < 0)
-                throw new ArgumentException($"{nameof(AddMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(AddMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).",
+                    nameof(registered));
             if (registered.Right > processor.Width)
-                throw new ArgumentException($"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.",
+                    nameof(registered));
             if (registered.Bottom > processor.Height)
-                throw new ArgumentException($"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.", nameof(registered));
+                throw new ArgumentException(
+                    $"{nameof(AddMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.",
+                    nameof(registered));
             for (int k = 0; k < _seaProcessors.Count; k++)
             {
                 Processor p = _seaProcessors[k];
                 if (p.Width != registered.Region.Width || p.Height != registered.Region.Height)
-                    throw new ArgumentException($"{nameof(AddMap)}: Карты не соответствуют по размерам.", nameof(registered));
+                    throw new ArgumentException($"{nameof(AddMap)}: Карты не соответствуют по размерам.",
+                        nameof(registered));
                 bool res = true;
                 for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                    for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                    {
-                        if (p[x1, y1] == processor[x, y])
-                            continue;
-                        res = false;
-                        goto exit;
-                    }
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                {
+                    if (p[x1, y1] == processor[x, y])
+                        continue;
+                    res = false;
+                    goto exit;
+                }
                 exit:
                 if (res)
                     return null;
             }
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                    values[x1, y1] = processor[x, y];
+            for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                values[x1, y1] = processor[x, y];
             return values;
         }
 
         /// <summary>
-        /// Производит поиск указанного слова <see cref="string"/> на указанной карте <see cref="Processor"/>.
-        /// Запоминает все предыдущие вызовы посредством обучения, на основе сведений, которые удалось получить в процессе поиска слов.
-        /// Сведениями, которые запоминает класс <see cref="Reflex"/>, являются фрагменты распознаваемой карты, которые были с неё скопированы
-        /// в процессе распознавания. Это места, в которых были найдены искомые карты.
-        /// При этом карты сохраняются во внутреннюю коллекцию искомых карт <see cref="ProcessorContainer"/>.
-        /// Карты сохраняются при условии отсутствия конфликтов между ними, т.е. при условии того, что из них можно составить искомое слово
-        /// с помощью метода <see cref="SearchResults.FindRelation(string,int,int)"/>. При поиске слова используется только первая буква
-        /// свойства <see cref="Processor.Tag"/> каждой искомой карты (хранящейся внутри экземпляра класса <see cref="Reflex"/>),
-        /// остальные буквы свойства <see cref="Processor.Tag"/> предназначены для случая, когда необходимо искать несколько вариантов одной и той же карты.
-        /// Поиск указанного слова производится без учёта регистра.
-        /// Этот метод работает как связка <see cref="Processor.GetEqual(ProcessorContainer)"/> и <see cref="SearchResults.FindRelation(string,int,int)"/>.
-        /// Таким образом, результаты всех последующих вызовов зависят от результатов предыдущих вызовов,
-        /// в том числе от того, какое слово и на какой карте искалось, так же важна последовательность этих вызовов.
-        /// Возвращает значение <see langword="true"/> в случае нахождения указанного слова на карте, в противном случае - <see langword="false"/>.
-        /// В случае возвращения значения <see langword="false"/> состояние объекта <see cref="Reflex"/> остаётся прежним.
+        ///     Производит поиск указанного слова <see cref="string" /> на указанной карте <see cref="Processor" />.
+        ///     Запоминает все предыдущие вызовы посредством обучения, на основе сведений, которые удалось получить в процессе
+        ///     поиска слов.
+        ///     Сведениями, которые запоминает класс <see cref="Reflex" />, являются фрагменты распознаваемой карты, которые были с
+        ///     неё скопированы
+        ///     в процессе распознавания. Это места, в которых были найдены искомые карты.
+        ///     При этом карты сохраняются во внутреннюю коллекцию искомых карт <see cref="ProcessorContainer" />.
+        ///     Карты сохраняются при условии отсутствия конфликтов между ними, т.е. при условии того, что из них можно составить
+        ///     искомое слово
+        ///     с помощью метода <see cref="SearchResults.FindRelation(string,int,int)" />. При поиске слова используется только
+        ///     первая буква
+        ///     свойства <see cref="Processor.Tag" /> каждой искомой карты (хранящейся внутри экземпляра класса
+        ///     <see cref="Reflex" />),
+        ///     остальные буквы свойства <see cref="Processor.Tag" /> предназначены для случая, когда необходимо искать несколько
+        ///     вариантов одной и той же карты.
+        ///     Поиск указанного слова производится без учёта регистра.
+        ///     Этот метод работает как связка <see cref="Processor.GetEqual(ProcessorContainer)" /> и
+        ///     <see cref="SearchResults.FindRelation(string,int,int)" />.
+        ///     Таким образом, результаты всех последующих вызовов зависят от результатов предыдущих вызовов,
+        ///     в том числе от того, какое слово и на какой карте искалось, так же важна последовательность этих вызовов.
+        ///     Возвращает значение <see langword="true" /> в случае нахождения указанного слова на карте, в противном случае -
+        ///     <see langword="false" />.
+        ///     В случае возвращения значения <see langword="false" /> состояние объекта <see cref="Reflex" /> остаётся прежним.
         /// </summary>
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <returns>Возвращает значение <see langword="true"/> в случае нахождения указанного слова на карте, в противном случае - <see langword="false"/>.</returns>
+        /// <returns>
+        ///     Возвращает значение <see langword="true" /> в случае нахождения указанного слова на карте, в противном случае
+        ///     - <see langword="false" />.
+        /// </returns>
         public bool FindRelation(Processor processor, string word)
         {
             if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
+                throw new ArgumentNullException(nameof(processor),
+                    $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
             if (word == null)
                 throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
             if (word == string.Empty)
@@ -162,8 +205,9 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно составить из первых букв свойств
-        /// <see cref="Processor.Tag"/> карт.
+        ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно
+        ///     составить из первых букв свойств
+        ///     <see cref="Processor.Tag" /> карт.
         /// </summary>
         /// <param name="regs">Список обрабатываемых карт.</param>
         /// <param name="wordLength">Длина искомого слова.</param>
@@ -172,18 +216,24 @@ namespace DynamicMosaic
         static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, int wordLength, Size mapSize)
         {
             if (regs == null)
-                throw new ArgumentNullException(nameof(regs), $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
+                throw new ArgumentNullException(nameof(regs),
+                    $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
             if (regs.Count <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Количество обрабатываемых карт должно быть больше ноля ({regs.Count}).", nameof(regs));
+                throw new ArgumentException(
+                    $"{nameof(FindWord)}: Количество обрабатываемых карт должно быть больше ноля ({regs.Count}).",
+                    nameof(regs));
             if (wordLength <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Длина искомого слова должна быть указана.", nameof(wordLength));
+                throw new ArgumentException($"{nameof(FindWord)}: Длина искомого слова должна быть указана.",
+                    nameof(wordLength));
             Size searchSize = regs[0].SelectedProcessor.Size;
             if (mapSize.Height < searchSize.Height)
                 throw new ArgumentException(
-                    $"{nameof(FindWord)}: Высота поля результатов поиска должна быть больше или равна высоте искомых карт.", nameof(mapSize));
+                    $"{nameof(FindWord)}: Высота поля результатов поиска должна быть больше или равна высоте искомых карт.",
+                    nameof(mapSize));
             if (mapSize.Width < searchSize.Width)
                 throw new ArgumentException(
-                    $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.", nameof(mapSize));
+                    $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.",
+                    nameof(mapSize));
             int[] counting = null;
             Reg[] regsCounting = new Reg[wordLength];
             Region region = new Region(mapSize.Width, mapSize.Height);
@@ -211,7 +261,8 @@ namespace DynamicMosaic
         /// <summary>
         ///     Увеличивает значение младших разрядов счётчика, если это возможно.
         ///     Возвращаются только случаи без совпадающих значений в различных разрядах.
-        ///     Если увеличение было произведено, возвращается номер позиции, на которой произошло изменение, в противном случае -1.
+        ///     Если увеличение было произведено, возвращается номер позиции, на которой произошло изменение, в противном случае
+        ///     -1.
         /// </summary>
         /// <param name="count">Массив, представляющий состояние разрядов счётчика.</param>
         /// <param name="counter">Количество элементов в массиве "count".</param>
@@ -220,19 +271,33 @@ namespace DynamicMosaic
         static int ChangeCount(ref int[] count, int counter, int maxCount)
         {
             if (counter <= 0)
-                throw new ArgumentException($"{nameof(ChangeCount)}: Количество элементов в массиве-счётчике \"count\" должно быть больше ноля.", nameof(counter));
+                throw new ArgumentException(
+                    $"{nameof(ChangeCount)}: Количество элементов в массиве-счётчике \"count\" должно быть больше ноля.",
+                    nameof(counter));
             if (maxCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(maxCount), $@"{nameof(ChangeCount)}: Максимальное значение каждого разряда меньше или равно нолю ({maxCount}).");
+                throw new ArgumentOutOfRangeException(nameof(maxCount),
+                    $@"{
+                            nameof(ChangeCount)
+                        }: Максимальное значение каждого разряда меньше или равно нолю ({maxCount}).");
             if (count != null)
             {
                 if (count.Length != counter)
-                    throw new ArgumentException($@"{nameof(ChangeCount)}: Количество элементов, указанных в параметре {nameof(counter)
-                        } ({counter}), не соответствует количеству элементов массива-счётчика {nameof(count)} ({count.Length}).", nameof(counter));
+                    throw new ArgumentException(
+                        $@"{nameof(ChangeCount)}: Количество элементов, указанных в параметре {nameof(counter)} ({
+                                counter
+                            }), не соответствует количеству элементов массива-счётчика {nameof(count)} ({
+                                count.Length
+                            }).",
+                        nameof(counter));
                 if (count.Length <= 0)
-                    throw new ArgumentException($"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Length}).", nameof(count));
+                    throw new ArgumentException(
+                        $"{nameof(ChangeCount)}: Длина массива-счётчика должна быть больше ноля ({count.Length}).",
+                        nameof(count));
                 if (count.Length > maxCount)
-                    throw new ArgumentException($@"{nameof(ChangeCount)}: Длина массива-счётчика ({count.Length
-                        }) должна быть меньше или равна максимальному значению каждого разряда ({maxCount}).");
+                    throw new ArgumentException(
+                        $@"{nameof(ChangeCount)}: Длина массива-счётчика ({
+                                count.Length
+                            }) должна быть меньше или равна максимальному значению каждого разряда ({maxCount}).");
             }
             if (count == null)
             {
@@ -262,9 +327,9 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Удаляет из строки совпадающие символы.
-        /// Без учёта регистра.
-        /// Возвращает новую строку в верхнем регистре.
+        ///     Удаляет из строки совпадающие символы.
+        ///     Без учёта регистра.
+        ///     Возвращает новую строку в верхнем регистре.
         /// </summary>
         /// <param name="str">Анализируемая строка.</param>
         /// <returns>Возвращает новую строку в верхнем регистре.</returns>
@@ -279,20 +344,21 @@ namespace DynamicMosaic
                 return str;
             StringBuilder sb = new StringBuilder(str);
             for (int k = 0; k < sb.Length; k++)
-                for (int j = 0; j < sb.Length; j++)
-                    if (j != k && sb[j] == sb[k])
-                        sb.Remove(j--, 1);
+            for (int j = 0; j < sb.Length; j++)
+                if (j != k && sb[j] == sb[k])
+                    sb.Remove(j--, 1);
             return sb.ToString();
         }
 
         /// <summary>
-        /// Позволяет выяснить, содержит ли текущий экземпляр <see cref="Reflex"/> достаточное количество карт с соответствующими значениями
-        /// первых символов свойств <see cref="Processor.Tag"/> для составления указанного слова.
-        /// Проверка производится без учёта регистра.
-        /// В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.
+        ///     Позволяет выяснить, содержит ли текущий экземпляр <see cref="Reflex" /> достаточное количество карт с
+        ///     соответствующими значениями
+        ///     первых символов свойств <see cref="Processor.Tag" /> для составления указанного слова.
+        ///     Проверка производится без учёта регистра.
+        ///     В случае успешной проверки возвращается значение <see langword="true" />, иначе <see langword="false" />.
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
-        /// <returns>В случае успешной проверки возвращается значение <see langword="true"/>, иначе <see langword="false"/>.</returns>
+        /// <returns>В случае успешной проверки возвращается значение <see langword="true" />, иначе <see langword="false" />.</returns>
         bool IsMapsWord(string word)
         {
             if (string.IsNullOrEmpty(word))
@@ -311,8 +377,9 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Находит карты в <see cref="SearchResults"/>, свойства <see cref="Processor.Tag" /> которых по первому символу соответствуют указанному символу.
-        /// Поиск проводится без учёта регистра.
+        ///     Находит карты в <see cref="SearchResults" />, свойства <see cref="Processor.Tag" /> которых по первому символу
+        ///     соответствуют указанному символу.
+        ///     Поиск проводится без учёта регистра.
         /// </summary>
         /// <param name="procName">Искомое название карты.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
@@ -325,17 +392,17 @@ namespace DynamicMosaic
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
-                for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
-                {
-                    ProcPerc pp = searchResults[x, y];
-                    lstRegs.AddRange(from p in pp.Procs
-                                     where char.ToUpper(p.Tag[0]) == procName
-                                     select new Reg(new Point(x, y))
-                                     {
-                                         Percent = pp.Percent,
-                                         SelectedProcessor = p
-                                     });
-                }
+            for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
+            {
+                ProcPerc pp = searchResults[x, y];
+                lstRegs.AddRange(from p in pp.Procs
+                    where char.ToUpper(p.Tag[0]) == procName
+                    select new Reg(new Point(x, y))
+                    {
+                        Percent = pp.Percent,
+                        SelectedProcessor = p
+                    });
+            }
             return lstRegs;
         }
     }
