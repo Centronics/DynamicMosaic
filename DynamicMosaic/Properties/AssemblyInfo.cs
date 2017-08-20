@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("DynamicMosaic")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Основан на DynamicParser. Является продолжением этого проекта с поддержкой функции анализа поступающих данных с учётом предыдущих запросов.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Home")]
 [assembly: AssemblyProduct("DynamicMosaic")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
