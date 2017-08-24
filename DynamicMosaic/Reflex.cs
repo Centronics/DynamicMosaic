@@ -11,7 +11,7 @@ using Region = DynamicParser.Region;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Предназначен для связывания карт <see cref="Processor" />.
+    ///     Предназначен для связывания карт <see cref="DynamicParser.Processor" />.
     ///     Служит для поиска данных на карте и сохранения результатов поиска для последующих вызовов.
     ///     Это позволяет системе лучше ориентироваться при поиске данных, сопоставляя каждую новую карту с тем, что она уже
     ///     обрабатывала.
@@ -25,7 +25,7 @@ namespace DynamicMosaic
 
         /// <summary>
         ///     Инициализирует текущий экземпляр <see cref="Reflex" /> указанными картами.
-        ///     Карты предназначены для вызова <see cref="Processor.GetEqual(ProcessorContainer)" />.
+        ///     Карты предназначены для вызова <see cref="DynamicParser.Processor.GetEqual(ProcessorContainer)" />.
         ///     Этот список невозможно изменить вручную, в процессе работы с классом.
         /// </summary>
         /// <param name="processors">
@@ -199,7 +199,7 @@ namespace DynamicMosaic
             List<Reg> lstRegs = new List<Reg>();
             foreach (List<Reg> lstReg in w.Select(c => FindSymbols(c, searchResults)))
                 lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, w.Length, searchResults.ResultSize).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(lstRegs, w, searchResults.ResultSize).SelectMany(regs => regs))
                 GetMap(processor, r);
             return true;
         }
@@ -210,10 +210,10 @@ namespace DynamicMosaic
         ///     <see cref="Processor.Tag" /> карт.
         /// </summary>
         /// <param name="regs">Список обрабатываемых карт.</param>
-        /// <param name="wordLength">Длина искомого слова.</param>
+        /// <param name="word">Искомое слово.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
-        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, int wordLength, Size mapSize)
+        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs),
@@ -222,9 +222,11 @@ namespace DynamicMosaic
                 throw new ArgumentException(
                     $"{nameof(FindWord)}: Количество обрабатываемых карт должно быть больше ноля ({regs.Count}).",
                     nameof(regs));
-            if (wordLength <= 0)
-                throw new ArgumentException($"{nameof(FindWord)}: Длина искомого слова должна быть указана.",
-                    nameof(wordLength));
+            if (word == null)
+                throw new ArgumentNullException(nameof(word),
+                    $"{nameof(FindWord)}: Искомое слово должно быть указано (null).");
+            if (word == string.Empty)
+                throw new ArgumentException($"{nameof(FindWord)}: Искомое слово должно быть указано.", nameof(word));
             Size searchSize = regs[0].SelectedProcessor.Size;
             if (mapSize.Height < searchSize.Height)
                 throw new ArgumentException(
@@ -235,9 +237,11 @@ namespace DynamicMosaic
                     $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.",
                     nameof(mapSize));
             int[] counting = null;
-            Reg[] regsCounting = new Reg[wordLength];
+            Reg[] regsCounting = new Reg[word.Length];
             Region region = new Region(mapSize.Width, mapSize.Height);
-            while (ChangeCount(ref counting, wordLength, regs.Count) >= 0)
+            StringBuilder mapString = new StringBuilder(word.Length);
+            TagSearcher mapSearcher = new TagSearcher(word);
+            while (ChangeCount(ref counting, word.Length, regs.Count) >= 0)
             {
                 bool result = true;
                 for (int k = 0; k < counting.Length; k++)
@@ -251,10 +255,12 @@ namespace DynamicMosaic
                         break;
                     }
                     region.Add(rect, pp.SelectedProcessor, pp.Percent);
+                    mapString.Append(pp.SelectedProcessor.Tag[0]);
                 }
-                if (result)
+                if (result && mapSearcher.IsEqual(mapString.ToString()))
                     yield return region.Elements;
                 region.Clear();
+                mapString.Clear();
             }
         }
 
