@@ -1,10 +1,10 @@
-﻿using DynamicParser;
-using DynamicProcessor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using DynamicParser;
+using DynamicProcessor;
 using Processor = DynamicParser.Processor;
 using Region = DynamicParser.Region;
 
