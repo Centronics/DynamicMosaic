@@ -62,13 +62,10 @@ namespace DynamicMosaic
             if (reflex == null)
                 throw new ArgumentNullException(nameof(reflex),
                     $"{nameof(Reflex)}: Необходимо указать экземпляр класса {nameof(Reflex)}.");
-            if (reflex._seaProcessors.Count < 2)
-                throw new ArgumentException(
-                    $"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(Count)} = {reflex._seaProcessors.Count}).");
             Processor[] procs = new Processor[reflex._seaProcessors.Count];
             for (int k = 0; k < procs.Length; k++)
                 procs[k] = reflex._seaProcessors[k];
-            _seaProcessors.AddRange(procs);
+            _seaProcessors = new ProcessorContainer(procs);
         }
 
         /// <summary>
@@ -79,7 +76,7 @@ namespace DynamicMosaic
         /// <summary>
         ///     Получает карту по заданному индексу.
         /// </summary>
-        /// <param name="index">Индекс карты, которую необходимо получить.</param>
+        /// <param name="index">Индекс карты, начинающийся с ноля, которую необходимо получить.</param>
         /// <returns>Возвращает карту по заданному индексу.</returns>
         public Processor this[int index] => _seaProcessors[index];
 
@@ -167,21 +164,21 @@ namespace DynamicMosaic
                         nameof(registered));
                 bool res = true;
                 for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                {
-                    if (p[x1, y1] == processor[x, y])
-                        continue;
-                    res = false;
-                    goto exit;
-                }
+                    for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                    {
+                        if (p[x1, y1] == processor[x, y])
+                            continue;
+                        res = false;
+                        goto exit;
+                    }
                 exit:
                 if (res)
                     return null;
             }
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-            for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                values[x1, y1] = processor[x, y];
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                    values[x1, y1] = processor[x, y];
             return values;
         }
 
@@ -385,9 +382,9 @@ namespace DynamicMosaic
                 return str;
             StringBuilder sb = new StringBuilder(str);
             for (int k = 0; k < sb.Length; k++)
-            for (int j = 0; j < sb.Length; j++)
-                if (j != k && sb[j] == sb[k])
-                    sb.Remove(j--, 1);
+                for (int j = 0; j < sb.Length; j++)
+                    if (j != k && sb[j] == sb[k])
+                        sb.Remove(j--, 1);
             return sb.ToString();
         }
 
@@ -433,17 +430,17 @@ namespace DynamicMosaic
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
-            for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
-            {
-                ProcPerc pp = searchResults[x, y];
-                lstRegs.AddRange(from p in pp.Procs
-                    where char.ToUpper(p.Tag[0]) == procName
-                    select new Reg(new Point(x, y))
-                    {
-                        Percent = pp.Percent,
-                        SelectedProcessor = p
-                    });
-            }
+                for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
+                {
+                    ProcPerc pp = searchResults[x, y];
+                    lstRegs.AddRange(from p in pp.Procs
+                                     where char.ToUpper(p.Tag[0]) == procName
+                                     select new Reg(new Point(x, y))
+                                     {
+                                         Percent = pp.Percent,
+                                         SelectedProcessor = p
+                                     });
+                }
             return lstRegs;
         }
     }

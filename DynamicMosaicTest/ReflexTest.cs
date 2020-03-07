@@ -46,12 +46,12 @@ namespace DynamicMosaicTest
                 SignValue[,] minmap = new SignValue[1, 1];
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                 int c = 0;
                 try
@@ -86,67 +86,67 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
             }
         }
 
@@ -181,67 +181,67 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
             }
         }
 
@@ -297,67 +297,67 @@ namespace DynamicMosaicTest
         {
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
             }
         }
 
@@ -394,67 +394,67 @@ namespace DynamicMosaicTest
 
                 Processor main = new Processor(map, "main");
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
                 for (int k = 0; k < 50; k++)
                 {
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
                 }
             }
 
@@ -472,67 +472,67 @@ namespace DynamicMosaicTest
 
                 Processor main = new Processor(map1, "main");
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
                 for (int k = 0; k < 50; k++)
                 {
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
                 }
             }
         }
@@ -572,67 +572,67 @@ namespace DynamicMosaicTest
 
                 Processor main = new Processor(map1, "main");
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
                 for (int k = 0; k < 50; k++)
                 {
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "ED"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ED"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
                 }
             }
 
@@ -648,67 +648,67 @@ namespace DynamicMosaicTest
 
                 Processor main = new Processor(map, "main");
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
                 for (int k = 0; k < 50; k++)
                 {
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DB"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "BD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EA"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EB"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EC"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "BE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "CE"));
-                    Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                    Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EA"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EB"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EC"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CE"));
+                    Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                    Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
                 }
             }
         }
@@ -744,67 +744,67 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
             }
         }
 
@@ -834,27 +834,27 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
         }
 
         [TestMethod]
@@ -869,16 +869,16 @@ namespace DynamicMosaicTest
             SignValue[,] p1 = new SignValue[1, 1];
             p1[0, 0] = new SignValue(SignValue.MaxValue.Value / 2);
 
-            Assert.AreEqual(false, reflex.FindRelation(new Processor(p1, "p1"), "1"));
+            Assert.AreEqual(null, reflex.FindRelation(new Processor(p1, "p1"), "1"));
 
             SignValue[,] p2 = new SignValue[1, 1];
             p2[0, 0] = new SignValue(p1[0, 0].Value - 10000);
 
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
-            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(null, reflex.FindRelation(new Processor(p2, "p2"), "1"));
 
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
-            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(null, reflex.FindRelation(new Processor(p2, "p2"), "1"));
         }
 
         [TestMethod]
@@ -893,16 +893,16 @@ namespace DynamicMosaicTest
             SignValue[,] p1 = new SignValue[1, 1];
             p1[0, 0] = new SignValue(SignValue.MaxValue.Value / 2);
 
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(p1, "p1"), "2"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(new Processor(p1, "p1"), "2"));
 
             SignValue[,] p2 = new SignValue[1, 1];
             p2[0, 0] = new SignValue(p1[0, 0].Value + 10000);
 
-            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(null, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(new Processor(p2, "p2"), "2"));
 
-            Assert.AreEqual(false, reflex.FindRelation(new Processor(p2, "p2"), "1"));
-            Assert.AreEqual(true, reflex.FindRelation(new Processor(p2, "p2"), "2"));
+            Assert.AreEqual(null, reflex.FindRelation(new Processor(p2, "p2"), "1"));
+            Assert.AreNotEqual(null, reflex.FindRelation(new Processor(p2, "p2"), "2"));
         }
 
         [TestMethod]
@@ -914,16 +914,16 @@ namespace DynamicMosaicTest
             Reflex reflex = new Reflex(pc);
             Processor p = new Processor(new[] { average }, "c");
 
-            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
-            Assert.AreEqual(false, reflex.FindRelation(p, "f"));
+            Assert.AreEqual(null, reflex.FindRelation(p, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(p, "b"));
+            Assert.AreEqual(null, reflex.FindRelation(p, "f"));
 
             Processor pf = new Processor(new[] { average }, "f");
             pc.Add(pf);
 
-            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
-            Assert.AreEqual(false, reflex.FindRelation(p, "f"));
+            Assert.AreEqual(null, reflex.FindRelation(p, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(p, "b"));
+            Assert.AreEqual(null, reflex.FindRelation(p, "f"));
         }
 
         [TestMethod]
@@ -936,9 +936,9 @@ namespace DynamicMosaicTest
             Reflex reflex = new Reflex(pc);
             Processor p = new Processor(new[] { average }, "c");
 
-            Assert.AreEqual(false, reflex.FindRelation(p, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(p, "b"));
-            Assert.AreEqual(true, reflex.FindRelation(p, "f"));
+            Assert.AreEqual(null, reflex.FindRelation(p, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(p, "b"));
+            Assert.AreNotEqual(null, reflex.FindRelation(p, "f"));
         }
 
         [TestMethod]
@@ -974,12 +974,12 @@ namespace DynamicMosaicTest
             {
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                 int c = 0;
                 try
@@ -1014,22 +1014,22 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
             {
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                 int c = 0;
                 try
@@ -1064,24 +1064,24 @@ namespace DynamicMosaicTest
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1114,26 +1114,26 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1166,26 +1166,26 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1218,26 +1218,26 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1270,26 +1270,26 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1324,6 +1324,131 @@ namespace DynamicMosaicTest
             }
         }
 
+        static bool ProcessorCompare(Processor pOne, Processor pTwo)
+        {
+            if ((object)pOne == pTwo && pOne is null)
+                return true;
+            if (pOne is null || pTwo is null)
+                return false;
+            if ((object)pOne == pTwo)
+                return true;
+            if (pOne.Length != pTwo.Length)
+                return false;
+            for (int y = 0; y < pOne.Height; y++)
+                for (int x = 0; x < pOne.Width; x++)
+                    if (pOne[x, y] != pTwo[x, y])
+                        return false;
+            return true;
+        }
+
+        [TestMethod]
+        public void ReflexRelationTest()
+        {
+            SignValue[,] minmap1 = new SignValue[1, 1];
+            minmap1[0, 0] = new SignValue(1000);
+            Processor p1 = new Processor(minmap1, "minmap1");
+
+            SignValue[,] minmap2 = new SignValue[1, 1];
+            minmap2[0, 0] = new SignValue(3000);
+            Processor p2 = new Processor(minmap2, "minmap2");
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = new SignValue(3000);
+            Processor pA = new Processor(mapA, "A");
+
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = new SignValue(1500);
+            Processor pB = new Processor(mapB, "B");
+
+            SignValue[,] mapC = new SignValue[1, 1];
+            mapC[0, 0] = new SignValue(500);
+            Processor pC = new Processor(mapC, "C");
+            Processor pCClone = new Processor(mapC, "D");
+
+            void MapVerify(Reflex pr, int needCount)
+            {
+                Assert.AreNotEqual(null, pr);
+                Assert.AreEqual(needCount, pr.Count);
+                Assert.AreEqual((object)pr[0], pA);
+                Assert.AreEqual((object)pr[1], pB);
+                Assert.AreEqual((object)pr[2], pC);
+            }
+
+            void TestExReflex(Reflex r, params int[] pars)
+            {
+                Assert.AreNotEqual(null, r);
+
+                int exCount = 0;
+
+                foreach (int k in pars)
+                    try
+                    {
+                        Processor p = r[k];
+                    }
+                    catch (ArgumentException)
+                    {
+                        exCount++;
+                    }
+
+                Assert.AreEqual(exCount, pars.Length);
+            }
+
+            Reflex reflex = new Reflex(new ProcessorContainer(pA, pB, pC, pCClone));
+            for (int k = 0; k < 50; k++)
+            {
+                {
+                    MapVerify(reflex, 4);
+                    Assert.AreEqual(null, reflex.FindRelation(p1, "A"));
+                    MapVerify(reflex, 4);
+                }
+                {
+                    Reflex rB = reflex.FindRelation(p1, "B");
+                    Assert.AreNotEqual(null, rB);
+                    MapVerify(reflex, 4);
+                    MapVerify(rB, 5);
+                    Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+                    Assert.AreEqual("B0", rB[4].Tag);
+
+                    TestExReflex(rB, 5, 6, -1, -2);
+                }
+                {
+                    Reflex rC = reflex.FindRelation(p1, "C");
+                    Assert.AreNotEqual(null, rC);
+                    MapVerify(reflex, 4);
+                    MapVerify(rC, 5);
+                    Assert.AreEqual(true, ProcessorCompare(rC[4], p1));
+                    Assert.AreEqual("C0", rC[4].Tag);
+
+                    TestExReflex(rC, 5, 6, -1, -2);//Добавить тест с проверкой критического значения, т.е. карты с крайним значением относительно всего массива карт.
+                }
+
+                {
+                    MapVerify(reflex, 4);
+                    Reflex rA = reflex.FindRelation(p2, "A");
+                    Assert.AreNotEqual(null, rA);
+                    MapVerify(reflex, 4);
+                    MapVerify(rA, 4);
+                    Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
+                    Assert.AreEqual("A", rA[0].Tag);
+
+                    Assert.AreEqual(null, rA.FindRelation(p2, "B"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rA, 4);
+                    Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
+                    Assert.AreEqual("A", rA[0].Tag);
+
+                    Assert.AreEqual(null, reflex.FindRelation(p2, "C"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rA, 4);
+                    Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
+                    Assert.AreEqual("A", rA[0].Tag);
+
+                    TestExReflex(reflex, 4, 5, -1, -2);
+                    TestExReflex(rA, 4, 5, -1, -2);
+                }
+            }
+        }
+
         [TestMethod]
         public void ReflexTest10()
         {
@@ -1352,25 +1477,25 @@ namespace DynamicMosaicTest
             {
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                 int c = 0;
                 try
@@ -1405,57 +1530,62 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));//ДОПИСАТЬ ТЕСТ НА ВЗАИМОСВЯЗИ
+            Reflex reflexBefore = reflex;
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreEqual(reflex.Count, reflexBefore.Count + 1);
+            Processor newProcessor = reflex[reflexBefore.Count];
+            Assert.AreEqual(true, ProcessorCompare(newProcessor, main));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
+
+            Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
             {
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "WW"));
 
                 int c = 0;
                 try
@@ -1490,59 +1620,59 @@ namespace DynamicMosaicTest
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1575,61 +1705,61 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1662,61 +1792,61 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1749,61 +1879,61 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1836,61 +1966,61 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(3, c);
                 }
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ED"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ED"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WA"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WB"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WC"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WD"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WA"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WB"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WC"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WD"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BW"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EQ"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "AF"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "BP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "CP"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "DV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "EV"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WQ"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AF"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "BP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "CP"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "DV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "EV"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WQ"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
                 {
                     Processor minProcessor = new Processor(minmap, "main");
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "A"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "B"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "C"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "D"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "E"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "A"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "B"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "C"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "D"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "E"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EQ"));
 
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "AQ"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "BP"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "CW"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "DV"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "EF"));
-                    Assert.AreEqual(false, reflex.FindRelation(minProcessor, "W"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "AQ"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "BP"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "CW"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "DV"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "EF"));
+                    Assert.AreEqual(null, reflex.FindRelation(minProcessor, "W"));
 
                     int c = 0;
                     try
@@ -1947,29 +2077,27 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "ABCD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "dADDDbbBBDDbBacccaCccccaaabbcDddd"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "ABC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CAB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BCA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ABCD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dADDDbbBBDDbBacccaCccccaaabbcDddd"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ABC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CAB"));
+            Assert.AreNotEqual(null, reflex.FindRelation(main, "BCA"));
         }
 
         [TestMethod]
         public void ReflexTest12()
         {
-            SignValue[,] map;
-            Assert.AreEqual(true, GetMapsForTest_12_13(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
-            Assert.AreEqual(true, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
-            Assert.AreEqual(true, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "abcde"));
+            Assert.AreNotEqual(null, GetMapsForTest_12_13(out SignValue[,] map, true).FindRelation(new Processor(map, "main"), "abcde"));
+            Assert.AreNotEqual(null, GetMapsForTest_121_131(out map, true).FindRelation(new Processor(map, "main"), "abcde"));
+            Assert.AreNotEqual(null, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "abcde"));
         }
 
         [TestMethod]
         public void ReflexTest13()
         {
-            SignValue[,] map;
-            Assert.AreEqual(true, GetMapsForTest_12_13(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
-            Assert.AreEqual(true, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
-            Assert.AreEqual(true, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreNotEqual(null, GetMapsForTest_12_13(out SignValue[,] map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreNotEqual(null, GetMapsForTest_121_131(out map, false).FindRelation(new Processor(map, "main"), "ABCDE"));
+            Assert.AreNotEqual(null, GetMapsForTest_122_132(out map).FindRelation(new Processor(map, "main"), "ABCDE"));
         }
 
         static Reflex GetMapsForTest_12_13(out SignValue[,] map, bool register)
@@ -2102,19 +2230,17 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
         }
 
         [TestMethod]
         public void ReflexTest15()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC(reflex, main);
 
@@ -2124,10 +2250,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_1()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB1(reflex, main);
 
@@ -2139,10 +2263,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_2()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC(reflex, main);
 
@@ -2152,10 +2274,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_3()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB2(reflex, main);
 
@@ -2167,10 +2287,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_4()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC(reflex, main);
 
@@ -2180,10 +2298,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_5()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB3(reflex, main);
 
@@ -2195,10 +2311,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_6()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC1(reflex, main);
 
@@ -2208,10 +2322,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_7()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB1(reflex, main);
 
@@ -2223,10 +2335,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_8()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC1(reflex, main);
 
@@ -2236,10 +2346,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_9()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB2(reflex, main);
 
@@ -2251,10 +2359,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_10()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AC1(reflex, main);
 
@@ -2264,10 +2370,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest15_11()
         {
-            Processor main;
-            Reflex reflex;
 
-            GetReflexProcessor(out reflex, out main);
+            GetReflexProcessor(out Reflex reflex, out Processor main);
 
             Check_AB3(reflex, main);
 
@@ -2294,88 +2398,88 @@ namespace DynamicMosaicTest
 
         static void Check_AC(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "aC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "Ac"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "aC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "Ac"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "aB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "Ab"));
         }
 
         static void Check_AC1(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "aB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "Ab"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "aC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "Ac"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "aC"));
+            Assert.AreNotEqual(null, reflex.FindRelation(main, "Ac"));
         }
 
         static void Check_All(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "Ac"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "aC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "Ac"));
+            Assert.AreNotEqual(null, reflex.FindRelation(main, "aC"));
         }
 
         static void Check_AB1(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
             Check_All(reflex, main);
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "Ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "aB"));
             Check_All(reflex, main);
         }
 
         static void Check_AB2(Reflex reflex, Processor main)
         {
             Check_All(reflex, main);
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "Ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "aB"));
             Check_All(reflex, main);
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
             Check_All(reflex, main);
         }
 
         static void Check_AB3(Reflex reflex, Processor main)
         {
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "Ab"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "aB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "Ab"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "aB"));
             Check_All(reflex, main);
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "b"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "b"));
             Check_All(reflex, main);
         }
 
@@ -2410,32 +2514,32 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ADC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CAD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DCA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "ADCE"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ADC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CAD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DCA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ADCE"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "EA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
         }
 
         [TestMethod]
@@ -2467,51 +2571,51 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "D"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
 
             Processor main1 = new Processor(bmap, "bigmain");
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "W"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "CC"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "DD"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "CC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "WW"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AC"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "CA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AD"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "CA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AE"));
         }
 
         [TestMethod]
@@ -2543,51 +2647,51 @@ namespace DynamicMosaicTest
 
             Processor main1 = new Processor(bmap, "bigmain");
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "W"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "CC"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "DD"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "CC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "WW"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AC"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "CA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AD"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "CA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AE"));
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "C"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "D"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
         }
 
         [TestMethod]
@@ -2598,54 +2702,54 @@ namespace DynamicMosaicTest
             {
                 Processor main = Map1ForMultipleSizesMain;
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "A"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "AA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "AB"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "BA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AC"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "CA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AD"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "DA"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AC"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "AW"));
             }
 
             Processor main1 = Map2ForMultipleSizesMain;
 
-            Assert.AreEqual(false, reflex.FindRelation(main1, "C"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "D"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "C"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "E"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "B"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BB"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "CC"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "DD"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BB"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "CC"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "WW"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main1, "AB"));
-            Assert.AreEqual(true, reflex.FindRelation(main1, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "CA"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
-            Assert.AreEqual(false, reflex.FindRelation(main1, "AW"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "AB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "CA"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main1, "AW"));
         }
 
         [TestMethod]
@@ -2656,54 +2760,54 @@ namespace DynamicMosaicTest
             {
                 Processor main1 = Map2ForMultipleSizesMain;
 
-                Assert.AreEqual(true, reflex.FindRelation(main1, "C"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "W"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "D"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "E"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "A"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "B"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "C"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "W"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "D"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "E"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "A"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "B"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AA"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "BB"));
-                Assert.AreEqual(true, reflex.FindRelation(main1, "CC"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "DD"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "EE"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "WW"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AA"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "BB"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main1, "CC"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "DD"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "EE"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "WW"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AB"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "BA"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AC"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "CA"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AD"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "DA"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AE"));
-                Assert.AreEqual(false, reflex.FindRelation(main1, "AW"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AB"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "BA"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AC"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "CA"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AD"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "DA"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AE"));
+                Assert.AreEqual(null, reflex.FindRelation(main1, "AW"));
             }
 
             Processor main = Map1ForMultipleSizesMain;
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "C"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "D"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "E"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "W"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AA"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "BB"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "CC"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "DD"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "EE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "BB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "AB"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "BA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AC"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "CA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AD"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "DA"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AE"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "AW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AW"));
         }
 
         static Processor Map1ForMultipleSizesMain
@@ -2798,61 +2902,53 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTest17()
         {
-            ProcessorContainer pc;
-            Processor main;
 
-            GetTest17_18_19_20(out pc, out main);
+            GetTest17_18_19_20(out ProcessorContainer pc, out Processor main);
 
             foreach (string s in GetWordsSequental("ABCD"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
 
             foreach (string s in GetWordsSequental("DCBA"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
         }
 
         [TestMethod]
         public void ReflexTest18()
         {
-            ProcessorContainer pc;
-            Processor main;
 
-            GetTest17_18_19_20(out pc, out main);
+            GetTest17_18_19_20(out ProcessorContainer pc, out Processor main);
 
             foreach (string s in GetWordsSequental("DCBA"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
 
             foreach (string s in GetWordsSequental("ABCD"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
         }
 
         [TestMethod]
         public void ReflexTest19()
         {
-            ProcessorContainer pc;
-            Processor main;
 
-            GetTest17_18_19_20(out pc, out main);
+            GetTest17_18_19_20(out ProcessorContainer pc, out Processor main);
 
             foreach (string s in GetWordsSequental("abcd"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
 
             foreach (string s in GetWordsSequental("dcba"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
         }
 
         [TestMethod]
         public void ReflexTest20()
         {
-            ProcessorContainer pc;
-            Processor main;
 
-            GetTest17_18_19_20(out pc, out main);
+            GetTest17_18_19_20(out ProcessorContainer pc, out Processor main);
 
             foreach (string s in GetWordsSequental("dcba"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
 
             foreach (string s in GetWordsSequental("abcd"))
-                Assert.AreEqual(true, new Reflex(pc).FindRelation(main, s));
+                Assert.AreNotEqual(null, new Reflex(pc).FindRelation(main, s));
         }
 
         static void GetTest17_18_19_20(out ProcessorContainer pc, out Processor main)
@@ -2988,12 +3084,12 @@ namespace DynamicMosaicTest
                 SignValue[,] minmap = new SignValue[1, 1];
                 Processor minProcessor = new Processor(minmap, "main");
 
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "a"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "b"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "c"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "d"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "e"));
-                Assert.AreEqual(false, reflex.FindRelation(minProcessor, "w"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "a"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "b"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "c"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "d"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "e"));
+                Assert.AreEqual(null, reflex.FindRelation(minProcessor, "w"));
 
                 int c = 0;
                 try
@@ -3028,67 +3124,67 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "c"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "d"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "e"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "w"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "c"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "d"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "e"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "w"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "aa"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ad"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "da"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "aa"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ab"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ba"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ca"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ad"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "da"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ae"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ba"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "be"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ab"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "db"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "eb"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ca"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ce"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ec"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "da"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ad"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "da"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "db"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "de"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ad"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bd"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cd"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ed"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "ea"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ea"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "eb"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ec"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ed"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ae"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ee"));
             }
         }
 
@@ -3123,67 +3219,67 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "c"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "a"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "b"));
-            Assert.AreEqual(true, reflex.FindRelation(main, "d"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "e"));
-            Assert.AreEqual(false, reflex.FindRelation(main, "w"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "c"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "a"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "b"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "d"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "e"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "w"));
 
             for (int k = 0; k < 50; k++)
             {
-                Assert.AreEqual(true, reflex.FindRelation(main, "aa"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ad"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "da"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "aa"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ab"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ba"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ca"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ad"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "da"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ae"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "ba"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ab"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ba"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "be"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ab"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "db"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "eb"));
 
-                Assert.AreEqual(true, reflex.FindRelation(main, "ca"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cb"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "ac"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ca"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cb"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ce"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "ac"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dc"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ec"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "da"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "db"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dc"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ad"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "bd"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "cd"));
-                Assert.AreEqual(true, reflex.FindRelation(main, "dd"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "da"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "db"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dc"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ad"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "bd"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "cd"));
+                Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "dd"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ed"));
 
-                Assert.AreEqual(false, reflex.FindRelation(main, "ea"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "eb"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ec"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ed"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ae"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "be"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ce"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "de"));
-                Assert.AreEqual(false, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ea"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "eb"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ec"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ed"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ee"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ae"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "be"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ce"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "de"));
+                Assert.AreEqual(null, reflex.FindRelation(main, "ee"));
             }
         }
 
@@ -3212,15 +3308,15 @@ namespace DynamicMosaicTest
 
             Reflex reflex = new Reflex(pc);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
 
             pc.Add(new Processor(mapB, "B"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "A"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "B"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
         }
 
         [TestMethod]
@@ -3248,15 +3344,15 @@ namespace DynamicMosaicTest
 
             Reflex reflex = new Reflex(pc);
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
 
             pc.Add(new Processor(mapA, "A"));
 
-            Assert.AreEqual(true, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
 
-            Assert.AreEqual(false, reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
         }
 
         [TestMethod]
@@ -3375,7 +3471,15 @@ namespace DynamicMosaicTest
         public void ReflexArgumentNullException3()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new Reflex(null);
+            new Reflex((ProcessorContainer)null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReflexArgumentNullException4()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new Reflex((Reflex)null);
         }
     }
 }
