@@ -164,21 +164,21 @@ namespace DynamicMosaic
                         nameof(registered));
                 bool res = true;
                 for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                    for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                    {
-                        if (p[x1, y1] == processor[x, y])
-                            continue;
-                        res = false;
-                        goto exit;
-                    }
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                {
+                    if (p[x1, y1] == processor[x, y])
+                        continue;
+                    res = false;
+                    goto exit;
+                }
                 exit:
                 if (res)
                     return null;
             }
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                    values[x1, y1] = processor[x, y];
+            for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                values[x1, y1] = processor[x, y];
             return values;
         }
 
@@ -202,7 +202,7 @@ namespace DynamicMosaic
         ///     остальные буквы свойства <see cref="Processor.Tag" /> предназначены для случая, когда необходимо искать несколько
         ///     вариантов одной и той же карты. Поиск указанного слова производится без учёта регистра.
         ///     Этот метод работает как связка <see cref="Processor.GetEqual(ProcessorContainer)" /> и
-        ///     <see cref="SearchResults.FindRelation(string,int,int)" />.
+        ///     <see cref="SearchResults.FindRelation(string,int,int)" />. Эта функция может работать в многопоточном режиме.
         /// </summary>
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
@@ -337,6 +337,7 @@ namespace DynamicMosaic
                                 count.Length
                             }) должна быть меньше или равна максимальному значению каждого разряда ({maxCount}).");
             }
+
             if (count == null)
             {
                 count = new int[counter];
@@ -344,6 +345,7 @@ namespace DynamicMosaic
                     count[k] = k;
                 return counter - 1;
             }
+
             int? j = count.Length - 1;
             for (; j >= 0; j--)
             {
@@ -355,6 +357,7 @@ namespace DynamicMosaic
                 j = null;
                 break;
             }
+
             if (j == null)
                 return -1;
             int x = j.Value;
@@ -382,9 +385,9 @@ namespace DynamicMosaic
                 return str;
             StringBuilder sb = new StringBuilder(str);
             for (int k = 0; k < sb.Length; k++)
-                for (int j = 0; j < sb.Length; j++)
-                    if (j != k && sb[j] == sb[k])
-                        sb.Remove(j--, 1);
+            for (int j = 0; j < sb.Length; j++)
+                if (j != k && sb[j] == sb[k])
+                    sb.Remove(j--, 1);
             return sb.ToString();
         }
 
@@ -430,17 +433,17 @@ namespace DynamicMosaic
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
-                for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
-                {
-                    ProcPerc pp = searchResults[x, y];
-                    lstRegs.AddRange(from p in pp.Procs
-                                     where char.ToUpper(p.Tag[0]) == procName
-                                     select new Reg(new Point(x, y))
-                                     {
-                                         Percent = pp.Percent,
-                                         SelectedProcessor = p
-                                     });
-                }
+            for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
+            {
+                ProcPerc pp = searchResults[x, y];
+                lstRegs.AddRange(from p in pp.Procs
+                    where char.ToUpper(p.Tag[0]) == procName
+                    select new Reg(new Point(x, y))
+                    {
+                        Percent = pp.Percent,
+                        SelectedProcessor = p
+                    });
+            }
             return lstRegs;
         }
     }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DynamicMosaic;
 using DynamicParser;
 using DynamicProcessor;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Processor = DynamicParser.Processor;
 
 namespace DynamicMosaicTest
@@ -1342,15 +1343,15 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexRelationTest()
+        public void ReflexMultiThreadTest()
         {
             SignValue[,] minmap1 = new SignValue[1, 1];
             minmap1[0, 0] = new SignValue(1000);
             Processor p1 = new Processor(minmap1, "minmap1");
 
-            SignValue[,] minmap2 = new SignValue[1, 1];
-            minmap2[0, 0] = new SignValue(3000);
-            Processor p2 = new Processor(minmap2, "minmap2");
+            SignValue[,] minmap6 = new SignValue[1, 1];
+            minmap6[0, 0] = new SignValue(600);
+            Processor p6 = new Processor(minmap6, "minmap6");
 
             SignValue[,] mapA = new SignValue[1, 1];
             mapA[0, 0] = new SignValue(3000);
@@ -1372,6 +1373,127 @@ namespace DynamicMosaicTest
                 Assert.AreEqual((object)pr[0], pA);
                 Assert.AreEqual((object)pr[1], pB);
                 Assert.AreEqual((object)pr[2], pC);
+                Assert.AreEqual((object)pr[3], pCClone);
+            }
+
+            void TestExReflex(Reflex r, params int[] pars)
+            {
+                Assert.AreNotEqual(null, r);
+
+                int exCount = 0;
+
+                foreach (int k in pars)
+                    try
+                    {
+                        Processor p = r[k];
+                    }
+                    catch (ArgumentException)
+                    {
+                        exCount++;
+                    }
+
+                Assert.AreEqual(exCount, pars.Length);
+            }
+
+            Reflex re = new Reflex(new ProcessorContainer(pA, pB, pC, pCClone));
+
+            for (int k = 0; k < 200; k++)
+            {
+                Thread t = new Thread((object obj) =>
+                {
+                    for (int k1 = 0; k1 < 50000; k1++)
+                    {
+                        Reflex reflex = (Reflex)obj;
+                        Reflex rZ6 = reflex.FindRelation(p6, "D");
+                        Assert.AreNotEqual(null, rZ6);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ6, 5);
+                        Assert.AreNotEqual((object)rZ6[4], p6);
+                        Assert.AreEqual(true, ProcessorCompare(rZ6[4], p6));
+                        Assert.AreEqual("D0", rZ6[4].Tag);
+
+                        TestExReflex(rZ6, 5, 6, -1, -2);
+                        TestExReflex(reflex, 4, 5, -1, -2);
+
+                        Reflex rC = reflex.FindRelation(p1, "C");
+                        Assert.AreNotEqual(null, rC);
+                        MapVerify(reflex, 4);
+                        MapVerify(rC, 5);
+                        Assert.AreNotEqual((object)rC[4], p1);
+                        Assert.AreEqual(true, ProcessorCompare(rC[4], p1));
+                        Assert.AreEqual("C0", rC[4].Tag);
+
+                        TestExReflex(rC, 5, 6, -1, -2);
+                        TestExReflex(rZ6, 5, 6, -1, -2);
+                        TestExReflex(reflex, 4, 5, -1, -2);
+
+                        Reflex rB = reflex.FindRelation(p1, "B");
+                        Assert.AreNotEqual(null, rB);
+                        MapVerify(reflex, 4);
+                        MapVerify(rB, 5);
+                        Assert.AreNotEqual((object)rB[4], p1);
+                        Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+                        Assert.AreEqual("B0", rB[4].Tag);
+
+                        TestExReflex(rB, 5, 6, -1, -2);
+                        TestExReflex(reflex, 4, 5, -1, -2);
+                        TestExReflex(rC, 5, 6, -1, -2);
+                        TestExReflex(rZ6, 5, 6, -1, -2);
+                    }
+                })
+                { IsBackground = true, Priority = ThreadPriority.AboveNormal, Name = $"Number: {k}" };
+                t.Start(re);
+            }
+        }
+
+        [TestMethod]
+        public void ReflexRelationTest()
+        {
+            SignValue[,] minmap1 = new SignValue[1, 1];
+            minmap1[0, 0] = new SignValue(1000);
+            Processor p1 = new Processor(minmap1, "minmap1");
+
+            SignValue[,] minmap12 = new SignValue[1, 1];
+            minmap12[0, 0] = new SignValue(1200);
+            Processor p12 = new Processor(minmap12, "minmap12");
+
+            SignValue[,] minmap13 = new SignValue[1, 1];
+            minmap13[0, 0] = new SignValue(1200);
+            Processor p13 = new Processor(minmap13, "minmap13");
+
+            SignValue[,] minmap8 = new SignValue[1, 1];
+            minmap8[0, 0] = new SignValue(800);
+            Processor p8 = new Processor(minmap8, "minmap8");
+
+            SignValue[,] minmap2 = new SignValue[1, 1];
+            minmap2[0, 0] = new SignValue(3000);
+            Processor p2 = new Processor(minmap2, "minmap2");
+
+            SignValue[,] minmap6 = new SignValue[1, 1];
+            minmap6[0, 0] = new SignValue(600);
+            Processor p6 = new Processor(minmap6, "minmap6");
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = new SignValue(3000);
+            Processor pA = new Processor(mapA, "A");
+
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = new SignValue(1500);
+            Processor pB = new Processor(mapB, "B");
+
+            SignValue[,] mapC = new SignValue[1, 1];
+            mapC[0, 0] = new SignValue(500);
+            Processor pC = new Processor(mapC, "C");
+            Processor pCClone = new Processor(mapC, "D");
+
+            void MapVerify(Reflex pr, int needCount)
+            {
+                Assert.AreNotEqual(null, pr);
+                Assert.AreEqual(needCount, pr.Count);
+                Assert.AreEqual((object)pr[0], pA);
+                Assert.AreEqual((object)pr[1], pB);
+                Assert.AreEqual((object)pr[2], pC);
+                Assert.AreEqual((object)pr[3], pCClone);
             }
 
             void TestExReflex(Reflex r, params int[] pars)
@@ -1403,23 +1525,393 @@ namespace DynamicMosaicTest
                 }
                 {
                     Reflex rB = reflex.FindRelation(p1, "B");
-                    Assert.AreNotEqual(null, rB);
-                    MapVerify(reflex, 4);
-                    MapVerify(rB, 5);
-                    Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
-                    Assert.AreEqual("B0", rB[4].Tag);
+
+                    void rBCheck()
+                    {
+                        Assert.AreNotEqual(null, rB);
+                        MapVerify(reflex, 4);
+                        MapVerify(rB, 5);
+                        Assert.AreNotEqual((object)rB[4], p1);
+                        Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+                        Assert.AreEqual("B0", rB[4].Tag);
+                    }
+                    rBCheck();
 
                     TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Assert.AreEqual(null, rB.FindRelation(p8, "C"));
+
+                    MapVerify(rB, 5);
+                    Assert.AreNotEqual((object)rB[4], p1);
+                    Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+
+                    Reflex rZ = rB.FindRelation(p12, "B");
+
+                    void rZCheck()
+                    {
+                        Assert.AreNotEqual(null, rZ);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ, 6);
+                        Assert.AreEqual((object) rZ[4], rB[4]);
+                        Assert.AreNotEqual((object) rZ[5], p12);
+                        Assert.AreEqual(true, ProcessorCompare(rZ[5], p12));
+                        Assert.AreEqual("B00", rZ[5].Tag);
+                    }
+                    rBCheck();
+                    rZCheck();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Reflex rB1 = rB.FindRelation(p8, "B");
+
+                    void rB1Check()
+                    {
+                        Assert.AreNotEqual(null, rB1);
+                        MapVerify(reflex, 4);
+                        MapVerify(rB1, 6);
+                        MapVerify(rB, 5);
+                        Assert.AreEqual((object) rB1[4], rB[4]);
+                        Assert.AreNotEqual((object) rB1[5], p8);
+                        Assert.AreEqual(true, ProcessorCompare(rB1[5], p8));
+                    }
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Reflex rZ1 = rZ.FindRelation(p8, "B");
+
+                    void rZ1Check()
+                    {
+                        Assert.AreNotEqual(null, rZ1);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ, 6);
+                        MapVerify(rZ1, 7);
+                        MapVerify(rB, 5);
+                        Assert.AreEqual((object) rZ1[4], rZ[4]);
+                        Assert.AreEqual((object) rZ1[5], rZ[5]);
+                        Assert.AreNotEqual((object) rZ1[6], p8);
+                        Assert.AreEqual(true, ProcessorCompare(rZ1[5], p8));
+                    }
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Assert.AreEqual(null, rB.FindRelation(p8, "C"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rB1, 6);
+                    MapVerify(rB, 5);
+                    MapVerify(rZ, 6);
+                    MapVerify(rZ1, 7);
+                    Assert.AreNotEqual((object)rB[4], p1);
+                    Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Assert.AreEqual(null, rZ.FindRelation(p8, "C"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rB1, 6);
+                    MapVerify(rB, 5);
+                    MapVerify(rZ, 6);
+                    MapVerify(rZ1, 7);
+                    Assert.AreEqual((object)rZ[4], rB[4]);
+                    Assert.AreNotEqual((object)rZ[5], p12);
+                    Assert.AreEqual(true, ProcessorCompare(rZ[5], p12));
+
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Assert.AreEqual(null, rB1.FindRelation(p8, "C"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rB1, 6);
+                    MapVerify(rB, 5);
+                    MapVerify(rZ, 6);
+                    MapVerify(rZ1, 7);
+                    Assert.AreEqual((object)rB1[4], rB[4]);
+                    Assert.AreNotEqual((object)rB1[5], p8);
+                    Assert.AreEqual(true, ProcessorCompare(rB1[5], p8));
+
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Assert.AreEqual(null, rZ1.FindRelation(p8, "C"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ, 6);
+                    MapVerify(rZ1, 7);
+                    MapVerify(rB, 5);
+                    Assert.AreEqual((object)rZ1[4], rZ[4]);
+                    Assert.AreEqual((object)rZ1[5], rZ[5]);
+                    Assert.AreNotEqual((object)rZ1[6], p8);
+                    Assert.AreEqual(true, ProcessorCompare(rZ1[5], p8));
+
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
+
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rB, 5, 6, -1, -2);
+                    TestExReflex(rB1, 6, 7, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    rBCheck();
+                    rZCheck();
+                    rB1Check();
+                    rZ1Check();
                 }
                 {
                     Reflex rC = reflex.FindRelation(p1, "C");
-                    Assert.AreNotEqual(null, rC);
+
+                    void rCCheck()
+                    {
+                        Assert.AreNotEqual(null, rC);
+                        MapVerify(reflex, 4);
+                        MapVerify(rC, 5);
+                        Assert.AreNotEqual((object) rC[4], p1);
+                        Assert.AreEqual(true, ProcessorCompare(rC[4], p1));
+                        Assert.AreEqual("C0", rC[4].Tag);
+
+                        TestExReflex(rC, 5, 6, -1, -2);
+                    }
+                    rCCheck();
+
+                    Reflex rZ = rC.FindRelation(p12, "C");
+
+                    void rZCheck()
+                    {
+                        Assert.AreNotEqual(null, rZ);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ, 6);
+                        Assert.AreEqual((object) rZ[4], rC[4]);
+                        Assert.AreNotEqual((object) rZ[5], p12);
+                        Assert.AreEqual(true, ProcessorCompare(rZ[5], p12));
+                        Assert.AreEqual("C00", rZ[5].Tag);
+
+                        TestExReflex(rZ, 6, 7, -1, -2);
+                        TestExReflex(rC, 5, 6, -1, -2);
+                    }
+                    rZCheck();
+                    rCCheck();
+
+                    Reflex rZ1 = rZ.FindRelation(p13, "C");
+
+                    void rZ1Check()
+                    {
+                        Assert.AreNotEqual(null, rZ1);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ1, 7);
+                        Assert.AreEqual((object) rZ1[4], rZ[4]);
+                        Assert.AreEqual((object) rZ1[5], rZ[5]);
+                        Assert.AreNotEqual((object) rZ1[6], p13);
+                        Assert.AreEqual(true, ProcessorCompare(rZ1[6], p13));
+                        Assert.AreEqual("C000", rZ1[6].Tag);
+
+                        TestExReflex(rZ1, 7, 8, -1, -2);
+                        TestExReflex(rZ, 6, 7, -1, -2);
+                        TestExReflex(rC, 5, 6, -1, -2);
+                    }
+                    rZ1Check();
+                    rZCheck();
+                    rCCheck();
+
+                    Reflex rZ2 = rZ1.FindRelation(p8, "C");
+
+                    void rZ2Check()
+                    {
+                        Assert.AreNotEqual(null, rZ2);
+                        MapVerify(reflex, 4);
+                        MapVerify(rZ2, 8);
+                        MapVerify(rZ1, 7);
+                        Assert.AreEqual((object) rZ1[4], rZ[4]);
+                        Assert.AreEqual((object) rZ1[5], rZ[5]);
+                        Assert.AreEqual((object) rZ1[6], rZ[6]);
+                        Assert.AreNotEqual((object) rZ2[7], p8);
+                        Assert.AreEqual(true, ProcessorCompare(rZ2[7], p8));
+                        Assert.AreEqual("C0000", rZ2[7].Tag);
+
+                        TestExReflex(rZ2, 8, 9, -1, -2);
+                        TestExReflex(rZ1, 7, 8, -1, -2);
+                        TestExReflex(rZ, 6, 7, -1, -2);
+                        TestExReflex(rC, 5, 6, -1, -2);
+                    }
+                    rZ2Check();
+                    rZ1Check();
+                    rZCheck();
+                    rCCheck();
+
+                    Assert.AreEqual(null, rZ2.FindRelation(p8, "D"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ2, 8);
+                    Assert.AreEqual((object)rZ1[4], rZ[4]);
+                    Assert.AreEqual((object)rZ1[5], rZ[5]);
+                    Assert.AreEqual((object)rZ1[6], rZ[6]);
+                    Assert.AreNotEqual((object)rZ2[7], p8);
+                    Assert.AreEqual(true, ProcessorCompare(rZ2[7], p8));
+
+                    Assert.AreEqual(null, rZ1.FindRelation(p8, "D"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ1, 7);
+                    Assert.AreEqual((object)rZ1[4], rZ[4]);
+                    Assert.AreEqual((object)rZ1[5], rZ[5]);
+                    Assert.AreNotEqual((object)rZ1[6], p13);
+                    Assert.AreEqual(true, ProcessorCompare(rZ1[6], p13));
+                    Assert.AreEqual("C000", rZ1[6].Tag);
+
+                    Assert.AreEqual(null, rZ.FindRelation(p8, "D"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ, 6);
+                    Assert.AreEqual((object)rZ[4], rC[4]);
+                    Assert.AreNotEqual((object)rZ[5], p12);
+                    Assert.AreEqual(true, ProcessorCompare(rZ[5], p12));
+                    Assert.AreEqual("C00", rZ[5].Tag);
+
+                    Reflex rZ3 = rZ1.FindRelation(p6, "D");
+                    Assert.AreNotEqual(null, rZ3);
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ1, 7);
+                    MapVerify(rZ3, 8);
+                    Assert.AreEqual((object)rZ1[4], rZ3[4]);
+                    Assert.AreEqual((object)rZ1[5], rZ3[5]);
+                    Assert.AreEqual((object)rZ1[6], rZ3[6]);
+                    Assert.AreNotEqual((object)rZ3[7], p6);
+                    Assert.AreEqual(true, ProcessorCompare(rZ3[7], p6));
+                    Assert.AreEqual("D0", rZ3[7].Tag);
+
+                    Reflex rZ4 = rZ2.FindRelation(p6, "D");
+                    Assert.AreNotEqual(null, rZ4);
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ2, 8);
+                    MapVerify(rZ4, 9);
+                    Assert.AreEqual((object)rZ2[4], rZ4[4]);
+                    Assert.AreEqual((object)rZ2[5], rZ4[5]);
+                    Assert.AreEqual((object)rZ2[6], rZ4[6]);
+                    Assert.AreEqual((object)rZ2[7], rZ4[7]);
+                    Assert.AreNotEqual((object)rZ4[8], p6);
+                    Assert.AreEqual(true, ProcessorCompare(rZ4[8], p6));
+                    Assert.AreEqual("D0", rZ4[8].Tag);
+
+                    Reflex rZ5 = rC.FindRelation(p6, "D");
+                    Assert.AreNotEqual(null, rZ5);
                     MapVerify(reflex, 4);
                     MapVerify(rC, 5);
+                    MapVerify(rZ5, 6);
+                    Assert.AreEqual((object)rZ5[4], rC[4]);
+                    Assert.AreNotEqual((object)rZ5[5], p6);
+                    Assert.AreEqual(true, ProcessorCompare(rZ5[5], p6));
+                    Assert.AreEqual("D0", rZ5[5].Tag);
+
+                    Reflex rZ6 = reflex.FindRelation(p6, "D");
+                    Assert.AreNotEqual(null, rZ6);
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ6, 5);
+                    Assert.AreNotEqual((object)rZ6[4], p6);
+                    Assert.AreEqual(true, ProcessorCompare(rZ6[4], p6));
+                    Assert.AreEqual("D0", rZ6[4].Tag);
+
+                    Reflex rZ7 = reflex.FindRelation(p1, "B");
+                    Assert.AreNotEqual(null, rZ7);
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ7, 5);
+                    Assert.AreNotEqual((object)rZ7[4], p1);
+                    Assert.AreEqual(true, ProcessorCompare(rZ7[4], p1));
+                    Assert.AreEqual("B0", rZ7[4].Tag);
+
+                    Assert.AreEqual(null, rC.FindRelation(p1, "B"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rC, 5);
+                    Assert.AreNotEqual((object)rC[4], p1);
                     Assert.AreEqual(true, ProcessorCompare(rC[4], p1));
                     Assert.AreEqual("C0", rC[4].Tag);
 
-                    TestExReflex(rC, 5, 6, -1, -2);//Добавить тест с проверкой критического значения, т.е. карты с крайним значением относительно всего массива карт.
+                    Reflex rB = reflex.FindRelation(p1, "B");
+                    Assert.AreNotEqual(null, rB);
+                    MapVerify(reflex, 4);
+                    MapVerify(rB, 5);
+                    Assert.AreNotEqual((object)rB[4], p1);
+                    Assert.AreEqual(true, ProcessorCompare(rB[4], p1));
+                    Assert.AreEqual("B0", rB[4].Tag);
+                    TestExReflex(rB, 5, 6, -1, -2);
+
+                    Assert.AreEqual(null, rZ2.FindRelation(p1, "B"));
+                    MapVerify(reflex, 4);
+                    MapVerify(rZ2, 8);
+                    Assert.AreNotEqual(null, rZ4);
+                    MapVerify(rZ2, 8);
+                    MapVerify(rZ4, 9);
+                    Assert.AreEqual((object)rZ2[4], rZ4[4]);
+                    Assert.AreEqual((object)rZ2[5], rZ4[5]);
+                    Assert.AreEqual((object)rZ2[6], rZ4[6]);
+                    Assert.AreEqual((object)rZ2[7], rZ4[7]);
+                    Assert.AreNotEqual((object)rZ4[8], p6);
+                    Assert.AreEqual(true, ProcessorCompare(rZ4[8], p6));
+                    Assert.AreEqual("D0", rZ4[8].Tag);
+
+                    rZ2Check();
+                    rZ1Check();
+                    rZCheck();
+                    rCCheck();
+
+                    TestExReflex(rZ2, 8, 9, -1, -2);
+                    TestExReflex(rZ1, 7, 8, -1, -2);
+                    TestExReflex(rZ, 6, 7, -1, -2);
+                    TestExReflex(rC, 5, 6, -1, -2);
+                    TestExReflex(rZ3, 8, 9, -1, -2);
+                    TestExReflex(rZ4, 9, 10, -1, -2);
+                    TestExReflex(rZ5, 6, 7, -1, -2);
+                    TestExReflex(rZ6, 5, 6, -1, -2);
+                    TestExReflex(rZ7, 5, 6, -1, -2);
+                    TestExReflex(reflex, 4, 5, -1, -2);
+
+                    Reflex refl = new Reflex(rZ2);
+                    Assert.AreNotEqual(refl, rZ2);
+                    Assert.AreEqual(refl.Count, rZ2.Count);
+                    for (int j = 0; j < refl.Count; j++)
+                        Assert.AreEqual((object)refl[j], rZ2[j]);
+
+                    rZ2Check();
+                    rZ1Check();
+                    rZCheck();
+                    rCCheck();
                 }
 
                 {
@@ -1428,18 +1920,21 @@ namespace DynamicMosaicTest
                     Assert.AreNotEqual(null, rA);
                     MapVerify(reflex, 4);
                     MapVerify(rA, 4);
+                    Assert.AreNotEqual(rA[0], p2);
                     Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
                     Assert.AreEqual("A", rA[0].Tag);
 
                     Assert.AreEqual(null, rA.FindRelation(p2, "B"));
                     MapVerify(reflex, 4);
                     MapVerify(rA, 4);
+                    Assert.AreNotEqual(rA[0], p2);
                     Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
                     Assert.AreEqual("A", rA[0].Tag);
 
                     Assert.AreEqual(null, reflex.FindRelation(p2, "C"));
                     MapVerify(reflex, 4);
                     MapVerify(rA, 4);
+                    Assert.AreNotEqual(rA[0], p2);
                     Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
                     Assert.AreEqual("A", rA[0].Tag);
 
@@ -1530,7 +2025,7 @@ namespace DynamicMosaicTest
 
             Processor main = new Processor(map, "main");
 
-            Assert.AreEqual(null, reflex.FindRelation(main, "A"));//ДОПИСАТЬ ТЕСТ НА ВЗАИМОСВЯЗИ
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
             Reflex reflexBefore = reflex;
             Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
             Assert.AreEqual(reflex.Count, reflexBefore.Count + 1);
