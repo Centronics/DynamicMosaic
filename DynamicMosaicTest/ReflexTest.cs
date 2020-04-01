@@ -2014,6 +2014,25 @@ namespace DynamicMosaicTest
                     bool b4 = r2[3][0, 0] == new SignValue(2000);
                     Assert.AreEqual(true, (b1 || b2) && (b3 || b4));
                 }
+                {
+                    SignValue[,] minmap1t = new SignValue[1, 2];
+                    minmap1t[0, 0] = new SignValue(2000);
+                    minmap1t[0, 1] = new SignValue(2000);
+                    Processor pr0 = new Processor(minmap1t, "C");
+
+                    Reflex r = new Reflex(new ProcessorContainer(pB, pC));
+                    for (int k1 = 0; k1 < 5; k1++)
+                    {
+                        Reflex r1 = r.FindRelation(pr0, "B");
+                        Assert.AreNotEqual(null, r1);
+                        Assert.AreEqual(r1.Count, 3);
+                        Assert.AreEqual((object)r1[0], pB);
+                        Assert.AreEqual((object)r1[1], pC);
+                        Assert.AreNotEqual((object)r1[2], pr0);
+                        Assert.AreEqual(r1[2][0, 0], pr0[0, 0]);
+                        Assert.AreEqual(r1[2].Tag, "B0");
+                    }
+                }
             }
         }
 
