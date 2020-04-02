@@ -1,12 +1,12 @@
-﻿using DynamicMosaic;
-using DynamicParser;
-using DynamicProcessor;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using DynamicMosaic;
+using DynamicParser;
+using DynamicProcessor;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Processor = DynamicParser.Processor;
 
 namespace DynamicMosaicTest
@@ -1327,11 +1327,11 @@ namespace DynamicMosaicTest
 
         static bool ProcessorCompare(Processor pOne, Processor pTwo)
         {
-            if ((object)pOne == pTwo && pOne is null)
+            if (pOne == pTwo && pOne is null)
                 return true;
             if (pOne is null || pTwo is null)
                 return false;
-            if ((object)pOne == pTwo)
+            if (pOne == pTwo)
                 return true;
             if (pOne.Length != pTwo.Length)
                 return false;
@@ -1385,7 +1385,7 @@ namespace DynamicMosaicTest
                 foreach (int k in pars)
                     try
                     {
-                        Processor p = r[k];
+                        Processor unused = r[k];
                     }
                     catch (ArgumentException)
                     {
@@ -1401,7 +1401,7 @@ namespace DynamicMosaicTest
 
             for (int k = 0; k < steps; k++)
             {
-                Thread t = new Thread((object obj) =>
+                Thread t = new Thread(obj =>
                 {
                     for (int k1 = 0; k1 < 300; k1++)
                     {
@@ -1453,6 +1453,7 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
+        // ReSharper disable once FunctionComplexityOverflow
         public void ReflexRelationTest()
         {
             SignValue[,] minmap1 = new SignValue[1, 1];
@@ -1511,7 +1512,7 @@ namespace DynamicMosaicTest
                 foreach (int k in pars)
                     try
                     {
-                        Processor p = r[k];
+                        Processor unused = r[k];
                     }
                     catch (ArgumentException)
                     {
@@ -1952,8 +1953,8 @@ namespace DynamicMosaicTest
                     }
                 }
                 {
-                    Processor pr1 = new Processor(new SignValue[] { new SignValue(1300) }, "A");
-                    Processor pr2 = new Processor(new SignValue[] { new SignValue(2100) }, "B");
+                    Processor pr1 = new Processor(new[] { new SignValue(1300) }, "A");
+                    Processor pr2 = new Processor(new[] { new SignValue(2100) }, "B");
 
                     void MapVerify1(Reflex rx, int needCount)
                     {
@@ -1972,7 +1973,7 @@ namespace DynamicMosaicTest
                         foreach (int k1 in pars)
                             try
                             {
-                                Processor p = r[k1];
+                                Processor unused = r[k1];
                             }
                             catch (ArgumentException)
                             {
@@ -1982,18 +1983,18 @@ namespace DynamicMosaicTest
                         Assert.AreEqual(exCount, pars.Length);
                     }
 
-                    SignValue[,] minmap1t = new SignValue[1, 2];
-                    minmap1t[0, 0] = new SignValue(1000);
-                    minmap1t[0, 1] = new SignValue(2000);
-                    Processor pr0 = new Processor(minmap1t, "C");
+                    SignValue[,] minmapt1 = new SignValue[1, 2];
+                    minmapt1[0, 0] = new SignValue(1000);
+                    minmapt1[0, 1] = new SignValue(2000);
+                    Processor pr0 = new Processor(minmapt1, "C");
                     Reflex r1 = new Reflex(new ProcessorContainer(pr1, pr2));
                     MapVerify1(r1, 2);
                     Reflex r2 = r1.FindRelation(pr0, "AB");
                     Assert.AreNotEqual(null, r2);
                     MapVerify1(r1, 2);
                     MapVerify1(r2, 4);
-                    TestExReflex1(r1, new int[] { 2, 3, -1, -2 });
-                    TestExReflex1(r2, new int[] { 4, 5, -1, -2 });
+                    TestExReflex1(r1, 2, 3, -1, -2);
+                    TestExReflex1(r2, 4, 5, -1, -2);
                     Assert.AreEqual((object)r1[0], r2[0]);
                     Assert.AreEqual((object)r1[1], r2[1]);
                     Assert.AreNotEqual((object)r2[2], pr1);
@@ -2015,10 +2016,10 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(true, (b1 || b2) && (b3 || b4));
                 }
                 {
-                    SignValue[,] minmap1t = new SignValue[1, 2];
-                    minmap1t[0, 0] = new SignValue(2000);
-                    minmap1t[0, 1] = new SignValue(2000);
-                    Processor pr0 = new Processor(minmap1t, "C");
+                    SignValue[,] minmapt1 = new SignValue[1, 2];
+                    minmapt1[0, 0] = new SignValue(2000);
+                    minmapt1[0, 1] = new SignValue(2000);
+                    Processor pr0 = new Processor(minmapt1, "C");
 
                     Reflex r = new Reflex(new ProcessorContainer(pB, pC));
                     for (int k1 = 0; k1 < 5; k1++)
