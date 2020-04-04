@@ -187,7 +187,7 @@ namespace DynamicMosaic
         /// <summary>
         ///     Производит поиск указанного слова <see cref="string" /> на указанной карте <see cref="Processor" />.
         ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
-        ///     - <see langword="null" />.
+        ///     возвращается <see langword="null" />.
         ///     Возвращаемый экземпляр <see cref="Reflex" />, помимо карт текущего экземпляра, включает в себя карты, которые
         ///     скопированы с рабочей области.
         ///     Карты скопированы с координат, где были найдены искомые карты.
@@ -212,8 +212,7 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <returns>
         ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
-        ///     -
-        ///     <see langword="null" />.
+        ///     возвращается <see langword="null" />.
         /// </returns>
         public Reflex FindRelation(Processor processor, string word)
         {
