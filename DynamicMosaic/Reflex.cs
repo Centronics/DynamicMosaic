@@ -11,19 +11,21 @@ using Region = DynamicParser.Region;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Предназначен для связывания карт <see cref="Processor" />.
-    ///     Служит для поиска данных на карте и сохранения результатов поиска в виде генерации ногово экземпляра <see cref="Reflex" />.
+    ///     Предназначен для связывания карт <see cref="DynamicParser.Processor" />.
+    ///     Служит для поиска данных на карте и сохранения результатов поиска в виде генерации нового экземпляра
+    ///     <see cref="Reflex" />.
     /// </summary>
     public sealed class Reflex
     {
         /// <summary>
-        ///     Карты <see cref="Processor" />, с помощью которых производится поиск запрашиваемых данных.
+        ///     Карты <see cref="DynamicParser.Processor" />, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
         readonly ProcessorContainer _seaProcessors;
 
         /// <summary>
-        ///     Инициализирует текущий экземпляр <see cref="Reflex" /> картами из указанного экземпляра <see cref="ProcessorContainer" />.
-        ///     Карты предназначены для вызова <see cref="Processor.GetEqual(ProcessorContainer)" />.
+        ///     Инициализирует текущий экземпляр <see cref="Reflex" /> картами из указанного экземпляра
+        ///     <see cref="ProcessorContainer" />.
+        ///     Карты предназначены для вызова <see cref="DynamicParser.Processor.GetEqual(ProcessorContainer)" />.
         ///     Этот список невозможно изменить вручную, в процессе работы с классом.
         /// </summary>
         /// <param name="processors">
@@ -47,7 +49,7 @@ namespace DynamicMosaic
         /// <summary>
         ///     Инициализирует текущий экземпляр <see cref="Reflex" /> картами, взятыми из указанного экземпляра
         ///     <see cref="Reflex" />.
-        ///     Карты предназначены для вызова <see cref="Processor.GetEqual(ProcessorContainer)" />.
+        ///     Карты предназначены для вызова <see cref="DynamicParser.Processor.GetEqual(ProcessorContainer)" />.
         ///     Этот список невозможно изменить вручную, в процессе работы с классом.
         /// </summary>
         /// <param name="reflex">
@@ -169,10 +171,12 @@ namespace DynamicMosaic
                     res = false;
                     goto exit;
                 }
+
                 exit:
                 if (res)
                     return null;
             }
+
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
             for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
@@ -195,17 +199,20 @@ namespace DynamicMosaic
         ///     что из них можно составить
         ///     искомое слово с помощью метода <see cref="SearchResults.FindRelation(string,int,int)" />. При поиске слова
         ///     используется только
-        ///     первая буква свойства <see cref="Processor.Tag" /> каждой искомой карты (хранящейся внутри экземпляра класса
+        ///     первая буква свойства <see cref="Processor.Tag" /> каждой искомой карты (хранящейся внутри текущего экземпляра
+        ///     класса
         ///     <see cref="Reflex" />),
         ///     остальные буквы свойства <see cref="Processor.Tag" /> предназначены для случая, когда необходимо искать несколько
         ///     вариантов одной и той же карты. Поиск указанного слова производится без учёта регистра.
-        ///     Этот метод работает как связка <see cref="Processor.GetEqual(ProcessorContainer)" /> и
-        ///     <see cref="SearchResults.FindRelation(string,int,int)" />. Эта функция может работать в многопоточном режиме.
+        ///     Этот метод работает как связка методов <see cref="Processor.GetEqual(ProcessorContainer)" /> и
+        ///     <see cref="SearchResults.FindRelation(string,int,int)" />. Эту функцию безопасно могут использовать несколько
+        ///     потоков одновременно, без блокировки.
         /// </summary>
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
         /// <returns>
-        ///     Возвращает новый объект <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае -
+        ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
+        ///     -
         ///     <see langword="null" />.
         /// </returns>
         public Reflex FindRelation(Processor processor, string word)
@@ -239,9 +246,9 @@ namespace DynamicMosaic
         ///     составить из первых букв свойств
         ///     <see cref="Processor.Tag" /> карт, при условии отсутствия наложений одной карты на другую.
         /// </summary>
-        /// <param name="regs">Список обрабатываемых карт.</param>
+        /// <param name="regs">Список обрабатываемых карт, из которых требуется получить список коллекций областей.</param>
         /// <param name="word">Искомое слово.</param>
-        /// <param name="mapSize">Размер поля результатов поиска, в которых планируется выполнить поиск требуемого слова.</param>
+        /// <param name="mapSize">Размер поля результатов поиска, в которых требуется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
         static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize)
         {
@@ -284,9 +291,11 @@ namespace DynamicMosaic
                         result = false;
                         break;
                     }
+
                     region.Add(rect, pp.SelectedProcessor, pp.Percent);
                     mapString.Append(pp.SelectedProcessor.Tag[0]);
                 }
+
                 if (result && mapSearcher.IsEqual(mapString.ToString()))
                     yield return region.Elements;
                 region.Clear();
@@ -412,6 +421,7 @@ namespace DynamicMosaic
                 if (lstCh.Count <= 0)
                     return true;
             }
+
             return lstCh.Count <= 0;
         }
 
@@ -442,6 +452,7 @@ namespace DynamicMosaic
                         SelectedProcessor = p
                     });
             }
+
             return lstRegs;
         }
     }
