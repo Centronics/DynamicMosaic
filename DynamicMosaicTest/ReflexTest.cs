@@ -1327,13 +1327,11 @@ namespace DynamicMosaicTest
 
         static bool ProcessorCompare(Processor pOne, Processor pTwo)
         {
-            if (pOne == pTwo && pOne is null)
+            if (ReferenceEquals(pOne, pTwo))
                 return true;
             if (pOne is null || pTwo is null)
                 return false;
-            if (pOne == pTwo)
-                return true;
-            if (pOne.Length != pTwo.Length)
+            if (pOne.Width != pTwo.Width || pOne.Height != pTwo.Height)
                 return false;
             for (int y = 0; y < pOne.Height; y++)
                 for (int x = 0; x < pOne.Width; x++)
