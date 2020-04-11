@@ -1932,6 +1932,12 @@ namespace DynamicMosaicTest
                         Assert.AreEqual(true, ProcessorCompare(rA[0], p2));
                         Assert.AreEqual("A", rA[0].Tag);
 
+                        MapVerify(reflex, 4);
+                        Reflex rA1 = reflex.FindRelation(pA, "A");
+                        Assert.AreNotEqual(null, rA1);
+                        MapVerify(reflex, 4);
+                        MapVerify(rA1, 4);
+
                         Assert.AreEqual(null, rA.FindRelation(p2, "B"));
                         MapVerify(reflex, 4);
                         MapVerify(rA, 4);
