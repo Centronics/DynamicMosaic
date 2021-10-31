@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -81,45 +82,6 @@ namespace DynamicMosaic
         public Processor this[int index] => _seaProcessors[index];
 
         /// <summary>
-        ///     Получает карту из целевой карты по указанным координатам, копируя часть указанной карты в массив карт для поиска
-        ///     <see cref="_seaProcessors" />.
-        /// </summary>
-        /// <param name="processor">Карта, с которой необходимо получить целевую карту.</param>
-        /// <param name="registered">Сведения о получаемой карте.</param>
-        void GetMap(Processor processor, Registered registered)
-        {
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor),
-                    $@"{nameof(GetMap)}: Исходная карта должна быть указана.");
-            if (registered == null)
-                throw new ArgumentNullException(nameof(registered),
-                    $@"{nameof(GetMap)}: Сведения о получаемой карте должны присутствовать.");
-            if (registered.X < 0)
-                throw new ArgumentException(
-                    $"{nameof(GetMap)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).",
-                    nameof(registered));
-            if (registered.Y < 0)
-                throw new ArgumentException(
-                    $"{nameof(GetMap)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).",
-                    nameof(registered));
-            if (registered.Right > processor.Width)
-                throw new ArgumentException(
-                    $"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.",
-                    nameof(registered));
-            if (registered.Bottom > processor.Height)
-                throw new ArgumentException(
-                    $"{nameof(GetMap)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.",
-                    nameof(registered));
-            SignValue[,] values = MapCopy(processor, registered);
-            if (values == null)
-                return;
-            string tag = registered.Register.SelectedProcessor.Tag;
-            while (_seaProcessors.ContainsTag(tag))
-                tag += '0';
-            _seaProcessors.Add(new Processor(values, tag));
-        }
-
-        /// <summary>
         ///     Определяет, содержит ли текущий экземпляр <see cref="Reflex" /> карту с подобным содержимым или нет.
         ///     В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null" />, в противном
         ///     случае -
@@ -132,56 +94,14 @@ namespace DynamicMosaic
         ///     случае -
         ///     массив данных, сведения о котором указаны в параметре <see cref="Registered" />.
         /// </returns>
-        SignValue[,] MapCopy(Processor processor, Registered registered)
+        static Processor GetProcessorFromField(Processor processor, Registered registered)
         {
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor),
-                    $"{nameof(MapCopy)}: Карта, из которой необходимо получить целевую карту, должна быть указана.");
-            if (registered == null)
-                throw new ArgumentNullException(nameof(registered),
-                    $"{nameof(MapCopy)}: Сведения о получаемой карте должны присутствовать.");
-            if (registered.X < 0)
-                throw new ArgumentException(
-                    $"{nameof(MapCopy)}: Координата {nameof(Registered.X)} получаемой карты меньше ноля ({registered.X}).",
-                    nameof(registered));
-            if (registered.Y < 0)
-                throw new ArgumentException(
-                    $"{nameof(MapCopy)}: Координата {nameof(Registered.Y)} получаемой карты меньше ноля ({registered.Y}).",
-                    nameof(registered));
-            if (registered.Right > processor.Width)
-                throw new ArgumentException(
-                    $"{nameof(MapCopy)}: Данные о получаемой карте некорректны: выход за предел карты по ширине.",
-                    nameof(registered));
-            if (registered.Bottom > processor.Height)
-                throw new ArgumentException(
-                    $"{nameof(MapCopy)}: Данные о получаемой карте некорректны: выход за предел карты по высоте.",
-                    nameof(registered));
-            for (int k = 0; k < _seaProcessors.Count; k++)
-            {
-                Processor p = _seaProcessors[k];
-                if (p.Width != registered.Region.Width || p.Height != registered.Region.Height)
-                    throw new ArgumentException($"{nameof(MapCopy)}: Карты не соответствуют по размерам.",
-                        nameof(registered));
-                bool res = true;
-                for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                {
-                    if (p[x1, y1] == processor[x, y])
-                        continue;
-                    res = false;
-                    goto exit;
-                }
-
-                exit:
-                if (res)
-                    return null;
-            }
-
             SignValue[,] values = new SignValue[registered.Region.Width, registered.Region.Height];
             for (int y = registered.Y, y1 = 0; y < registered.Bottom; y++, y1++)
-            for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
-                values[x1, y1] = processor[x, y];
-            return values;
+                for (int x = registered.X, x1 = 0; x < registered.Right; x++, x1++)
+                    values[x1, y1] = processor[x, y];
+
+            return new Processor(values, registered.Register.SelectedProcessor.Tag);
         }
 
         /// <summary>
@@ -232,30 +152,102 @@ namespace DynamicMosaic
         ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
         /// </returns>
-        public Reflex FindRelation(Processor processor, string word)
+        public ProcessorContainer FindRelation(Processor processor, string word)
         {
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor),
                     $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
-            if (word == null)
-                throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
-            if (word == string.Empty)
-                throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
+
+            switch (word)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
+                case "":
+                    throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
+            }
+
             if (processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height)
                 return null;
             string w = StripString(word);
             if (!IsMapsWord(w))
                 return null;
             SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            if (!searchResults.FindRelation(w))
-                return null;
-            Reflex reflex = new Reflex(this);
-            List<Reg> lstRegs = new List<Reg>();
-            foreach (List<Reg> lstReg in w.Select(c => FindSymbols(c, searchResults)))
-                lstRegs.AddRange(lstReg);
-            foreach (Registered r in FindWord(lstRegs, w, searchResults.ResultSize).SelectMany(regs => regs))
-                reflex.GetMap(processor, r);
-            return reflex;
+            //if (!searchResults.FindRelation(w))
+            //return null;
+
+            ProcessorHandler ph = new ProcessorHandler();
+            foreach (Registered r in FindWord(w.SelectMany(c => FindSymbols(c, searchResults)).ToArray(), w, searchResults.ResultSize).SelectMany(regs => regs))
+                ph.Add(GetProcessorFromField(processor, r));
+
+            return string.IsNullOrEmpty(ph.ToString()) ? null : ph.Processors;
+        }
+
+        public Reflex FindRelation(IEnumerable<(Processor p, string q)> queryPairs)
+        {
+            if (queryPairs == null)
+                throw new ArgumentNullException(nameof(queryPairs), "Последовательность запросов равна null.");
+
+            (Processor, string q)[] pqArray = queryPairs.Select(t =>
+            {
+                Processor p = t.p ?? throw new ArgumentNullException(nameof(queryPairs), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
+                switch (t.q)
+                {
+                    case null:
+                        throw new ArgumentNullException(nameof(queryPairs), $"{nameof(FindRelation)}: Искомое слово равно null.");
+                    case "":
+                        throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(queryPairs));
+                }
+                return (p, t.q.ToUpper());
+            }).ToArray();
+
+            ConcurrentBag<(ProcessorContainer pc, string q)> completedQueries = new ConcurrentBag<(ProcessorContainer, string)>();
+            Exception exThrown = null;
+
+            //Parallel.ForEach(queries, ((Processor p, string q), ParallelLoopState state) =>
+            foreach ((Processor p, string q) in pqArray)
+            {
+                try
+                {
+                    ProcessorContainer pc = FindRelation(p, q);
+                    if (pc != null)
+                        completedQueries.Add((pc, q));
+                }
+                catch (Exception ex)
+                {
+                    exThrown = ex;
+                    break;
+                    //state.Stop();
+                }
+            }//);
+
+            if (exThrown != null)
+                throw exThrown;
+
+            HashSet<char> allQueries = new HashSet<char>(pqArray.SelectMany(t => t.q));
+            allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
+
+            IEnumerable<Processor> GetResultProcessors()
+            {
+                foreach ((ProcessorContainer p, string _) in completedQueries)
+                    for (int k = 0; k < p.Count; k++)
+                        yield return p[k];
+            }
+
+            ProcessorContainer pcResult = new ProcessorContainer(GetProcessorsBySymbols(allQueries).ToArray());
+            pcResult.AddRange(GetResultProcessors().ToArray());
+
+            return new Reflex(pcResult);
+        }
+
+        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
+        {
+            HashSet<char> hash = new HashSet<char>(symbols.Select(char.ToUpper));
+            for (int k = 0; k < _seaProcessors.Count; k++)
+            {
+                Processor p = _seaProcessors[k];
+                if (hash.Contains(char.ToUpper(p.Tag[0])))
+                    yield return p;
+            }
         }
 
         /// <summary>
@@ -409,9 +401,9 @@ namespace DynamicMosaic
                 return str;
             StringBuilder sb = new StringBuilder(str);
             for (int k = 0; k < sb.Length; k++)
-            for (int j = 0; j < sb.Length; j++)
-                if (j != k && sb[j] == sb[k])
-                    sb.Remove(j--, 1);
+                for (int j = 0; j < sb.Length; j++)
+                    if (j != k && sb[j] == sb[k])
+                        sb.Remove(j--, 1);
             return sb.ToString();
         }
 
@@ -458,17 +450,17 @@ namespace DynamicMosaic
             procName = char.ToUpper(procName);
             List<Reg> lstRegs = new List<Reg>();
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
-            for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
-            {
-                ProcPerc pp = searchResults[x, y];
-                lstRegs.AddRange(from p in pp.Procs
-                    where char.ToUpper(p.Tag[0]) == procName
-                    select new Reg(new Point(x, y))
-                    {
-                        Percent = pp.Percent,
-                        SelectedProcessor = p
-                    });
-            }
+                for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
+                {
+                    ProcPerc pp = searchResults[x, y];
+                    lstRegs.AddRange(from p in pp.Procs
+                                     where char.ToUpper(p.Tag[0]) == procName
+                                     select new Reg(new Point(x, y))
+                                     {
+                                         Percent = pp.Percent,
+                                         SelectedProcessor = p
+                                     });
+                }
 
             return lstRegs;
         }

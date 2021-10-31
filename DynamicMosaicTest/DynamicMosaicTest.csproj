@@ -36,10 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DynamicParser">
-      <HintPath>..\..\..\Программы\Системы программирования\ДИС\DynamicParserRelease\Скомпилировано\Библиотека\DynamicParser.dll</HintPath>
+      <HintPath>Z:\Documents\ДИС\DynamicParser.dll</HintPath>
     </Reference>
     <Reference Include="DynamicProcessor">
-      <HintPath>..\..\..\Программы\Системы программирования\ДИС\DynamicParserRelease\Скомпилировано\Библиотека\DynamicProcessor.dll</HintPath>
+      <HintPath>Z:\Documents\ДИС\DynamicProcessor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -60,6 +60,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ProcessorHandlerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflexTest.cs" />
   </ItemGroup>
