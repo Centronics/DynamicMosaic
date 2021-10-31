@@ -48,28 +48,6 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Инициализирует текущий экземпляр <see cref="Reflex" /> картами, взятыми из указанного экземпляра
-        ///     <see cref="Reflex" />.
-        ///     Карты предназначены для вызова <see cref="DynamicParser.Processor.GetEqual(ProcessorContainer)" />.
-        ///     Этот список невозможно изменить вручную, в процессе работы с классом.
-        /// </summary>
-        /// <param name="reflex">
-        ///     Экземпляр <see cref="Reflex" />, карты из которого необходимо добавить в текущий экземпляр <see cref="Reflex" />.
-        ///     С помощью них будет проводиться поиск запрашиваемых данных.
-        ///     Состояние данного экземпляра <see cref="Reflex" /> останется прежним.
-        /// </param>
-        public Reflex(Reflex reflex)
-        {
-            if (reflex == null)
-                throw new ArgumentNullException(nameof(reflex),
-                    $"{nameof(Reflex)}: Необходимо указать экземпляр класса {nameof(Reflex)}.");
-            Processor[] procs = new Processor[reflex._seaProcessors.Count];
-            for (int k = 0; k < procs.Length; k++)
-                procs[k] = reflex._seaProcessors[k];
-            _seaProcessors = new ProcessorContainer(procs);
-        }
-
-        /// <summary>
         ///     Получает количество карт, содержащихся в текущем экземпляре <see cref="Reflex" />.
         /// </summary>
         public int Count => _seaProcessors.Count;
@@ -152,63 +130,32 @@ namespace DynamicMosaic
         ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
         /// </returns>
-        public ProcessorContainer FindRelation(Processor processor, string word)
+        ProcessorContainer IntFindRelation(Processor processor, string word)
         {
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor),
-                    $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
-
-            switch (word)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(word), $"{nameof(FindRelation)}: Искомое слово равно null.");
-                case "":
-                    throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(word));
-            }
-
-            if (processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height)
+            if (processor == null || processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height || !QueryMapping(ref word))
                 return null;
-            string w = StripString(word);
-            if (!IsMapsWord(w))
-                return null;
-            SearchResults searchResults = processor.GetEqual(_seaProcessors);
-            //if (!searchResults.FindRelation(w))
-            //return null;
-
             ProcessorHandler ph = new ProcessorHandler();
-            foreach (Registered r in FindWord(w.SelectMany(c => FindSymbols(c, searchResults)).ToArray(), w, searchResults.ResultSize).SelectMany(regs => regs))
+            foreach (Registered r in FindWord(word.SelectMany(c => FindSymbols(c, processor.GetEqual(_seaProcessors))).ToArray(), word, processor.Size).SelectMany(regs => regs))
                 ph.Add(GetProcessorFromField(processor, r));
-
-            return string.IsNullOrEmpty(ph.ToString()) ? null : ph.Processors;
+            return ph.Processors;
         }
 
-        public Reflex FindRelation(IEnumerable<(Processor p, string q)> queryPairs)
+        public Reflex FindRelation(params (Processor p, string q)[] queryPairs)
         {
-            if (queryPairs == null)
-                throw new ArgumentNullException(nameof(queryPairs), "Последовательность запросов равна null.");
+            if ((queryPairs?.Length ?? 0) == 0)
+                return null;
 
-            (Processor, string q)[] pqArray = queryPairs.Select(t =>
-            {
-                Processor p = t.p ?? throw new ArgumentNullException(nameof(queryPairs), $"{nameof(FindRelation)}: Карта для поиска не указана (null).");
-                switch (t.q)
-                {
-                    case null:
-                        throw new ArgumentNullException(nameof(queryPairs), $"{nameof(FindRelation)}: Искомое слово равно null.");
-                    case "":
-                        throw new ArgumentException($"{nameof(FindRelation)}: Искомое слово не указано.", nameof(queryPairs));
-                }
-                return (p, t.q.ToUpper());
-            }).ToArray();
+            queryPairs = queryPairs.Select(t => (t.p, t.q?.ToUpper() ?? string.Empty)).ToArray();
 
             ConcurrentBag<(ProcessorContainer pc, string q)> completedQueries = new ConcurrentBag<(ProcessorContainer, string)>();
             Exception exThrown = null;
 
             //Parallel.ForEach(queries, ((Processor p, string q), ParallelLoopState state) =>
-            foreach ((Processor p, string q) in pqArray)
+            foreach ((Processor p, string q) in queryPairs)
             {
                 try
                 {
-                    ProcessorContainer pc = FindRelation(p, q);
+                    ProcessorContainer pc = IntFindRelation(p, q);
                     if (pc != null)
                         completedQueries.Add((pc, q));
                 }
@@ -223,20 +170,20 @@ namespace DynamicMosaic
             if (exThrown != null)
                 throw exThrown;
 
-            HashSet<char> allQueries = new HashSet<char>(pqArray.SelectMany(t => t.q));
+            HashSet<char> allQueries = new HashSet<char>(queryPairs.SelectMany(t => t.q));
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
             IEnumerable<Processor> GetResultProcessors()
             {
-                foreach ((ProcessorContainer p, string _) in completedQueries)
-                    for (int k = 0; k < p.Count; k++)
-                        yield return p[k];
+                foreach (Processor p in GetProcessorsBySymbols(allQueries))
+                    yield return p;
+
+                foreach ((ProcessorContainer pc, string _) in completedQueries)
+                    for (int k = 0; k < pc.Count; k++)
+                        yield return pc[k];
             }
 
-            ProcessorContainer pcResult = new ProcessorContainer(GetProcessorsBySymbols(allQueries).ToArray());
-            pcResult.AddRange(GetResultProcessors().ToArray());
-
-            return new Reflex(pcResult);
+            return new Reflex(new ProcessorContainer(GetResultProcessors().ToArray()));
         }
 
         IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
@@ -392,10 +339,8 @@ namespace DynamicMosaic
         /// <returns>Возвращает новую строку в верхнем регистре.</returns>
         static string StripString(string str)
         {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str), $"{nameof(StripString)}: Искомое слово равно null.");
-            if (str == string.Empty)
-                throw new ArgumentException($"{nameof(StripString)}: Искомое слово не указано.", nameof(str));
+            if (string.IsNullOrWhiteSpace(str))
+                return null;
             str = str.ToUpper();
             if (str.Length == 1)
                 return str;
@@ -416,9 +361,9 @@ namespace DynamicMosaic
         /// </summary>
         /// <param name="word">Проверяемое слово.</param>
         /// <returns>В случае успешной проверки возвращается значение <see langword="true" />, иначе <see langword="false" />.</returns>
-        bool IsMapsWord(string word)
+        bool QueryMapping(ref string word)
         {
-            if (string.IsNullOrEmpty(word))
+            if (string.IsNullOrEmpty(word = StripString(word)))
                 return false;
             List<char> lstCh = word.Select(char.ToUpper).ToList();
             for (int k = 0; k < _seaProcessors.Count; k++)
