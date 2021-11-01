@@ -36,11 +36,7 @@ namespace DynamicMosaic
         public Reflex(ProcessorContainer processors)
         {
             if (processors == null)
-                throw new ArgumentNullException(nameof(processors),
-                    $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
-            if (processors.Count < 2)
-                throw new ArgumentException(
-                    $"{nameof(Reflex)}: В контексте должны присутствовать минимум две карты ({nameof(processors.Count)} = {processors.Count}).");
+                throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
             Processor[] procs = new Processor[processors.Count];
             for (int k = 0; k < procs.Length; k++)
                 procs[k] = processors[k];
@@ -130,24 +126,24 @@ namespace DynamicMosaic
         ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
         /// </returns>
-        ProcessorContainer IntFindRelation(Processor processor, string word)
+        Processor[] IntFindRelation(Processor processor, string word)
         {
             if (processor == null || processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height || !QueryMapping(ref word))
                 return null;
             ProcessorHandler ph = new ProcessorHandler();
             foreach (Registered r in FindWord(word.SelectMany(c => FindSymbols(c, processor.GetEqual(_seaProcessors))).ToArray(), word, processor.Size).SelectMany(regs => regs))
                 ph.Add(GetProcessorFromField(processor, r));
-            return ph.Processors;
+            return ph.Processors.ToArray();
         }
 
-        public Reflex FindRelation(params (Processor p, string q)[] queryPairs)
+        public IEnumerable<Processor> FindRelation(params (Processor p, string q)[] queryPairs)
         {
             if ((queryPairs?.Length ?? 0) == 0)
-                return null;
+                yield break;
 
             queryPairs = queryPairs.Select(t => (t.p, t.q?.ToUpper() ?? string.Empty)).ToArray();
 
-            ConcurrentBag<(ProcessorContainer pc, string q)> completedQueries = new ConcurrentBag<(ProcessorContainer, string)>();
+            ConcurrentBag<(Processor[] pc, string q)> completedQueries = new ConcurrentBag<(Processor[], string)>();
             Exception exThrown = null;
 
             //Parallel.ForEach(queries, ((Processor p, string q), ParallelLoopState state) =>
@@ -155,7 +151,7 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    ProcessorContainer pc = IntFindRelation(p, q);
+                    Processor[] pc = IntFindRelation(p, q);
                     if (pc != null)
                         completedQueries.Add((pc, q));
                 }
@@ -173,17 +169,11 @@ namespace DynamicMosaic
             HashSet<char> allQueries = new HashSet<char>(queryPairs.SelectMany(t => t.q));
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
-            IEnumerable<Processor> GetResultProcessors()
-            {
-                foreach (Processor p in GetProcessorsBySymbols(allQueries))
-                    yield return p;
+            foreach (Processor p in GetProcessorsBySymbols(allQueries))
+                yield return p;
 
-                foreach ((ProcessorContainer pc, string _) in completedQueries)
-                    for (int k = 0; k < pc.Count; k++)
-                        yield return pc[k];
-            }
-
-            return new Reflex(new ProcessorContainer(GetResultProcessors().ToArray()));
+            foreach (Processor p in completedQueries.SelectMany(t => t.pc))
+                yield return p;
         }
 
         IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
