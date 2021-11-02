@@ -138,10 +138,10 @@ namespace DynamicMosaic
 
         public IEnumerable<Processor> FindRelation(params (Processor p, string q)[] queryPairs)
         {
+            queryPairs = queryPairs?.Where(t => t.p != null && !string.IsNullOrWhiteSpace(t.q)).Select(t => (t.p, t.q.ToUpper())).ToArray();
+
             if ((queryPairs?.Length ?? 0) == 0)
                 yield break;
-
-            queryPairs = queryPairs.Select(t => (t.p, t.q?.ToUpper() ?? string.Empty)).ToArray();
 
             ConcurrentBag<(Processor[] pc, string q)> completedQueries = new ConcurrentBag<(Processor[], string)>();
             Exception exThrown = null;
@@ -178,7 +178,7 @@ namespace DynamicMosaic
 
         IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
         {
-            HashSet<char> hash = new HashSet<char>(symbols.Select(char.ToUpper));
+            HashSet<char> hash = new HashSet<char>(symbols);
             for (int k = 0; k < _seaProcessors.Count; k++)
             {
                 Processor p = _seaProcessors[k];
@@ -377,27 +377,20 @@ namespace DynamicMosaic
         /// <param name="procName">Искомое название карты.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
         /// <returns>Возвращает сведения о найденных картах.</returns>
-        static List<Reg> FindSymbols(char procName, SearchResults searchResults)
+        static IEnumerable<Reg> FindSymbols(char procName, SearchResults searchResults)
         {
-            if (searchResults == null)
-                throw new ArgumentNullException(nameof(searchResults),
-                    $@"{nameof(FindSymbols)}: Результаты поиска должны присутствовать.");
-            procName = char.ToUpper(procName);
-            List<Reg> lstRegs = new List<Reg>();
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
                 for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
                 {
                     ProcPerc pp = searchResults[x, y];
-                    lstRegs.AddRange(from p in pp.Procs
-                                     where char.ToUpper(p.Tag[0]) == procName
-                                     select new Reg(new Point(x, y))
-                                     {
-                                         Percent = pp.Percent,
-                                         SelectedProcessor = p
-                                     });
-                }
 
-            return lstRegs;
+                    foreach (Processor p in pp.Procs.Where(p => char.ToUpper(p.Tag[0]) == procName))
+                        yield return new Reg(new Point(x, y))
+                        {
+                            Percent = pp.Percent,
+                            SelectedProcessor = p
+                        };
+                }
         }
     }
 }
