@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="HashCreator.cs" />
     <Compile Include="ProcessorHandler.cs" />
-    <Compile Include="Reflex.cs" />
+    <Compile Include="DynamicReflex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

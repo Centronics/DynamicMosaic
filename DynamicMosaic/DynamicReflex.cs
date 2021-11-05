@@ -14,49 +14,46 @@ namespace DynamicMosaic
     /// <summary>
     ///     Предназначен для связывания карт <see cref="DynamicParser.Processor" />.
     ///     Служит для поиска данных на карте и сохранения результатов поиска в виде генерации нового экземпляра
-    ///     <see cref="Reflex" />.
+    ///     <see cref="DynamicReflex" />.
     /// </summary>
-    public sealed class Reflex
+    public sealed class DynamicReflex
     {
         /// <summary>
         ///     Карты <see cref="DynamicParser.Processor" />, с помощью которых производится поиск запрашиваемых данных.
         /// </summary>
-        readonly ProcessorContainer _seaProcessors;
+        ProcessorContainer _seaProcessors;
 
         /// <summary>
-        ///     Инициализирует текущий экземпляр <see cref="Reflex" /> картами из указанного экземпляра
+        ///     Инициализирует текущий экземпляр <see cref="DynamicReflex" /> картами из указанного экземпляра
         ///     <see cref="ProcessorContainer" />.
         ///     Карты предназначены для вызова <see cref="DynamicParser.Processor.GetEqual(ProcessorContainer)" />.
         ///     Этот список невозможно изменить вручную, в процессе работы с классом.
         /// </summary>
         /// <param name="processors">
-        ///     Карты, которые необходимо добавить в текущий экземпляр <see cref="Reflex" />.
+        ///     Карты, которые необходимо добавить в текущий экземпляр <see cref="DynamicReflex" />.
         ///     С помощью них будет проводиться поиск запрашиваемых данных.
         /// </param>
-        public Reflex(ProcessorContainer processors)
+        public DynamicReflex(ProcessorContainer processors)
         {
             if (processors == null)
-                throw new ArgumentNullException(nameof(processors), $"{nameof(Reflex)}: Карты должны быть добавлены в контекст (null).");
+                throw new ArgumentNullException(nameof(processors), $"{nameof(DynamicReflex)}: Карты должны быть добавлены в контекст (null).");
             Processor[] procs = new Processor[processors.Count];
             for (int k = 0; k < procs.Length; k++)
                 procs[k] = processors[k];
             _seaProcessors = new ProcessorContainer(procs);
         }
 
-        /// <summary>
-        ///     Получает количество карт, содержащихся в текущем экземпляре <see cref="Reflex" />.
-        /// </summary>
-        public int Count => _seaProcessors.Count;
+        public IEnumerable<Processor> Processors
+        {
+            get
+            {
+                for (int k = 0; k < _seaProcessors.Count; k++)
+                    yield return _seaProcessors[k];
+            }
+        }
 
         /// <summary>
-        ///     Получает карту по заданному индексу, который отсчитывается от ноля.
-        /// </summary>
-        /// <param name="index">Индекс карты, начинающийся с ноля, которую необходимо получить.</param>
-        /// <returns>Возвращает карту по заданному индексу.</returns>
-        public Processor this[int index] => _seaProcessors[index];
-
-        /// <summary>
-        ///     Определяет, содержит ли текущий экземпляр <see cref="Reflex" /> карту с подобным содержимым или нет.
+        ///     Определяет, содержит ли текущий экземпляр <see cref="DynamicReflex" /> карту с подобным содержимым или нет.
         ///     В случае нахождения карты с совпадающим содержимым, метод возвращает значение <see langword="null" />, в противном
         ///     случае -
         ///     массив данных, сведения о котором указаны в параметре <see cref="Registered" />.
@@ -80,24 +77,24 @@ namespace DynamicMosaic
 
         /// <summary>
         ///     Производит поиск указанного слова <see cref="string" /> на указанной карте <see cref="Processor" />.
-        ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
+        ///     Возвращает новый экземпляр <see cref="DynamicReflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
-        ///     Возвращаемый экземпляр <see cref="Reflex" />, помимо карт текущего экземпляра <see cref="Reflex" />, включает в
+        ///     Возвращаемый экземпляр <see cref="DynamicReflex" />, помимо карт текущего экземпляра <see cref="DynamicReflex" />, включает в
         ///     себя карты, которые
         ///     скопированы с рабочей области.
         ///     Карты скопированы с координат, где были найдены искомые карты.
-        ///     Таким образом, вызов этого метода не изменяет состояние текущего экземпляра класса <see cref="Reflex" />.
+        ///     Таким образом, вызов этого метода не изменяет состояние текущего экземпляра класса <see cref="DynamicReflex" />.
         ///     Скопированные карты добавлены в конец внутренней коллекции, количество карт в текущем (порождающем) объекте
-        ///     <see cref="Reflex" /> остаётся прежним и равняется номеру
-        ///     первой добавленной карты в порождённом объекте <see cref="Reflex" />.
+        ///     <see cref="DynamicReflex" /> остаётся прежним и равняется номеру
+        ///     первой добавленной карты в порождённом объекте <see cref="DynamicReflex" />.
         ///     Карты содержатся во внутренней коллекции искомых карт <see cref="ProcessorContainer" />.
-        ///     Карты сохраняются в новый экземпляр <see cref="Reflex" /> при условии отсутствия наложений одной карты на другую, и
+        ///     Карты сохраняются в новый экземпляр <see cref="DynamicReflex" /> при условии отсутствия наложений одной карты на другую, и
         ///     при условии, что из них можно составить
         ///     искомое слово с помощью метода <see cref="SearchResults.FindRelation(string,int,int)" />.
         ///     Карты сохраняются с изменением имени, в виде добавления символа '0' в конец названия карты
         ///     <see cref="Processor.Tag" />.
         ///     Количество символов '0' зависит от того, сколько раз эта карта была распознана. Например, если карта с названием
-        ///     "A" была распознана два раза, то в объекте <see cref="Reflex" /> будут храниться карты с названиями "A0" (создана
+        ///     "A" была распознана два раза, то в объекте <see cref="DynamicReflex" /> будут храниться карты с названиями "A0" (создана
         ///     раньше) и "A00" (создана позже). При этом, карты с символами '0' в конце названия обладают такой же силой, как
         ///     изначальная карта с названием "A", без них. Они так же распознаются и влияют на появление карт с бОльшим числом
         ///     символов '0' в конце названия.
@@ -105,14 +102,14 @@ namespace DynamicMosaic
         ///     они проверяются на совпадение содержимого. В случае, если карта с требуемым содержимым уже находится в коллекции,
         ///     новая с таким же содержимым добавлена не будет.
         ///     Так устроена защита от добавления дубликатов карт. Следует иметь ввиду, что если все найденные карты оказались
-        ///     дубликатами, хранящимися в текущем объекте <see cref="Reflex" />,
-        ///     то новый объект <see cref="Reflex" /> всё равно будет создан, только он будет содержать те же карты, которые
-        ///     содержит родительский <see cref="Reflex" />.
-        ///     Объект <see cref="Reflex" /> не может содержать карты с одинаковыми названиями <see cref="Processor.Tag" />.
+        ///     дубликатами, хранящимися в текущем объекте <see cref="DynamicReflex" />,
+        ///     то новый объект <see cref="DynamicReflex" /> всё равно будет создан, только он будет содержать те же карты, которые
+        ///     содержит родительский <see cref="DynamicReflex" />.
+        ///     Объект <see cref="DynamicReflex" /> не может содержать карты с одинаковыми названиями <see cref="Processor.Tag" />.
         ///     При поиске слова используется только
         ///     первая буква названия <see cref="Processor.Tag" /> каждой искомой карты (хранящейся внутри текущего экземпляра
         ///     класса
-        ///     <see cref="Reflex" />),
+        ///     <see cref="DynamicReflex" />),
         ///     остальные буквы названия карты <see cref="Processor.Tag" /> предназначены для случая, когда необходимо искать
         ///     несколько
         ///     вариантов одной и той же карты. Поиск указанного слова производится без учёта регистра.
@@ -123,25 +120,22 @@ namespace DynamicMosaic
         /// <param name="processor">Карта, на которой будет производиться поиск.</param>
         /// <param name="word">Искомое слово.</param>
         /// <returns>
-        ///     Возвращает новый экземпляр <see cref="Reflex" /> в случае нахождения указанного слова на карте, в противном случае
+        ///     Возвращает новый экземпляр <see cref="DynamicReflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
         /// </returns>
-        Processor[] IntFindRelation(Processor processor, string word)
+        IEnumerable<Processor> IntFindRelation(Processor processor, string word)
         {
             if (processor == null || processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height || !QueryMapping(ref word))
                 return null;
-            ProcessorHandler ph = new ProcessorHandler();
-            foreach (Registered r in FindWord(word.SelectMany(c => FindSymbols(c, processor.GetEqual(_seaProcessors))).ToArray(), word, processor.Size).SelectMany(regs => regs))
-                ph.Add(GetProcessorFromField(processor, r));
-            return ph.Processors.ToArray();
+            return FindWord(FindSymbols(word, processor.GetEqual(_seaProcessors)).ToArray(), word, processor.Size).Select(r => GetProcessorFromField(processor, r));
         }
 
-        public IEnumerable<Processor> FindRelation(params (Processor p, string q)[] queryPairs)
+        public bool FindRelation(params (Processor p, string q)[] queryPairs)
         {
             queryPairs = queryPairs?.Where(t => t.p != null && !string.IsNullOrWhiteSpace(t.q)).Select(t => (t.p, t.q.ToUpper())).ToArray();
 
             if ((queryPairs?.Length ?? 0) == 0)
-                yield break;
+                return false;
 
             ConcurrentBag<(Processor[] pc, string q)> completedQueries = new ConcurrentBag<(Processor[], string)>();
             Exception exThrown = null;
@@ -151,8 +145,8 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    Processor[] pc = IntFindRelation(p, q);
-                    if (pc != null)
+                    Processor[] pc = IntFindRelation(p, q).ToArray();
+                    if (pc.Length != 0)
                         completedQueries.Add((pc, q));
                 }
                 catch (Exception ex)
@@ -166,14 +160,29 @@ namespace DynamicMosaic
             if (exThrown != null)
                 throw exThrown;
 
+            if (completedQueries.IsEmpty)
+                return false;
+
             HashSet<char> allQueries = new HashSet<char>(queryPairs.SelectMany(t => t.q));
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
-            foreach (Processor p in GetProcessorsBySymbols(allQueries))
-                yield return p;
+            IEnumerable<Processor> GetResultContainer()
+            {
+                foreach (Processor p in GetProcessorsBySymbols(allQueries))
+                    yield return p;
 
-            foreach (Processor p in completedQueries.SelectMany(t => t.pc))
-                yield return p;
+                ProcessorHandler ph = new ProcessorHandler();
+
+                foreach (Processor p in completedQueries.SelectMany(t => t.pc))
+                    ph.Add(p);
+
+                foreach (Processor p in ph.Processors)
+                    yield return p;
+            }
+
+            _seaProcessors = new ProcessorContainer(GetResultContainer().ToArray());
+
+            return true;
         }
 
         IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
@@ -196,7 +205,7 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых требуется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
-        static IEnumerable<IEnumerable<Registered>> FindWord(IList<Reg> regs, string word, Size mapSize)
+        static IEnumerable<Registered> FindWord(IList<Reg> regs, string word, Size mapSize)
         {
             if (regs == null)
                 throw new ArgumentNullException(nameof(regs),
@@ -243,7 +252,9 @@ namespace DynamicMosaic
                 }
 
                 if (result && mapSearcher.IsEqual(mapString.ToString()))
-                    yield return region.Elements;
+                    foreach (Registered r in region.Elements)
+                        yield return r;
+
                 region.Clear();
                 mapString.Clear();
             }
@@ -343,7 +354,7 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Позволяет выяснить, содержит ли текущий экземпляр <see cref="Reflex" /> достаточное количество карт с
+        ///     Позволяет выяснить, содержит ли текущий экземпляр <see cref="DynamicReflex" /> достаточное количество карт с
         ///     соответствующими значениями
         ///     первых символов свойств <see cref="Processor.Tag" /> для составления указанного слова.
         ///     Проверка производится без учёта регистра.
@@ -374,17 +385,18 @@ namespace DynamicMosaic
         ///     соответствуют указанному символу.
         ///     Поиск производится без учёта регистра.
         /// </summary>
-        /// <param name="procName">Искомое название карты.</param>
+        /// <param name="procNames">Искомое название карты.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
         /// <returns>Возвращает сведения о найденных картах.</returns>
-        static IEnumerable<Reg> FindSymbols(char procName, SearchResults searchResults)
+        static IEnumerable<Reg> FindSymbols(IEnumerable<char> procNames, SearchResults searchResults)
         {
+            HashSet<char> pNames = new HashSet<char>(procNames);
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
                 for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
                 {
                     ProcPerc pp = searchResults[x, y];
 
-                    foreach (Processor p in pp.Procs.Where(p => char.ToUpper(p.Tag[0]) == procName))
+                    foreach (Processor p in pp.Procs.Where(p => pNames.Contains(char.ToUpper(p.Tag[0]))))
                         yield return new Reg(new Point(x, y))
                         {
                             Percent = pp.Percent,
