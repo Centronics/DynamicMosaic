@@ -126,8 +126,9 @@ namespace DynamicMosaic
         IEnumerable<Processor> IntFindRelation(Processor processor, string word)
         {
             if (processor == null || processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height || !QueryMapping(ref word))
-                return null;
-            return FindWord(FindSymbols(word, processor.GetEqual(_seaProcessors)).ToArray(), word, processor.Size).Select(r => GetProcessorFromField(processor, r));
+                yield break;
+            foreach (Processor p in FindWord(FindSymbols(word, processor.GetEqual(_seaProcessors)).ToArray(), word, processor.Size).Select(r => GetProcessorFromField(processor, r)))
+                yield return p;
         }
 
         public bool FindRelation(params (Processor p, string q)[] queryPairs)
@@ -146,7 +147,7 @@ namespace DynamicMosaic
                 try
                 {
                     Processor[] pc = IntFindRelation(p, q).ToArray();
-                    if (pc.Length != 0)
+                    if (pc.Length > 0)
                         completedQueries.Add((pc, q));
                 }
                 catch (Exception ex)
@@ -163,7 +164,7 @@ namespace DynamicMosaic
             if (completedQueries.IsEmpty)
                 return false;
 
-            HashSet<char> allQueries = new HashSet<char>(queryPairs.SelectMany(t => t.q));
+            HashSet<char> allQueries = new HashSet<char>(Processors.Select(t => char.ToUpper(t.Tag[0])));
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
             IEnumerable<Processor> GetResultContainer()
@@ -185,16 +186,7 @@ namespace DynamicMosaic
             return true;
         }
 
-        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
-        {
-            HashSet<char> hash = new HashSet<char>(symbols);
-            for (int k = 0; k < _seaProcessors.Count; k++)
-            {
-                Processor p = _seaProcessors[k];
-                if (hash.Contains(char.ToUpper(p.Tag[0])))
-                    yield return p;
-            }
-        }
+        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols) => Processors.Where(p => new HashSet<char>(symbols).Contains(char.ToUpper(p.Tag[0])));
 
         /// <summary>
         ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно
@@ -207,27 +199,9 @@ namespace DynamicMosaic
         /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
         static IEnumerable<Registered> FindWord(IList<Reg> regs, string word, Size mapSize)
         {
-            if (regs == null)
-                throw new ArgumentNullException(nameof(regs),
-                    $"{nameof(FindWord)}: Список обрабатываемых карт равен null.");
             if (regs.Count <= 0)
-                throw new ArgumentException(
-                    $"{nameof(FindWord)}: Количество обрабатываемых карт должно быть больше ноля ({regs.Count}).",
-                    nameof(regs));
-            if (word == null)
-                throw new ArgumentNullException(nameof(word),
-                    $"{nameof(FindWord)}: Искомое слово должно быть указано (null).");
-            if (word == string.Empty)
-                throw new ArgumentException($"{nameof(FindWord)}: Искомое слово должно быть указано.", nameof(word));
-            Size searchSize = regs[0].SelectedProcessor.Size;
-            if (mapSize.Height < searchSize.Height)
-                throw new ArgumentException(
-                    $"{nameof(FindWord)}: Высота поля результатов поиска должна быть больше или равна высоте искомых карт.",
-                    nameof(mapSize));
-            if (mapSize.Width < searchSize.Width)
-                throw new ArgumentException(
-                    $"{nameof(FindWord)}: Ширина поля результатов поиска должна быть больше или равна ширине искомых карт.",
-                    nameof(mapSize));
+                yield break;
+
             int[] counting = null;
             Reg[] regsCounting = new Reg[word.Length];
             Region region = new Region(mapSize.Width, mapSize.Height);
@@ -240,7 +214,7 @@ namespace DynamicMosaic
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    Rectangle rect = new Rectangle(pp.Position, searchSize);
+                    Rectangle rect = new Rectangle(pp.Position, regs[0].SelectedProcessor.Size);
                     if (region.IsConflict(rect))
                     {
                         result = false;
