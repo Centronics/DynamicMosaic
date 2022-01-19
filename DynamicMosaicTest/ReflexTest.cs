@@ -182,6 +182,66 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
+        public void ReflexTest1_1()
+        {
+            SignValue[,] main = new SignValue[1, 1];
+            main[0, 0] = new SignValue(10);
+
+            SignValue[,] mapA = new SignValue[1, 1];
+            mapA[0, 0] = new SignValue(6);
+            SignValue[,] mapB = new SignValue[1, 1];
+            mapB[0, 0] = new SignValue(7);
+
+            Processor[] processors = { new Processor(mapA, "a"), new Processor(mapB, "b") };
+
+            DynamicReflex reflex = new DynamicReflex(new ProcessorContainer(processors));
+
+            for (int k = 0; k < 10; k++)
+            {
+                Assert.AreEqual(false, reflex.FindRelation((new Processor(main, "main"), "A")));
+
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(false, reflex.FindRelation((new Processor(main, "main"), "C")));
+
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(main, "main"), "B")));
+
+                processors[1] = new Processor(main, "B");
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(mapB, "X"), "B")));
+                processors[1] = new Processor(mapB, "B");
+
+                CheckReflexValue(reflex, processors, 1, 1);
+            }
+
+            main[0, 0] = new SignValue(4);
+
+            for (int k = 0; k < 10; k++)
+            {
+                Assert.AreEqual(false, reflex.FindRelation((new Processor(main, "main"), "B")));
+
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(false, reflex.FindRelation((new Processor(main, "main"), "C")));
+
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(main, "main"), "A")));
+
+                processors[0] = new Processor(main, "A");
+                CheckReflexValue(reflex, processors, 1, 1);
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(mapA, "X"), "A")));
+                processors[0] = new Processor(mapA, "A");
+
+                CheckReflexValue(reflex, processors, 1, 1);
+            }
+        }
+
+        [TestMethod]
         public void ReflexTest1_2()
         {
             SignValue[,] main = new SignValue[1, 1];
@@ -385,9 +445,6 @@ namespace DynamicMosaicTest
             }
         }
 
-        //сделать тест: две карты из двух точек на карте из трёх
-        //сделать тест случая, когда полученные значения изменяют поведение трензистора (безальтернативность)
-
         [TestMethod]
         public void ReflexTest1_5()
         {
@@ -442,7 +499,7 @@ namespace DynamicMosaicTest
             SignValue[,] m2 = new SignValue[1, 1];
             m2[0, 0] = new SignValue(4);
 
-            SignValue[,] m3 = new SignValue[5, 1];
+            SignValue[,] m3 = new SignValue[7, 1];
             m3[0, 0] = new SignValue(2);
             m3[1, 0] = new SignValue(3);
             m3[2, 0] = new SignValue(4);
@@ -476,78 +533,1048 @@ namespace DynamicMosaicTest
 
             CheckReflexValue(reflex, new[] { new Processor(mapA, "A"), new Processor(mapB, "B") }, 1, 1);
 
-            Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB")));
+            #region Test1
 
-            IEnumerable<Processor> GetProcs1()
+            {
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB")));
+
+                IEnumerable<Processor> GetProcs1()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                }
+
+                CheckReflexValue(reflex, GetProcs1(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m1, "m1"), "B")));
+
+                IEnumerable<Processor> GetProcs2()
+                {
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(11) }, "B");
+                }
+
+                CheckReflexValue(reflex, GetProcs2(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m2, "m2"), "B")));
+
+                IEnumerable<Processor> GetProcs3()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                }
+
+                CheckReflexValue(reflex, GetProcs3(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), "AB")));
+
+                IEnumerable<Processor> GetProcs4()
+                {
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                CheckReflexValue(reflex, GetProcs4(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m4, "m4"), "A")));
+
+                IEnumerable<Processor> GetProcs5()
+                {
+                    yield return new Processor(new[] { new SignValue(1) }, "A");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                }
+
+                CheckReflexValue(reflex, GetProcs5(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region Test2
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs6()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(11) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B")));
+
+                CheckReflexValue(reflex, GetProcs6(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m0, "m0"), "AB"),
+                        (new Processor(m1, "m1"), "B"), (new Processor(m1, "m1"), "A")));
+
+                CheckReflexValue(reflex, GetProcs6(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m0, "m0"), "B"), (new Processor(m0, "m0"), "A"),
+                        (new Processor(m1, "m1"), "B"), (new Processor(m1, "m1"), "A")));
+
+                CheckReflexValue(reflex, GetProcs6(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(1) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "AB"), (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m0, "m0"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "BB"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "BB"), (new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "BB"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m0, "m0"), "BB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(1) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AA"), (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m0, "m0"), "AA")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m0, "m0"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(11) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m1, "m1"), "B"), (new Processor(m3, "m3"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), "AB"), (new Processor(m1, "m1"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B"),
+                        (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m1, "m1"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "B"),
+                        (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m2, "m2"), "A"),
+                        (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "A"),
+                        (new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m2, "m2"), "A"),
+                        (new Processor(m3, "m3"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "A"),
+                        (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "A"), (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "B"),
+                        (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"),
+                        (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "AB"),
+                        (new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "BA")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m2, "m2"), "A"),
+                        (new Processor(m3, "m3"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "A"), (new Processor(m3, "m3"), "BA"),
+                        (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "AB"), (new Processor(m2, "m2"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(3) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "AB"),
+                        (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "BA")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m2, "m2"), "B"),
+                        (new Processor(m3, "m3"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "BA"),
+                        (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "AB"), (new Processor(m2, "m2"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(5) }, "B");
+                    yield return new Processor(new[] { new SignValue(13) }, "B");
+                    yield return new Processor(new[] { new SignValue(1) }, "A");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A"),
+                        (new Processor(m4, "m4"), "A"), (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A"),
+                        (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A"),
+                        (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m4, "m4"), "A"), (new Processor(m3, "m3"), "B")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+
+            #endregion
+
+            #region SubTest_2
+
+            {
+
+                IEnumerable<Processor> GetProcs()
+                {
+                    yield return new Processor(new[] { new SignValue(1) }, "A");
+                    yield return new Processor(new[] { new SignValue(2) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "A");
+                    yield return new Processor(new[] { new SignValue(4) }, "B");
+                    yield return new Processor(new[] { new SignValue(10) }, "B");
+                }
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB"),
+                        (new Processor(m0, "m0"), "AB"), (new Processor(m4, "m4"), "A"), (new Processor(m4, "m4"), "A"),
+                        (new Processor(m0, "m0"), "AB"), (new Processor(m0, "m0"), "AB"),
+                        (new Processor(m4, "m4"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+                Assert.AreEqual(true,
+                    reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m4, "m4"), "A")));
+
+                CheckReflexValue(reflex, GetProcs(), 1, 1);
+
+                ResetReflex();
+
+            }
+            #endregion
+
+            //есть ли тест, где все знаки 100% совпадают? Есть ли позитивный тест с поиском нескольких карт большей, чем 1 разрядности? Надо включить ещё повторение одного и того же запроса. Добавить тест с изменением РС, от которого создаётся Reflex (можно дополнить существующие тесты).
+
+            /*SignValue[,] bmap = new SignValue[4, 4];
+            bmap[0, 0] = SignValue.MaxValue;
+            bmap[2, 0] = SignValue.MaxValue;
+            bmap[1, 1] = SignValue.MaxValue;
+            bmap[2, 1] = SignValue.MaxValue;
+            bmap[0, 2] = SignValue.MaxValue;
+            bmap[2, 2] = SignValue.MaxValue;
+            bmap[3, 3] = SignValue.MaxValue;
+
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[1, 0] = SignValue.MaxValue;
+
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+
+            ProcessorContainer pc = new ProcessorContainer(new Processor(mapB, "B"), new Processor(mapB, "C"));
+
+            Processor main = new Processor(bmap, "bigmain");
+
+            Reflex reflex = new Reflex(pc);
+
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));
+
+            pc.Add(new Processor(mapA, "A"));
+
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "B"));
+
+            Assert.AreEqual(null, reflex.FindRelation(main, "A"));*/
+
+            /* SignValue[,] map = new SignValue[4, 4];
+            map[0, 0] = SignValue.MaxValue;
+            map[2, 0] = SignValue.MaxValue;
+            map[1, 1] = SignValue.MaxValue;
+            map[2, 1] = SignValue.MaxValue;
+            map[0, 2] = SignValue.MaxValue;
+            map[2, 2] = SignValue.MaxValue;
+            map[3, 3] = SignValue.MaxValue;
+            SignValue[,] mapA = new SignValue[2, 2];
+            mapA[0, 0] = SignValue.MaxValue;
+            mapA[0, 1] = SignValue.MaxValue;
+            SignValue[,] mapB = new SignValue[2, 2];
+            mapB[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapC = new SignValue[2, 2];
+            mapC[0, 0] = SignValue.MaxValue;
+            mapC[1, 0] = SignValue.MaxValue;
+            SignValue[,] mapD = new SignValue[2, 2];
+            mapD[0, 0] = SignValue.MaxValue;
+            mapD[0, 1] = SignValue.MaxValue;
+            mapD[1, 0] = SignValue.MaxValue;
+            mapD[1, 1] = SignValue.MaxValue;
+            SignValue[,] mapE = new SignValue[2, 2];
+
+            Reflex reflex = new Reflex(new ProcessorContainer(new Processor(mapA, "A1"), new Processor(mapB, "A2"), new Processor(mapC, "C"),
+                new Processor(mapD, "D"), new Processor(mapE, "A3")));
+
+            Processor main = new Processor(map, "main");
+
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "A"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "B"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "C"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "D"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "E"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "W"));
+
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BB"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "CC"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "WW"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ADC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CAD"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "DCA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "ADCE"));
+
+            Assert.AreEqual(null, reflex.FindRelation(main, "AB"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "BA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AC"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "CA"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "AD"));
+            Assert.AreNotEqual(null, reflex = reflex.FindRelation(main, "DA"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "AE"));
+            Assert.AreEqual(null, reflex.FindRelation(main, "EA"));
+            
+             
+             [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReflexArgumentNullException3()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new Reflex((ProcessorContainer)null);
+        }
+             */
+
+            #endregion
+
+            #region Test3
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B")));
+
+            IEnumerable<Processor> GetProcs10()
             {
                 yield return new Processor(new[] { new SignValue(4) }, "A");
                 yield return new Processor(new[] { new SignValue(4) }, "B");
                 yield return new Processor(new[] { new SignValue(10) }, "B");
                 yield return new Processor(new[] { new SignValue(2) }, "A");
-            }
-
-            CheckReflexValue(reflex, GetProcs1(), 1, 1);
-
-            ResetReflex();
-
-            Assert.AreEqual(true, reflex.FindRelation((new Processor(m1, "m1"), "B")));
-
-            IEnumerable<Processor> GetProcs2()
-            {
-                yield return new Processor(new[] { new SignValue(3) }, "A");
                 yield return new Processor(new[] { new SignValue(11) }, "B");
             }
 
-            CheckReflexValue(reflex, GetProcs2(), 1, 1);
-
-            ResetReflex();//ПОМЕНЯТЬ МЕСТАМИ А и В карты, протестировать ещё раз после этого
-
-            Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "B")));
-
-            IEnumerable<Processor> GetProcs3()
-            {
-                yield return new Processor(new[] { new SignValue(4) }, "A");
-                yield return new Processor(new[] { new SignValue(4) }, "B");
-            }
-
-            CheckReflexValue(reflex, GetProcs3(), 1, 1);
+            CheckReflexValue(reflex, GetProcs10(), 1, 1);
 
             ResetReflex();
 
-            Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), "B")));
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
 
-            IEnumerable<Processor> GetProcs4()
+            IEnumerable<Processor> GetProcs11()
             {
-                yield return new Processor(new[] { new SignValue(2) }, "A");
-                yield return new Processor(new[] { new SignValue(3) }, "A");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(13) }, "B");
+                yield return new Processor(new[] { new SignValue(5) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs11(), 1, 1);
+
+            ResetReflex();
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A")));
+
+            IEnumerable<Processor> GetProcs12()
+            {
+                yield return new Processor(new[] { new SignValue(1) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(13) }, "B");
+                yield return new Processor(new[] { new SignValue(5) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs12(), 1, 1);
+
+            ResetReflex();
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B")));
+
+            IEnumerable<Processor> GetProcs13()
+            {
+                yield return new Processor(new[] { new SignValue(1) }, "A");
                 yield return new Processor(new[] { new SignValue(4) }, "A");
                 yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs13(), 1, 1);
+
+            ResetReflex();
+
+            #endregion
+
+            #region Test4
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B")));
+
+            IEnumerable<Processor> GetProcs14()
+            {
+                yield return new Processor(new[] { new SignValue(4) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
                 yield return new Processor(new[] { new SignValue(5) }, "B");
                 yield return new Processor(new[] { new SignValue(13) }, "B");
             }
 
-            CheckReflexValue(reflex, GetProcs4(), 1, 1);
+            CheckReflexValue(reflex, GetProcs14(), 1, 1);
 
             ResetReflex();
 
-            Assert.AreEqual(true, reflex.FindRelation((new Processor(m4, "m4"), "A")));
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B")));
 
-            IEnumerable<Processor> GetProcs5()
+            IEnumerable<Processor> GetProcs15()
             {
                 yield return new Processor(new[] { new SignValue(1) }, "A");
-                yield return new Processor(new[] { new SignValue(5) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(4) }, "A");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
             }
 
-            CheckReflexValue(reflex, GetProcs5(), 1, 1);
+            CheckReflexValue(reflex, GetProcs15(), 1, 1);
 
             ResetReflex();
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B")));
+
+            IEnumerable<Processor> GetProcs16()
+            {
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(5) }, "B");
+                yield return new Processor(new[] { new SignValue(13) }, "B");
+                yield return new Processor(new[] { new SignValue(1) }, "A");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs16(), 1, 1);
+
+            ResetReflex();
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A"), (new Processor(m0, "m0"), "AB")));
+
+            IEnumerable<Processor> GetProcs17()
+            {
+                yield return new Processor(new[] { new SignValue(1) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(13) }, "B");
+                yield return new Processor(new[] { new SignValue(5) }, "B");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+            }
+
+            CheckReflexValue(reflex, GetProcs17(), 1, 1);
+
+            ResetReflex();
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A")));
+
+            IEnumerable<Processor> GetProcs18()
+            {
+                yield return new Processor(new[] { new SignValue(1) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(5) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
+                yield return new Processor(new[] { new SignValue(13) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs18(), 1, 1);
+
+            ResetReflex();
+
+            #endregion
+
+            #region Test5
+
+            Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), "AB"), (new Processor(m1, "m1"), "B"), (new Processor(m2, "m2"), "B"), (new Processor(m3, "m3"), "B"), (new Processor(m4, "m4"), "A")));
+
+            IEnumerable<Processor> GetProcs19()
+            {
+                yield return new Processor(new[] { new SignValue(4) }, "A");
+                yield return new Processor(new[] { new SignValue(4) }, "B");
+                yield return new Processor(new[] { new SignValue(10) }, "B");
+                yield return new Processor(new[] { new SignValue(2) }, "A");
+                yield return new Processor(new[] { new SignValue(11) }, "B");
+            }
+
+            CheckReflexValue(reflex, GetProcs19(), 1, 1);
+
+            ResetReflex();
+
+            #endregion
 
             //перевернуть карты и провести "обратный" тест
         }
 
         [TestMethod]
         public void ReflexTest1_7()
-        {
+        {//дописать негативные тесты
+            Processor pQ = new Processor(new[] { new SignValue(10) }, "Q");
+
+            Processor pA = new Processor(new[] { new SignValue(2), new SignValue(62) }, "A");
+            Processor pB = new Processor(new[] { new SignValue(12), new SignValue(9) }, "B");
+
+            DynamicReflex reflex = new DynamicReflex(new ProcessorContainer(pA, pB));
+
+            Processor pQ1 = new Processor(new[] { new SignValue(1), new SignValue(10), new SignValue(81) }, "Q1");
+
+            Processor pA1 = new Processor(new[] { new SignValue(2), new SignValue(10) }, "A1");
+            Processor pB1 = new Processor(new[] { new SignValue(10), new SignValue(90) }, "B1");
+
+            SignValue[,] svQ2 = new SignValue[1, 3];
+
+            svQ2[0, 0] = new SignValue(1);
+            svQ2[0, 1] = new SignValue(10);
+            svQ2[0, 2] = new SignValue(81);
+
+            Processor pQ2 = new Processor(svQ2, "Q2");
+
+            SignValue[,] svQ3 = new SignValue[1, 2];
+            svQ3[0, 0] = new SignValue(2);
+            svQ3[0, 1] = new SignValue(10);
+
+            SignValue[,] svQ4 = new SignValue[1, 2];
+            svQ4[0, 0] = new SignValue(10);
+            svQ4[0, 1] = new SignValue(90);
+
+            Processor pA2 = new Processor(svQ3, "A2");
+            Processor pB2 = new Processor(svQ4, "B2");
+
             /*Assert.AreEqual(false, reflex.FindRelation((null, "AB"), (new Processor(m0, "mm"), string.Empty), (new Processor(m0, "mm"), null), (null,null), (new Processor(m0, "mm"), null), (null, string.Empty)));
 
             CheckReflexValue(reflex, processors, 1,1);*/
