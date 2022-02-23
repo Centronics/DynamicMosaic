@@ -611,26 +611,167 @@ namespace DynamicMosaicTest
                             }
                         }
 
-                        NegativeTests();
-
                         if (reflex == null)
                             throw new ArgumentNullException();
 
-                        Assert.AreEqual(true, reflex.FindRelation((ProcMain(j), "A")));
+                        void TestFunc(int start)
+                        {
+                            for (int s = 0; s < 4; s++, start++)
+                            {
 
-                        CheckReflexValue(reflex, new[] { procMaxA, processorB }, 1, 1);
+                                if (start < 0 || start > 3)
+                                    start = 0;
 
-                        ResetReflex();
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
 
-                        NegativeTests();
+                                Assert.AreEqual(true, reflex.FindRelation((ProcMain(j), "A")));
 
-                        Assert.AreEqual(true, reflex.FindRelation((ProcMain(j), "B")));
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
 
-                        CheckReflexValue(reflex, new[] { processorA, procMaxB }, 1, 1);
+                                CheckReflexValue(reflex, new[] { procMaxA, processorB }, 1, 1);
 
-                        ResetReflex();
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
 
-                        NegativeTests();
+                                if (start == 0 || start == 3)
+                                    ResetReflex();
+
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
+
+                                Assert.AreEqual(true, reflex.FindRelation((ProcMain(j), "B")));
+
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
+
+                                CheckReflexValue(reflex, new[] { processorA, procMaxB }, 1, 1);
+
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
+
+                                if (start == 0 || start == 3)
+                                    ResetReflex();
+
+                                if (start == 0 || start == 1)
+                                    NegativeTests();
+
+                            }
+                        }
+
+                        for (int z = 0; z < 4; z++)
+                            TestFunc(z);
+
+                        for (int z = 3; z >= 0; z--)
+                            TestFunc(z);
+
+                        for (int z = 0; z < 4; z++)
+                        {
+                            TestFunc(z);
+                            TestFunc(z);
+                        }
+
+                        for (int z = 0; z < 4; z++)
+                        {
+                            TestFunc(z);
+                            TestFunc(3 - z);
+                        }
+
+                        for (int z = 0; z < 4; z++)
+                        {
+                            TestFunc(3 - z);
+                            TestFunc(z);
+                        }
+
+                        for (int z = 0; z < 4; z++)
+                        {
+                            TestFunc(3 - z);
+                            TestFunc(3 - z);
+                        }
+
+                        for (int z = 0; z < 2; z++)
+                        {
+                            void T1()
+                            {
+                                TestFunc(0);
+                                TestFunc(0);
+
+                                TestFunc(0);
+                                TestFunc(1);
+
+                                TestFunc(0);
+                                TestFunc(2);
+
+                                TestFunc(0);
+                                TestFunc(3);
+                            }
+
+                            void T2()
+                            {
+                                TestFunc(1);
+                                TestFunc(0);
+
+                                TestFunc(1);
+                                TestFunc(1);
+
+                                TestFunc(1);
+                                TestFunc(2);
+
+                                TestFunc(1);
+                                TestFunc(3);
+                            }
+
+                            void T3()
+                            {
+                                TestFunc(2);
+                                TestFunc(0);
+
+                                TestFunc(2);
+                                TestFunc(1);
+
+                                TestFunc(2);
+                                TestFunc(2);
+
+                                TestFunc(2);
+                                TestFunc(3);
+                            }
+
+                            void T4()
+                            {
+                                TestFunc(3);
+                                TestFunc(0);
+
+                                TestFunc(3);
+                                TestFunc(1);
+
+                                TestFunc(3);
+                                TestFunc(2);
+
+                                TestFunc(3);
+                                TestFunc(3);
+                            }
+
+                            T1();
+                            T2();
+                            T3();
+                            T4();
+
+                            T4();
+                            T1();
+                            T2();
+                            T3();
+
+                            T3();
+                            T4();
+                            T1();
+                            T2();
+
+                            T2();
+                            T3();
+                            T4();
+                            T1();
+                        }
 
                     }
                 }
@@ -659,121 +800,250 @@ namespace DynamicMosaicTest
 
             void CheckReflexState() => CheckReflexValue(reflex, new[] { pA, pB }, 1, 1);
 
-            void ResetReflex(int k)
+            void ResetReflex(int k, int t)
             {
                 SignValue[,] m5 = new SignValue[2, 1];
                 m5[0, 0] = new SignValue(3);
                 m5[1, 0] = new SignValue(5);
 
-                Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), @"AB")));
+                for (int j = 0; j < 2; j++)
+                {
 
-                CheckReflexState();
+                    Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), @"AB")));
 
-                Assert.AreEqual(true,
-                    k % 2 == 0
-                        ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
-                        : reflex.FindRelation((pA, @"A"), (pB, @"B")));
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
+                            : reflex.FindRelation((pA, @"A"), (pB, @"B")));
 
-                Assert.AreEqual(true,
-                    k % 2 == 0
-                        ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
-                        : reflex.FindRelation((pA, @"A"), (pB, @"B")));
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
+                            : reflex.FindRelation((pA, @"A"), (pB, @"B")));
 
-                Assert.AreEqual(true,
-                    k % 2 == 0
-                        ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
-                        : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
 
-                Assert.AreEqual(true,
-                    k % 2 == 0
-                        ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
-                        : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D"))
+                            : reflex.FindRelation((pA, @"C"), (pB, @"D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D"))
+                            : reflex.FindRelation((pA, @"C"), (pB, @"D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, @"C"), (pB, @"D"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, @"C"), (pB, @"D"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D")));
+
+                }
             }
 
-            for (int k = 0; k < 5; k++)
-            {
-                CheckReflexState();
+            CheckReflexState();
 
-                Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+            for (int t = 0; t < 4; t++)
+                for (int k = 0; k < 10; k++)
+                {
+                    ResetReflex(k, t);
 
-                CheckReflexState();
+                    if (t == 0)
+                        CheckReflexState();
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
 
-                CheckReflexState();
+                    if (t == 0)
+                        CheckReflexState();
 
-                Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+                    ResetReflex(k, t);
 
-                CheckReflexState();
+                    if (t == 0)
+                        CheckReflexState();
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
 
-                pc.Add(k == 0 ? pC : new Processor(mapC, $@"C{k}"));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    ResetReflex(k, t);
 
-                Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    ResetReflex(k, t);
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
 
-                Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+                    pc.Add(k == 0 ? pC : new Processor(mapC, $@"C{k}"));
 
-                pc.Add(k == 0 ? pD : new Processor(mapD, $@"D{k}"));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    ResetReflex(k, t);
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
 
-                Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    ResetReflex(k, t);
 
-                Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
 
-                Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    ResetReflex(k, t);
 
-                Assert.AreEqual(false, reflex.FindRelation((null, "D")));
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
 
-                Assert.AreEqual(false, reflex.FindRelation((pC, null)));
+                    if (t == 0)
+                        CheckReflexState();
 
-                ResetReflex(k);
+                    ResetReflex(k, t);
 
-                ResetReflex(k);
+                    if (t == 0)
+                        CheckReflexState();
 
-                CheckReflexState();
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
 
-                Assert.AreEqual(false, reflex.FindRelation((pC, string.Empty)));
+                    pc.Add(k == 0 ? pD : new Processor(mapD, $@"D{k}"));
 
-                CheckReflexState();
+                    if (t == 0)
+                        CheckReflexState();
 
-                ResetReflex(k);
+                    ResetReflex(k, t);
 
-                ResetReflex(k);
-            }
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((null, "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pC, null)));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pC, string.Empty)));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+                }
+
+            CheckReflexState();
         }
 
         [TestMethod]
