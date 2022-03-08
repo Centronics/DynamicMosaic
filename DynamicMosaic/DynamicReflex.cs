@@ -117,18 +117,28 @@ namespace DynamicMosaic
         ///     <see cref="SearchResults.FindRelation(string,int,int)" />. Этот метод безопасно могут использовать несколько
         ///     потоков одновременно, без блокировки.
         /// </summary>
-        /// <param name="processor">Карта, на которой будет производиться поиск.</param>
-        /// <param name="word">Искомое слово.</param>
+        /// <param name="p">Карта, на которой будет производиться поиск.</param>
+        /// <param name="w">Искомое слово.</param>
         /// <returns>
         ///     Возвращает новый экземпляр <see cref="DynamicReflex" /> в случае нахождения указанного слова на карте, в противном случае
         ///     возвращает <see langword="null" />.
         /// </returns>
-        IEnumerable<Processor> IntFindRelation(Processor processor, string word)
+        IEnumerable<Processor> IntFindRelation(Processor p, string w)
         {
-            if (processor == null || processor.Width < _seaProcessors.Width || processor.Height < _seaProcessors.Height || !QueryMapping(ref word))
+            if (p == null)
                 yield break;
-            foreach (Processor p in FindWord(FindSymbols(word, processor.GetEqual(_seaProcessors)).ToArray(), word, processor.Size).Select(r => GetProcessorFromField(processor, r)))
-                yield return p;
+
+            if (p.Width < _seaProcessors.Width)
+                yield break;
+
+            if (p.Height < _seaProcessors.Height)
+                yield break;
+
+            if (!QueryMapping(ref w))
+                yield break;
+
+            foreach (Processor r in FindWord(p, w))
+                yield return r;
         }
 
         public bool FindRelation(params (Processor p, string q)[] queryPairs)
@@ -197,14 +207,16 @@ namespace DynamicMosaic
         /// <param name="word">Искомое слово.</param>
         /// <param name="mapSize">Размер поля результатов поиска, в которых требуется выполнить поиск требуемого слова.</param>
         /// <returns>Возвращает список коллекций областей, позволяющих выполнить поиск требуемого слова.</returns>
-        static IEnumerable<Registered> FindWord(IList<Reg> regs, string word, Size mapSize)
+        IEnumerable<Processor> FindWord(Processor p, string word)
         {
+            IList<Reg> regs = FindSymbols(word, p.GetEqual(_seaProcessors)).ToArray();
+
             if (regs.Count <= 0)
                 yield break;
 
             int[] counting = null;
             Reg[] regsCounting = new Reg[word.Length];
-            Region region = new Region(mapSize.Width, mapSize.Height);
+            Region region = new Region(p.Width, p.Height);
             StringBuilder mapString = new StringBuilder(word.Length);
             TagSearcher mapSearcher = new TagSearcher(word);
             while (ChangeCount(ref counting, word.Length, regs.Count) >= 0)
@@ -214,7 +226,7 @@ namespace DynamicMosaic
                     regsCounting[k] = regs[counting[k]];
                 foreach (Reg pp in regsCounting)
                 {
-                    Rectangle rect = new Rectangle(pp.Position, regs[0].SelectedProcessor.Size);
+                    Rectangle rect = new Rectangle(pp.Position, new Size(_seaProcessors.Width, _seaProcessors.Height));
                     if (region.IsConflict(rect))
                     {
                         result = false;
@@ -227,7 +239,7 @@ namespace DynamicMosaic
 
                 if (result && mapSearcher.IsEqual(mapString.ToString()))
                     foreach (Registered r in region.Elements)
-                        yield return r;
+                        yield return GetProcessorFromField(p, r);
 
                 region.Clear();
                 mapString.Clear();
@@ -359,24 +371,30 @@ namespace DynamicMosaic
         ///     соответствуют указанному символу.
         ///     Поиск производится без учёта регистра.
         /// </summary>
-        /// <param name="procNames">Искомое название карты.</param>
+        /// <param name="procName">Искомое название карты.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
         /// <returns>Возвращает сведения о найденных картах.</returns>
-        static IEnumerable<Reg> FindSymbols(IEnumerable<char> procNames, SearchResults searchResults)
+        static List<Reg> FindSymbols(IEnumerable<char> procName, SearchResults searchResults)
         {
-            HashSet<char> pNames = new HashSet<char>(procNames);
+            HashSet<char> pNames = new HashSet<char>(procName);
+            HashSet<char> pNameEx = new HashSet<char>(pNames);
+            List<Reg> lstResult = new List<Reg>(pNames.Count);
+
             for (int y = 0, my = searchResults.Height - searchResults.MapHeight; y <= my; y++)
                 for (int x = 0, mx = searchResults.Width - searchResults.MapWidth; x <= mx; x++)
                 {
                     ProcPerc pp = searchResults[x, y];
 
-                    foreach (Processor p in pp.Procs.Where(p => pNames.Contains(char.ToUpper(p.Tag[0]))))
-                        yield return new Reg(new Point(x, y))
-                        {
-                            Percent = pp.Percent,
-                            SelectedProcessor = p
-                        };
+                    lstResult.AddRange(pp.Procs.Where(p =>
+                    {
+                        char c = char.ToUpper(p.Tag[0]);
+                        pNameEx.Remove(c);
+                        return pNames.Contains(c);
+                    })
+                    .Select(p => new Reg(new Point(x, y)) { Percent = pp.Percent, SelectedProcessor = p }));
                 }
+
+            return pNameEx.Count <= 0 ? lstResult : new List<Reg>();
         }
     }
 }
