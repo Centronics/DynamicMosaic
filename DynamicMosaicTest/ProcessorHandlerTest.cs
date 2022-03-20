@@ -403,5 +403,12 @@ namespace DynamicMosaicTest
         {
             ProcessorHandler.ChangeProcessorTag(null, "a");
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void PHTestException_12()
+        {
+            HashCreator.GetHash(null);
+        }
     }
 }

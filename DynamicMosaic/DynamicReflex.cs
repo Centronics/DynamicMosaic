@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DynamicParser;
 using DynamicProcessor;
 using Processor = DynamicParser.Processor;
@@ -125,15 +126,6 @@ namespace DynamicMosaic
         /// </returns>
         IEnumerable<Processor> IntFindRelation(Processor p, string w)
         {
-            if (p == null)
-                yield break;
-
-            if (p.Width < _seaProcessors.Width)
-                yield break;
-
-            if (p.Height < _seaProcessors.Height)
-                yield break;
-
             if (!QueryMapping(ref w))
                 yield break;
 
@@ -143,7 +135,32 @@ namespace DynamicMosaic
 
         public bool FindRelation(params (Processor p, string q)[] queryPairs)
         {
-            queryPairs = queryPairs?.Where(t => t.p != null && !string.IsNullOrWhiteSpace(t.q)).Select(t => (t.p, t.q.ToUpper())).ToArray();
+            queryPairs = queryPairs?.Where(t =>
+            {
+                if (t.p == null)
+                    return false;
+
+                //bool[] b = { t.p.Width >= _seaProcessors.Width, t.p.Height >= _seaProcessors.Height, !string.IsNullOrWhiteSpace(t.q) };
+
+                //return b.All(e => e);
+
+                bool b1 = t.p.Width >= _seaProcessors.Width;
+
+                if (!b1)
+                    return false;
+
+                bool b2 = t.p.Height >= _seaProcessors.Height;
+
+                if (!b2)
+                    return false;
+
+                bool b3 = !string.IsNullOrWhiteSpace(t.q);
+
+                if (!b3)
+                    return false;
+
+                return b1 && b2 && b3;
+            }).Select(t => (t.p, t.q.ToUpper())).ToArray();
 
             if ((queryPairs?.Length ?? 0) == 0)
                 return false;
@@ -151,27 +168,27 @@ namespace DynamicMosaic
             ConcurrentBag<(Processor[] pc, string q)> completedQueries = new ConcurrentBag<(Processor[], string)>();
             Exception exThrown = null;
 
-            //Parallel.ForEach(queries, ((Processor p, string q), ParallelLoopState state) =>
-            foreach ((Processor p, string q) in queryPairs)
+            Parallel.ForEach(queryPairs, (pq, state) =>
             {
                 try
                 {
-                    Processor[] pc = IntFindRelation(p, q).ToArray();
+                    Processor[] pc = IntFindRelation(pq.p, pq.q).ToArray();
                     if (pc.Length > 0)
-                        completedQueries.Add((pc, q));
+                        completedQueries.Add((pc, pq.q));
+                    else
+                        state.Stop();
                 }
                 catch (Exception ex)
                 {
                     exThrown = ex;
-                    break;
-                    //state.Stop();
+                    state.Stop();
                 }
-            }//);
+            });
 
             if (exThrown != null)
                 throw exThrown;
 
-            if (completedQueries.IsEmpty)
+            if (completedQueries.Count != queryPairs.Length)
                 return false;
 
             HashSet<char> allQueries = new HashSet<char>(Processors.Select(t => char.ToUpper(t.Tag[0])));
