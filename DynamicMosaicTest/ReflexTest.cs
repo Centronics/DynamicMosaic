@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using DynamicMosaic;
 using DynamicParser;
 using DynamicProcessor;
@@ -12,6 +13,14 @@ namespace DynamicMosaicTest
     [TestClass]
     public class ReflexTest
     {
+        static void SetMinMaxPoolThreads()
+        {
+            ThreadPool.GetMinThreads(out _, out int comPortMin);
+            Assert.AreEqual(true, ThreadPool.SetMinThreads(Environment.ProcessorCount * 3, comPortMin));
+            ThreadPool.GetMaxThreads(out _, out int comPortMax);
+            Assert.AreEqual(true, ThreadPool.SetMaxThreads(Environment.ProcessorCount * 15, comPortMax));
+        }
+
         static void CheckReflexValue(DynamicReflex actual, IEnumerable<Processor> pcExpected, int width, int height)
         {
             List<Processor> listActual = actual.Processors.ToList();
@@ -53,6 +62,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexMultilineTest()
         {
+            SetMinMaxPoolThreads();
+
             IEnumerable<Processor> Procs()
             {
                 SignValue[,] mapA = new SignValue[2, 2];
@@ -87,29 +98,36 @@ namespace DynamicMosaicTest
                 return result.ToArray();
             }
 
-            void Scenario(Processor p, string q, params Processor[] desiredResult)
+            Processor Main(int index)
             {
-                DynamicReflex reflex = new DynamicReflex(new ProcessorContainer(Procs().ToArray()));
+                switch (index)
+                {
+                    case 0:
+                        {
+                            SignValue[,] map = new SignValue[4, 4];
+                            map[0, 0] = SignValue.MaxValue;
+                            map[2, 0] = SignValue.MaxValue;
+                            map[1, 1] = SignValue.MaxValue;
+                            map[2, 1] = SignValue.MaxValue;
+                            map[0, 2] = SignValue.MaxValue;
+                            map[2, 2] = SignValue.MaxValue;
+                            map[3, 3] = SignValue.MaxValue;
 
-                CheckReflexValue(reflex, Procs(), 2, 2);
+                            return new Processor(map, "main");
+                        }
+                    case 1:
+                        return new Processor(new SignValue[1, 1], "main");
+                    case 2:
+                        return new Processor(new SignValue[1, 2], "main");
+                    case 3:
+                        return new Processor(new SignValue[1, 4], "main");
+                    case 4:
+                        return new Processor(new SignValue[2, 1], "main");
+                    case 5:
+                        return new Processor(new SignValue[4, 1], "main");
+                }
 
-                Assert.AreEqual(desiredResult.Length > 0, reflex.FindRelation((p, q)));
-
-                CheckReflexValue(reflex, desiredResult.Length > 0 ? desiredResult : GetProcessors(), 2, 2);
-            }
-
-            Processor Main()
-            {
-                SignValue[,] map = new SignValue[4, 4];
-                map[0, 0] = SignValue.MaxValue;
-                map[2, 0] = SignValue.MaxValue;
-                map[1, 1] = SignValue.MaxValue;
-                map[2, 1] = SignValue.MaxValue;
-                map[0, 2] = SignValue.MaxValue;
-                map[2, 2] = SignValue.MaxValue;
-                map[3, 3] = SignValue.MaxValue;
-
-                return new Processor(map, "main");
+                throw new ArgumentException($@"{nameof(index)} value = {index}", nameof(index));
             }
 
             #region Иллюстрация
@@ -250,73 +268,115 @@ namespace DynamicMosaicTest
 
             #endregion
 
+            #region Тестовая процедура
+
+            DynamicReflex stReflex = null;
+
+            void Scenario(string q = "CE", params Processor[] desiredResult)
+            {
+                void TestBody(int k, string qx = null)
+                {
+                    void TestProc(DynamicReflex reflex)
+                    {
+                        CheckReflexValue(reflex, Procs(), 2, 2);
+
+                        bool isNormal = k == 0 && !string.IsNullOrEmpty(qx);
+
+                        Assert.AreEqual(isNormal && desiredResult.Length > 0, reflex?.FindRelation((Main(k), qx)));
+
+                        CheckReflexValue(reflex, isNormal && desiredResult.Length > 0 ? desiredResult : GetProcessors(), 2, 2);
+
+                        Assert.AreEqual(true, reflex?.FindRelation(Procs().Select(p => (p, p.Tag[0].ToString())).ToArray()));
+
+                        CheckReflexValue(reflex, Procs(), 2, 2);
+                    }
+
+                    if (stReflex == null)
+                        stReflex = new DynamicReflex(new ProcessorContainer(Procs().ToArray()));
+
+                    TestProc(new DynamicReflex(new ProcessorContainer(Procs().ToArray())));
+                    TestProc(stReflex);
+                }
+
+                for (int k = 0; k < 6; k++)
+                {
+                    TestBody(k, q);
+                    TestBody(k, string.Empty);
+                    TestBody(k);
+                }
+            }
+
+            #endregion
+
             #region Тестовые сценарии
 
-            Scenario(Main(), "A", pA);
-            Scenario(Main(), "B", pB);
-            Scenario(Main(), "C", pC);
-            Scenario(Main(), "D", pD);
-            Scenario(Main(), "E", pE);
+            Scenario("A", pA);
+            Scenario("B", pB);
+            Scenario("C", pC);
+            Scenario("D", pD);
+            Scenario("E", pE);
 
-            Scenario(Main(), "AA", pA);
-            Scenario(Main(), "AB", pAB);
-            Scenario(Main(), "AC", pAC);
-            Scenario(Main(), "AD", pAD);
-            Scenario(Main(), "AE", pAE);
+            Scenario("AA", pA);
+            Scenario("AB", pAB);
+            Scenario("AC", pAC);
+            Scenario("AD", pAD);
+            Scenario("AE", pAE);
 
-            Scenario(Main(), "AA", pA);
-            Scenario(Main(), "BA", pAB);
-            Scenario(Main(), "CA", pAC);
-            Scenario(Main(), "DA", pAD);
-            Scenario(Main(), "EA", pAE);
+            Scenario("AA", pA);
+            Scenario("BA", pAB);
+            Scenario("CA", pAC);
+            Scenario("DA", pAD);
+            Scenario("EA", pAE);
 
-            Scenario(Main(), "BA", pAB);
-            Scenario(Main(), "BB", pB);
-            Scenario(Main(), "BC", pBC);
-            Scenario(Main(), "BD", pBD);
-            Scenario(Main(), "BE", pBE);
+            Scenario("BA", pAB);
+            Scenario("BB", pB);
+            Scenario("BC", pBC);
+            Scenario("BD", pBD);
+            Scenario("BE", pBE);
 
-            Scenario(Main(), "AB", pAB);
-            Scenario(Main(), "BB", pB);
-            Scenario(Main(), "CB", pBC);
-            Scenario(Main(), "DB", pBD);
-            Scenario(Main(), "EB", pBE);
+            Scenario("AB", pAB);
+            Scenario("BB", pB);
+            Scenario("CB", pBC);
+            Scenario("DB", pBD);
+            Scenario("EB", pBE);
 
-            Scenario(Main(), "CA", pAC);
-            Scenario(Main(), "CB", pBC);
-            Scenario(Main(), "CC", pC);
-            Scenario(Main(), "CD", pCD);
-            Scenario(Main(), "CE");
+            Scenario("CA", pAC);
+            Scenario("CB", pBC);
+            Scenario("CC", pC);
+            Scenario("CD", pCD);
+            Scenario();
 
-            Scenario(Main(), "AC", pAC);
-            Scenario(Main(), "BC", pBC);
-            Scenario(Main(), "CC", pC);
-            Scenario(Main(), "DC", pCD);
-            Scenario(Main(), "EC");
+            Scenario("AC", pAC);
+            Scenario("BC", pBC);
+            Scenario("CC", pC);
+            Scenario("DC", pCD);
+            Scenario("EC");
 
-            Scenario(Main(), "DA", pAD);
-            Scenario(Main(), "DB", pBD);
-            Scenario(Main(), "DC", pCD);
-            Scenario(Main(), "DD", pD);
-            Scenario(Main(), "DE", pDE);
+            Scenario("DA", pAD);
+            Scenario("DB", pBD);
+            Scenario("DC", pCD);
+            Scenario("DD", pD);
+            Scenario("DE", pDE);
 
-            Scenario(Main(), "AD", pAD);
-            Scenario(Main(), "BD", pBD);
-            Scenario(Main(), "CD", pCD);
-            Scenario(Main(), "DD", pD);
-            Scenario(Main(), "ED", pDE);
+            Scenario("AD", pAD);
+            Scenario("BD", pBD);
+            Scenario("CD", pCD);
+            Scenario("DD", pD);
+            Scenario("ED", pDE);
 
-            Scenario(Main(), "EA", pAE);
-            Scenario(Main(), "EB", pBE);
-            Scenario(Main(), "EC");
-            Scenario(Main(), "ED", pDE);
-            Scenario(Main(), "EE", pE);
+            Scenario("EA", pAE);
+            Scenario("EB", pBE);
+            Scenario("EC");
+            Scenario("ED", pDE);
+            Scenario("EE", pE);
 
-            Scenario(Main(), "AE", pAE);
-            Scenario(Main(), "BE", pBE);
-            Scenario(Main(), "CE");
-            Scenario(Main(), "DE", pDE);
-            Scenario(Main(), "EE", pE);
+            Scenario("AE", pAE);
+            Scenario("BE", pBE);
+            Scenario();
+            Scenario("DE", pDE);
+            Scenario("EE", pE);
+
+            Scenario();
 
             #endregion
         }
@@ -324,6 +384,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexSamePointTest()
         {
+            SetMinMaxPoolThreads();
+
             SignValue svDefault = new SignValue(6);
             SignValue svMidl = new SignValue(8);
 
@@ -651,6 +713,8 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexTestChangePC()
         {
+            SetMinMaxPoolThreads();
+
             SignValue[,] mapA = new SignValue[1, 1];
             mapA[0, 0] = new SignValue(3);
             SignValue[,] mapB = new SignValue[1, 1];
@@ -917,8 +981,10 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        public void ReflexPositionalTest()//добавить в тест код для увеличения количества потоков в пуле!!! ДОБАВИТЬ тест, где мы пытаемся распознать карту меньшего размера бОльшим!!!!
+        public void ReflexPositionalTest()
         {
+            SetMinMaxPoolThreads();
+
             void Scenario(string a, string b)
             {
                 SignValue[] mapA = { new SignValue(3) };
@@ -947,9 +1013,9 @@ namespace DynamicMosaicTest
             }
 
             Scenario("A", "B");
-            //Scenario("a", "b");
-            //Scenario("A", "b");
-            //Scenario("a", "B");
+            Scenario("a", "b");
+            Scenario("A", "b");
+            Scenario("a", "B");
         }
 
         static void ReflexRecognizeTest(DynamicReflex reflex, SignValue[] mapA, SignValue[] mapB, string a, string b)
@@ -980,22 +1046,16 @@ namespace DynamicMosaicTest
             void ResetReflex()
             {
                 SignValue[,] m5 = new SignValue[1, 1];
-                m5[0, 0] = new SignValue(3);
+                m5[0, 0] = new SignValue(2);
 
                 SignValue[,] m6 = new SignValue[1, 1];
-                m6[0, 0] = new SignValue(5);
-
-                SignValue[,] m7 = new SignValue[1, 1];
-                m7[0, 0] = new SignValue(2);
-
-                SignValue[,] m8 = new SignValue[1, 1];
-                m8[0, 0] = new SignValue(8);
-
-                Assert.AreEqual(true, reflex.FindRelation((new Processor(m7, "m7"), a), (new Processor(m8, "m8"), b)));
-
-                CheckReflexValue(reflex, new[] { new Processor(m7, a), new Processor(m8, b) }, 1, 1);
+                m6[0, 0] = new SignValue(8);
 
                 Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), a), (new Processor(m6, "m6"), b)));
+
+                CheckReflexValue(reflex, new[] { new Processor(m5, a), new Processor(m6, b) }, 1, 1);
+
+                Assert.AreEqual(true, reflex.FindRelation((new Processor(mapA, a), a), (new Processor(mapB, b), b)));
 
                 CheckReflexValue(reflex, new[] { new Processor(mapA, a), new Processor(mapB, b) }, 1, 1);
             }
@@ -2115,6 +2175,8 @@ namespace DynamicMosaicTest
         [ExpectedException(typeof(ArgumentNullException))]
         public void ReflexArgumentNullException()
         {
+            SetMinMaxPoolThreads();
+
             // ReSharper disable once ObjectCreationAsStatement
             new DynamicReflex(null);
         }
