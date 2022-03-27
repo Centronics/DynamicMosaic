@@ -493,6 +493,50 @@ namespace DynamicMosaicTest
                             Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), "Aac")));
 
                             CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, "D")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), null)));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), string.Empty)));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), " ")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), "  ")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((ProcMain(j), "\t")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, string.Empty)));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, " ")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, "  ")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, "\t")));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(false, reflex.FindRelation((null, null)));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
                         }
 
                         void ResetReflex()
@@ -967,6 +1011,16 @@ namespace DynamicMosaicTest
                         CheckReflexState();
 
                     Assert.AreEqual(false, reflex.FindRelation((pC, string.Empty)));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((null, null)));//добавить остальные тесты с недопустимыми символами
 
                     if (t == 0)
                         CheckReflexState();
@@ -2172,13 +2226,61 @@ namespace DynamicMosaicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ReflexArgumentNullException()
+        public void ArgumentNullExceptionTest()
         {
             SetMinMaxPoolThreads();
 
-            // ReSharper disable once ObjectCreationAsStatement
-            new DynamicReflex(null);
+            bool TestFunc(Action act)
+            {
+                try
+                {
+                    act();
+                }
+                catch (ArgumentNullException)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(null)));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(new Processor(new[] { new SignValue(3) }, "A"), new Processor(new[] { new SignValue(5) }, "B"))).FindRelation(null)));
+        }
+
+        [TestMethod]
+        public void ArgumentExceptionTest()
+        {
+            SetMinMaxPoolThreads();
+
+            bool TestFunc(Action act)
+            {
+                try
+                {
+                    act();
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            Processor p1 = new Processor(new[] { new SignValue(3) }, "A");
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation()));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, " "))));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "  "))));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "\t"))));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, string.Empty))));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, null))));//сделать тест с одной распознающей картой
         }
     }
 }
