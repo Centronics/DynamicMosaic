@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using DynamicMosaic;
@@ -57,6 +58,60 @@ namespace DynamicMosaicTest
             }
 
             Assert.AreEqual(0, listActual.Count);
+        }
+
+        static void ArgumentNullExceptionTest()
+        {
+            bool TestFunc(Action act)
+            {
+                try
+                {
+                    act();
+                }
+                catch (ArgumentNullException)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(null)));
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(new Processor(new[] { new SignValue(3) }, "A"), new Processor(new[] { new SignValue(5) }, "B"))).FindRelation(null)));
+        }
+
+        static void ArgumentExceptionTest()
+        {
+            bool TestFunc(Action act)
+            {
+                try
+                {
+                    act();
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            ArgumentNullExceptionTest();
+
+            Processor p1 = new Processor(new[] { new SignValue(3) }, "A");
+
+            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation()));
+
+            Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, " ")));
+
+            Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "  ")));
+
+            Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "\t")));
+
+            Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, string.Empty)));
+
+            Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, null)));
         }
 
         [TestMethod]
@@ -431,6 +486,20 @@ namespace DynamicMosaicTest
 
                         void NegativeTests(Processor[] rp)
                         {
+                            bool ExceptionFunc(Action act)
+                            {
+                                try
+                                {
+                                    act();
+                                }
+                                catch (ArgumentException)
+                                {
+                                    return true;
+                                }
+
+                                return false;
+                            }
+
                             if (reflex == null)
                                 throw new ArgumentNullException();
 
@@ -494,7 +563,7 @@ namespace DynamicMosaicTest
 
                             CheckReflexValue(reflex, rp, 1, 1);
 
-                            Assert.AreEqual(false, reflex.FindRelation((null, "D")));
+                            Assert.AreEqual(false, reflex.FindRelation((null, "AB")));
 
                             CheckReflexValue(reflex, rp, 1, 1);
 
@@ -535,6 +604,14 @@ namespace DynamicMosaicTest
                             CheckReflexValue(reflex, rp, 1, 1);
 
                             Assert.AreEqual(false, reflex.FindRelation((null, null)));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            Assert.AreEqual(true, ExceptionFunc(() => reflex.FindRelation()));
+
+                            CheckReflexValue(reflex, rp, 1, 1);
+
+                            ArgumentExceptionTest();
 
                             CheckReflexValue(reflex, rp, 1, 1);
                         }
@@ -776,6 +853,20 @@ namespace DynamicMosaicTest
             ProcessorContainer pc = new ProcessorContainer(pA, pB);
             DynamicReflex reflex = new DynamicReflex(pc);
 
+            bool ExceptionFunc(Action act)
+            {
+                try
+                {
+                    act();
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             void CheckReflexState() => CheckReflexValue(reflex, new[] { pA, pB }, 1, 1);
 
             void ResetReflex(int k, int t)
@@ -856,12 +947,98 @@ namespace DynamicMosaicTest
                 }
             }
 
+            void ZeroTest(int k, int t)
+            {
+                void NullTest(Processor p)
+                {
+                    Assert.AreEqual(false, reflex.FindRelation((p, null)));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((p, string.Empty)));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((p, " ")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((p, "  ")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((p, "\t")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(true, ExceptionFunc(() => reflex.FindRelation()));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ArgumentExceptionTest();
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ResetReflex(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+                }
+
+                NullTest(pA);
+                NullTest(pB);
+                NullTest(pC);
+                NullTest(pD);
+                NullTest(new Processor(mapA, "A"));
+                NullTest(new Processor(mapB, "B"));
+                NullTest(new Processor(mapC, "C"));
+                NullTest(new Processor(mapD, "D"));
+            }
+
             CheckReflexState();
 
             for (int t = 0; t < 4; t++)
                 for (int k = 0, kMax = 10; k < kMax; k++)
                 {
-                    ResetReflex(k, t);
+
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -871,7 +1048,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -881,7 +1058,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -891,7 +1068,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -903,7 +1080,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -913,7 +1090,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -923,7 +1100,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -933,7 +1110,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -945,7 +1122,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -955,7 +1132,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -965,7 +1142,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -975,7 +1152,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -985,7 +1162,7 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
@@ -995,43 +1172,283 @@ namespace DynamicMosaicTest
                     if (t == 0)
                         CheckReflexState();
 
-                    ResetReflex(k, t);
+                    ZeroTest(k, t);
 
                     if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(false, reflex.FindRelation((pC, null)));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ResetReflex(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pC, string.Empty)));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ResetReflex(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((null, null)));//добавить остальные тесты с недопустимыми символами
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ResetReflex(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
                 }
 
             CheckReflexState();
+        }
+
+        [TestMethod]
+        public void ReflexOneMapTest()
+        {
+            SetMinMaxPoolThreads();
+
+            SignValue[,] sv1 = new SignValue[2, 3];
+            sv1[0, 0] = new SignValue(100);
+            sv1[1, 0] = SignValue.MinValue;
+            sv1[0, 1] = SignValue.MaxValue;
+            sv1[1, 1] = sv1[0, 0];
+            sv1[0, 2] = SignValue.MaxValue;
+            sv1[1, 2] = SignValue.MaxValue;
+
+            SignValue[,] sv2 = new SignValue[2, 3];
+            sv2[0, 0] = sv1[0, 0];
+            sv2[1, 0] = sv1[0, 0];
+            sv2[0, 1] = sv1[0, 0];
+            sv2[1, 1] = sv1[0, 0];
+            sv2[0, 2] = sv1[0, 0];
+            sv2[1, 2] = sv1[0, 0];
+
+            SignValue[] sv3 = new SignValue[1];
+            sv3[0] = SignValue.MaxValue;
+
+            SignValue[] sv4 = new SignValue[2];
+            sv4[0] = sv1[0, 0];
+            sv4[1] = sv1[0, 0];
+
+            SignValue[,] sv5 = new SignValue[1, 2];
+            sv5[0, 0] = sv1[0, 0];
+            sv5[0, 1] = sv1[0, 0];
+
+            IEnumerable<Processor> GetProcResults1()
+            {
+                yield return new Processor(sv1, "b");
+                yield return new Processor(sv2, "b");
+                yield return new Processor(sv3, "b");
+                yield return new Processor(sv4, "b");
+                yield return new Processor(sv5, "b");
+            }
+
+            const char cQuery = 'a';
+
+            Processor tp = null;
+
+            Processor Main(bool createNew, char c)
+            {
+                Processor CreateProcessor() => new Processor(new[] { sv1[0, 0] }, c.ToString());
+
+                switch (createNew)
+                {
+                    case true:
+                        return CreateProcessor();
+                    case false:
+                        return tp ?? (tp = CreateProcessor());
+                    default:
+                        throw new ArgumentException($@"Недопустимое значение {nameof(createNew)}: {createNew}", nameof(createNew));
+                }
+            }
+
+            Processor p1 = null, p2 = null, p3 = null, p4 = null;
+
+            IEnumerable<Processor> GetProcessorIterations(int count)
+            {
+                if (count <= 0 || count > 8)
+                    throw new ArgumentException($@"Недопустимое значение {nameof(count)}: {count}",
+                        nameof(count));
+
+                Processor GetProcessor(int index)
+                {
+                    if (index < 0 || index > 7)
+                        throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
+                            nameof(index));
+
+                    Processor CreateProcessor()
+                    {
+                        switch (index % 4)
+                        {
+                            case 0:
+                                return new Processor(sv1, "sv1");
+                            case 1:
+                                return new Processor(sv2, "sv2");
+                            case 2:
+                                return new Processor(sv3, "sv3");
+                            case 3:
+                                return new Processor(sv4, "sv4");
+                            default:
+                                throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
+                                    nameof(index));
+                        }
+                    }
+
+                    if (index > 3)
+                        return CreateProcessor();
+
+                    switch (index)
+                    {
+                        case 0:
+                            return p1 ?? (p1 = CreateProcessor());
+                        case 1:
+                            return p2 ?? (p2 = CreateProcessor());
+                        case 2:
+                            return p3 ?? (p3 = CreateProcessor());
+                        case 3:
+                            return p4 ?? (p4 = CreateProcessor());
+                        default:
+                            throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
+                                nameof(index));
+                    }
+                }
+
+                for (int k1 = 0; k1 < 7; k1++)
+                {
+                    yield return GetProcessor(k1);
+
+                    if (count == 1)
+                        continue;
+
+                    for (int k2 = 0; k2 < 7; k2++)
+                    {
+                        yield return GetProcessor(k2);
+
+                        if (count == 2)
+                            continue;
+
+                        for (int k3 = 0; k3 < 7; k3++)
+                        {
+                            yield return GetProcessor(k3);
+
+                            if (count == 3)
+                                continue;
+
+                            for (int k4 = 0; k4 < 7; k4++)
+                            {
+                                yield return GetProcessor(k4);
+
+                                if (count == 4)
+                                    continue;
+
+                                for (int k5 = 0; k5 < 7; k5++)
+                                {
+                                    yield return GetProcessor(k5);
+
+                                    if (count == 5)
+                                        continue;
+
+                                    for (int k6 = 0; k6 < 7; k6++)
+                                    {
+                                        yield return GetProcessor(k6);
+
+                                        if (count == 6)
+                                            continue;
+
+                                        for (int k7 = 0; k7 < 7; k7++)
+                                        {
+                                            yield return GetProcessor(k7);
+
+                                            if (count == 7)
+                                                continue;
+
+                                            for (int k8 = 0; k8 < 7; k8++)
+                                                yield return GetProcessor(k8);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            IEnumerable<(DynamicReflex r, char c)> GetReflexIterations()
+            {
+                DynamicReflex reflex = null;
+
+                (DynamicReflex r, char c) GetReflexIteration(int iteration)
+                {
+                    DynamicReflex GetReflex(char c)
+                    {
+                        DynamicReflex CreateReflex() => new DynamicReflex(new ProcessorContainer(Main(iteration > 3, c)));
+
+                        switch (iteration % 2)
+                        {
+                            case 0:
+                                return CreateReflex();
+                            case 1:
+                                return reflex ?? (reflex = CreateReflex());
+                            default:
+                                throw new ArgumentException($@"Недопустимое значение {nameof(iteration)}: {iteration}", nameof(iteration));
+                        }
+                    }
+
+                    switch (iteration)
+                    {
+                        case 0:
+                        case 1:
+                        case 6:
+                        case 7:
+                            {
+                                char c = char.ToUpper(cQuery);
+                                return (GetReflex(c), c);
+                            }
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                            {
+                                char c = char.ToLower(cQuery);
+                                return (GetReflex(c), c);
+                            }
+                        default:
+                            throw new ArgumentException($@"Недопустимое значение {nameof(iteration)}: {iteration}", nameof(iteration));
+                    }
+                }
+
+                for (int k1 = 0; k1 < 8; k1++)
+                {
+                    yield return GetReflexIteration(k1);
+
+                    for (int k2 = 0; k2 < 8; k2++)
+                    {
+                        yield return GetReflexIteration(k2);
+
+                        for (int k3 = 0; k3 < 8; k3++)
+                        {
+                            yield return GetReflexIteration(k3);
+
+                            for (int k4 = 0; k4 < 8; k4++)
+                                yield return GetReflexIteration(k4);
+                        }
+                    }
+                }
+            }
+
+            IEnumerable<Processor> GetResults(IEnumerable<Processor> ps, char c)
+            {
+                HashSet<int> hs = new HashSet<int>(ps.SelectMany(p =>
+                {
+                    List<int> lst = new List<int>(p.Length);
+
+                    for (int y = 0; y < p.Height; y++)
+                        for (int x = 0; x < p.Width; x++)
+                            lst.Add(p[x, y].Value);
+
+                    return lst;
+                }));
+
+                foreach (int i in hs)
+                    yield return new Processor(new[] { new SignValue(i) }, c.ToString());
+            }
+
+            void SubTestFunc(DynamicReflex r, Processor p, char cQ, char cSource)
+            {
+                Assert.AreEqual(true, r.FindRelation((p, cQ.ToString())));
+                CheckReflexValue(r, GetResults(new[] { p }, cQ/*cSource*/), 1, 1);//new[] { ProcessorHandler.ChangeProcessorTag(p, cSource.ToString()) }//починить баг с названиями
+            }
+
+            void CharTest(char cQ)
+            {
+                for (int h = 1; h < 9; h++)
+                    foreach ((DynamicReflex r, char c) in GetReflexIterations())
+                        foreach (Processor p in GetProcessorIterations(h))
+                            SubTestFunc(r, p, cQ, c);
+            }
+
+            CharTest(char.ToUpper(cQuery));
+            CharTest(char.ToLower(cQuery));//добавить общие проверки, используя стандартные функции, нет тестов с несколькими заросами
         }
 
         [TestMethod]
@@ -2223,64 +2640,6 @@ namespace DynamicMosaicTest
             }
 
             #endregion
-        }
-
-        [TestMethod]
-        public void ArgumentNullExceptionTest()
-        {
-            SetMinMaxPoolThreads();
-
-            bool TestFunc(Action act)
-            {
-                try
-                {
-                    act();
-                }
-                catch (ArgumentNullException)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(null)));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(new Processor(new[] { new SignValue(3) }, "A"), new Processor(new[] { new SignValue(5) }, "B"))).FindRelation(null)));
-        }
-
-        [TestMethod]
-        public void ArgumentExceptionTest()
-        {
-            SetMinMaxPoolThreads();
-
-            bool TestFunc(Action act)
-            {
-                try
-                {
-                    act();
-                }
-                catch (ArgumentException)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            Processor p1 = new Processor(new[] { new SignValue(3) }, "A");
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation()));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, " "))));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "  "))));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, "\t"))));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, string.Empty))));
-
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, null))));//сделать тест с одной распознающей картой
         }
     }
 }

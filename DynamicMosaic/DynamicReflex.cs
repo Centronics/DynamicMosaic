@@ -137,7 +137,7 @@ namespace DynamicMosaic
             if (completedQueries.Count != queryPairs.Length)
                 return false;
 
-            HashSet<char> allQueries = new HashSet<char>(Processors.Select(t => char.ToUpper(t.Tag[0])));
+            HashSet<char> allQueries = new HashSet<char>(Processors.Select(t => char.ToUpper(t.Tag[0])));//оптимизировать
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
             IEnumerable<Processor> GetResultContainer()
@@ -147,7 +147,7 @@ namespace DynamicMosaic
 
                 ProcessorHandler ph = new ProcessorHandler();
 
-                foreach (Processor p in completedQueries.SelectMany(t => t.pc))
+                foreach (Processor p in completedQueries.SelectMany(t => t.pc))//возможно, можно оптимизировать
                     ph.Add(p);
 
                 foreach (Processor p in ph.Processors)
@@ -159,7 +159,7 @@ namespace DynamicMosaic
             return true;
         }
 
-        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols) => Processors.Where(p => new HashSet<char>(symbols).Contains(char.ToUpper(p.Tag[0])));
+        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols) => Processors.Where(p => new HashSet<char>(symbols).Contains(char.ToUpper(p.Tag[0])));//оптимизировать
 
         /// <summary>
         ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно
