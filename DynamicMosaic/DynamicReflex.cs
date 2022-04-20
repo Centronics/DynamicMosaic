@@ -105,7 +105,7 @@ namespace DynamicMosaic
 
                 return !string.IsNullOrWhiteSpace(t.q);
 
-            }).Select(t => (t.p, new string(new HashSet<char>(t.q.Select(char.ToUpper)).ToArray()))).Where(t => _setChars.IsSupersetOf(t.Item2)).ToArray();
+            }).Select(t => (t.p, new string(new HashSet<char>(t.q.Select(char.ToUpper)).ToArray()))).Where(t => _setChars.IsSupersetOf(t.Item2)).ToArray();//добавить проверку на дубли
 
             if (!queryPairs.Any())
                 return false;
@@ -117,7 +117,9 @@ namespace DynamicMosaic
             {
                 try
                 {
-                    Processor[] pc = FindWord(pq.p, pq.q).ToArray();//как вызвать исключение???
+                    Processor[]
+                        pc = FindWord(pq.p, pq.q)
+                            .ToArray(); //как вызвать исключение??? сделать одну супер большую карту, сделав огромное количество запросов на неё (упадёт при копированни новых карт) - лучше ещё одну такую же ОГРОМНУЮ карту, чтобы упал при копированни её - узнать свобоную память одним движком
 
                     if (pc.Any())
                         completedQueries.Add((pc, pq.q));
@@ -182,6 +184,7 @@ namespace DynamicMosaic
             Region region = new Region(p.Width, p.Height);
             StringBuilder mapString = new StringBuilder(word.Length);
             TagSearcher mapSearcher = new TagSearcher(word);
+
             while (ChangeCount(ref counting, word.Length, regs.Count) >= 0)
             {
                 bool result = true;

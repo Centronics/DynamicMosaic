@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using DynamicMosaic;
@@ -21,7 +22,7 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, ThreadPool.SetMaxThreads(Environment.ProcessorCount * 15, comPortMax));
         }
 
-        static void CheckReflexValue(DynamicReflex actual, IEnumerable<Processor> pcExpected, int width, int height)
+        static void CheckReflexValue(DynamicReflex actual, IEnumerable<Processor> pcExpected, int widthExpected, int heightExpected)
         {
             List<Processor> listActual = actual.Processors.ToList();
 
@@ -35,13 +36,13 @@ namespace DynamicMosaicTest
 
                     if (pActual.Tag[0] != pExpected.Tag[0])
                         return false;
-                    if (width != pActual.Width)
+                    if (widthExpected != pActual.Width)
                         return false;
-                    if (height != pActual.Height)
+                    if (heightExpected != pActual.Height)
                         return false;
-                    if (width != pExpected.Width)
+                    if (widthExpected != pExpected.Width)
                         return false;
-                    if (height != pExpected.Height)
+                    if (heightExpected != pExpected.Height)
                         return false;
 
                     for (int y = 0; y < pExpected.Height; y++)
@@ -1236,15 +1237,11 @@ namespace DynamicMosaicTest
 
             IEnumerable<Processor> GetProcessorIterations()
             {
-                Processor GetProcessor(int index)
+                Processor GetIterationResult(int k)
                 {
-                    if (index < 0 || index > 7)
-                        throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
-                            nameof(index));
-
                     Processor CreateProcessor()
                     {
-                        switch (index % 4)
+                        switch (k)
                         {
                             case 0:
                                 return new Processor(sv1, "sv1");
@@ -1255,15 +1252,11 @@ namespace DynamicMosaicTest
                             case 3:
                                 return new Processor(sv4, "sv4");
                             default:
-                                throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
-                                    nameof(index));
+                                return null;
                         }
                     }
 
-                    if (index > 3)
-                        return CreateProcessor();
-
-                    switch (index)
+                    switch (k)
                     {
                         case 0:
                             return p1 ?? (p1 = CreateProcessor());
@@ -1274,46 +1267,63 @@ namespace DynamicMosaicTest
                         case 3:
                             return p4 ?? (p4 = CreateProcessor());
                         default:
-                            throw new ArgumentException($@"Недопустимое значение {nameof(index)}: {index}",
-                                nameof(index));
+                            return CreateProcessor();
                     }
                 }
 
-                for (int k1 = 0; k1 < 8; k1++)
+                Processor GetProcessorIteration(IList<int> iteration)
                 {
-                    yield return GetProcessor(k1);
+                    Processor r = GetIterationResult(iteration[0]++);
 
-                    for (int k2 = 0; k2 < 8; k2++)
-                        yield return GetProcessor(k2);
+                    if (r != null)
+                        return r;
+
+                    iteration[0] = 0;
+
+                    return null;
+                }
+
+                int[] it1 = new int[1], it2 = new int[1];
+
+                while (true)
+                {
+                    {
+                        Processor pp1 = GetProcessorIteration(it1);
+
+                        if (pp1 == null)
+                            break;
+
+                        yield return pp1;
+                    }
+
+                    for (Processor pp2; ;)
+                        if ((pp2 = GetProcessorIteration(it2)) != null)
+                            yield return pp2;
+                        else
+                            break;
+
                 }
             }
 
+            DynamicReflex rxBuf = null;
+
             IEnumerable<(DynamicReflex r, char c)> GetReflexIterations()
             {
-                DynamicReflex reflex = null;
-
-                (DynamicReflex r, char c) GetReflexIteration(int iteration)
+                (DynamicReflex r, char c)? GetIterationResult(int k)
                 {
-                    bool isUpper = iteration % 4 == 0;
+                    bool isUpper = k % 4 == 0;
 
                     DynamicReflex GetReflex(bool createNewProcessor, bool createNewReflex)
                     {
-                        DynamicReflex CreateReflex() => new DynamicReflex(new ProcessorContainer(Main(createNewProcessor, isUpper)));
+                        DynamicReflex CreateReflex() =>
+                            new DynamicReflex(new ProcessorContainer(Main(createNewProcessor, isUpper)));
 
-                        switch (createNewReflex)
-                        {
-                            case false:
-                                return CreateReflex();
-                            case true:
-                                return reflex ?? (reflex = CreateReflex());
-                            default:
-                                throw new ArgumentException($@"Недопустимое значение {nameof(iteration)}: {iteration}", nameof(iteration));
-                        }
+                        return createNewReflex ? rxBuf ?? (rxBuf = CreateReflex()) : CreateReflex();
                     }
 
                     char ch = isUpper ? char.ToUpper(cQuery) : char.ToLower(cQuery);
 
-                    switch (iteration)
+                    switch (k)
                     {
                         case 0:
                         case 4:
@@ -1328,16 +1338,41 @@ namespace DynamicMosaicTest
                         case 7:
                             return (GetReflex(true, true), ch);
                         default:
-                            throw new ArgumentException($@"Недопустимое значение {nameof(iteration)}: {iteration}", nameof(iteration));
+                            return null;
                     }
                 }
 
-                for (int k1 = 0; k1 < 8; k1++)
+                (DynamicReflex r, char c)? GetReflexIteration(IList<int> iteration)
                 {
-                    yield return GetReflexIteration(k1);
+                    (DynamicReflex, char)? r = GetIterationResult(iteration[0]++);
 
-                    for (int k2 = 0; k2 < 8; k2++)
-                        yield return GetReflexIteration(k2);
+                    if (r.HasValue)
+                        return r.Value;
+
+                    iteration[0] = 0;
+
+                    return null;
+                }
+
+                int[] it1 = new int[1], it2 = new int[1];
+
+                while (true)
+                {
+                    {
+                        (DynamicReflex, char)? r1 = GetReflexIteration(it1);
+
+                        if (!r1.HasValue)
+                            break;
+
+                        yield return r1.Value;
+                    }
+
+                    for ((DynamicReflex, char)? r2; ;)
+                        if ((r2 = GetReflexIteration(it2)).HasValue)
+                            yield return r2.Value;
+                        else
+                            break;
+
                 }
             }
 
@@ -1345,7 +1380,7 @@ namespace DynamicMosaicTest
             {
                 HashSet<int> hs = new HashSet<int>(ps.SelectMany(p =>
                 {
-                    List<int> lst = new List<int>(p.Length);
+                    HashSet<int> lst = new HashSet<int>();
 
                     for (int y = 0; y < p.Height; y++)
                         for (int x = 0; x < p.Width; x++)
@@ -2582,6 +2617,131 @@ namespace DynamicMosaicTest
             Scenario("a", "b");
             Scenario("A", "b");
             Scenario("a", "B");
+        }
+
+        [TestMethod]
+        public void ReflexExceptionTest()
+        {
+            void RandomInit(SignValue[,] vals)
+            {
+                Random rnd = new Random();
+
+                for (int y = 0; y < vals.GetLength(1); y++)
+                    for (int x = 0; x < vals.GetLength(0); x++)
+                        vals[x, y] = new SignValue(rnd.Next(SignValue.MinValue.Value, SignValue.MaxValue.Value + 1));
+            }
+
+            Processor CreateProcessor(int cX, int cY, string tag)
+            {
+                SignValue[,] values = new SignValue[cX, cY];
+
+                RandomInit(values);
+
+                return new Processor(values, tag);
+            }
+
+            //byte[] bb = new byte[0x100000000]; 
+
+            //byte[,] bb = new byte[268435456, 268435456];
+
+            //byte[,] bb = new byte[268435456, 6];
+
+            //for (int u = 0; u < bb.GetLength(1); u++)
+            //    for (int d = 0; d < bb.GetLength(0); d++)
+            //        bb[d, u] = 0;
+
+            //byte[,] bb1 = new byte[1073741824, 1];
+
+            //for (int u = 0; u < bb1.GetLength(1); u++)
+            //    for (int d = 0; d < bb1.GetLength(0); d++)
+            //        bb1[d, u] = 0;
+
+            //byte[,] bb2 = new byte[1073741824, 1];
+
+            //for (int u = 0; u < bb2.GetLength(1); u++)
+            //    for (int d = 0; d < bb2.GetLength(0); d++)
+            //        bb2[d, u] = 0;
+
+            //bb[0, 0] = 1;
+
+            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA)
+            {
+                bool isExcept = false;
+
+                void ThreadFindRelation()
+                {
+                    try
+                    {
+                        reflex.FindRelation(qA);
+                    }
+                    catch (ThreadAbortException)
+                    {
+                        // ignored
+                    }
+                    catch
+                    {
+                        isExcept = true;
+                    }
+                }
+
+                Thread thr = new Thread(ThreadFindRelation)
+                {
+                    IsBackground = true,
+                    Name = "ThreadFindRelation",
+                    Priority = ThreadPriority.AboveNormal
+                };
+
+                thr.Start();
+
+                bool r = thr.Join(4000);
+
+                if (r)
+                    return isExcept;
+
+                thr.Abort();
+                thr.Join();
+
+                return isExcept;
+            }
+
+            checked
+            {
+                const int amount = 52428800 / 2;
+
+                for (ulong y = 1; y <= int.MaxValue; y++)
+                    for (ulong x = amount; x <= int.MaxValue; x += amount)
+                    {
+                        int ix = Convert.ToInt32(x);
+                        int iy = Convert.ToInt32(y);
+
+                        int xHalf = ix / 2;
+                        int yHalf = iy / 2;
+
+                        if (xHalf <= 0)
+                            xHalf = ix;
+                        if (yHalf <= 0)
+                            yHalf = iy;
+
+                        Processor pA = CreateProcessor(ix, iy, "main");
+
+                        Processor pMain = CreateProcessor(xHalf, yHalf, "a");
+
+                        (Processor, string) qA = (pA, "a");
+
+                        ProcessorContainer pc = new ProcessorContainer(pMain);
+
+                        DynamicReflex r = new DynamicReflex(pc);
+
+                        if (!TimeFunction(r, qA))
+                            continue;
+
+                        CheckReflexValue(r, new[] { pMain }, xHalf, yHalf);
+                        return;
+                    }
+
+            }
+
+            throw new Exception("NotException");
         }
     }
 }

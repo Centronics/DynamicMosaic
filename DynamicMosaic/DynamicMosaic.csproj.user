@@ -4,4 +4,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>D:\разработки\DynamicMosaicExample\DynamicMosaicExample\bin\Debug\DynamicMosaicExample.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <StartProgram>D:\разработки\DynamicMosaicExample\DynamicMosaicExample\bin\Debug\DynamicMosaicExample.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>
