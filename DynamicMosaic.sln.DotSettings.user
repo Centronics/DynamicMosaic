@@ -18,7 +18,8 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="D:\Программы\Системы программирования\ДИС\DynamicParserRelease\Скомпилировано\Библиотека\DynamicParser.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\Centronics\AppData\Local\Temp\JetBrains\ReSharperPlatformVs16\vAny_f8d5fb02\CoverageData\_DynamicMosaic.275367655\Snapshot\snapshot.utdcvr</s:String>
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\Centronics\AppData\Local\Temp\JetBrains\ReSharperPlatformVs16\vAny_f8d5fb02\CoverageData\_DynamicMosaic.690365537\Snapshot\snapshot.utdcvr</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=46bdb8b0_002Dbf84_002D4147_002D93d2_002D7a964cc936b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;DynamicMosaicTest&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;MSTest::7FD53189-7927-4A9D-A107-8661A6FFB1D8::.NETFramework,Version=v4.7.2::DynamicMosaicTest.ReflexTest.ReflexExceptionTest&lt;/TestId&gt;&#xD;

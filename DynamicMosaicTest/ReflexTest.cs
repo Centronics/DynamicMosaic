@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using DynamicMosaic;
@@ -2622,6 +2621,12 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexExceptionTest()
         {
+            Assert.AreEqual(true, Environment.Is64BitOperatingSystem);
+
+            Assert.AreEqual(true, Environment.Is64BitProcess);
+
+            Assert.AreEqual(8, IntPtr.Size);
+
             void RandomInit(SignValue[,] vals)
             {
                 Random rnd = new Random();
@@ -2640,9 +2645,11 @@ namespace DynamicMosaicTest
                 return new Processor(values, tag);
             }
 
-            //byte[] bb = new byte[0x100000000]; 
+            //byte[] bb13 = new byte[(ulong)int.MaxValue + 0];
 
-            //byte[,] bb = new byte[268435456, 268435456];
+            //byte[] bb12 = new byte[0x100000000]; 
+
+            //byte[,] bb21 = new byte[268435456, 268435456];
 
             //byte[,] bb = new byte[268435456, 6];
 
@@ -2693,9 +2700,7 @@ namespace DynamicMosaicTest
 
                 thr.Start();
 
-                bool r = thr.Join(4000);
-
-                if (r)
+                if (thr.Join(4000))
                     return isExcept;
 
                 thr.Abort();
@@ -2704,44 +2709,42 @@ namespace DynamicMosaicTest
                 return isExcept;
             }
 
-            checked
+            bool Iteration(int x, int y)
             {
-                const int amount = 52428800 / 2;
+                checked
+                {
+                    int xHalf = x / 2;
+                    int yHalf = y / 2;
 
-                for (ulong y = 1; y <= int.MaxValue; y++)
-                    for (ulong x = amount; x <= int.MaxValue; x += amount)
-                    {
-                        int ix = Convert.ToInt32(x);
-                        int iy = Convert.ToInt32(y);
+                    Assert.AreEqual(true, xHalf > 0);
 
-                        int xHalf = ix / 2;
-                        int yHalf = iy / 2;
+                    if (yHalf <= 0)
+                        yHalf = y;
 
-                        if (xHalf <= 0)
-                            xHalf = ix;
-                        if (yHalf <= 0)
-                            yHalf = iy;
+                    Processor pA = CreateProcessor(x, y, "main");
 
-                        Processor pA = CreateProcessor(ix, iy, "main");
+                    Processor pMain = CreateProcessor(xHalf, yHalf, "a");
 
-                        Processor pMain = CreateProcessor(xHalf, yHalf, "a");
+                    DynamicReflex testReflex = new DynamicReflex(new ProcessorContainer(pMain));
 
-                        (Processor, string) qA = (pA, "a");
+                    if (!TimeFunction(testReflex, (pA, "a")))
+                        return false;
 
-                        ProcessorContainer pc = new ProcessorContainer(pMain);
+                    CheckReflexValue(testReflex, new[] { pMain }, xHalf, yHalf);
 
-                        DynamicReflex r = new DynamicReflex(pc);
-
-                        if (!TimeFunction(r, qA))
-                            continue;
-
-                        CheckReflexValue(r, new[] { pMain }, xHalf, yHalf);
-                        return;
-                    }
-
+                    return true;
+                }
             }
 
-            throw new Exception("NotException");
+            Assert.AreEqual(false, Iteration(2, 1));
+
+            for (int x = 100; x < 1000; x += 100)//1000?
+                Assert.AreEqual(false, Iteration(x, 1));
+
+            for (ulong amount = 13107200 * 100, y = 1; y <= int.MaxValue; y++)//исследовать насчёт количества amount, БАГ в цифре 100!!!!!
+                for (ulong x = amount; x <= int.MaxValue; x += amount)
+                    if (Iteration(Convert.ToInt32(x), Convert.ToInt32(y)))
+                        break;
         }
     }
 }
