@@ -2621,11 +2621,11 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexExceptionTest()
         {
-            Assert.AreEqual(true, Environment.Is64BitOperatingSystem);
+            //Assert.AreEqual(true, Environment.Is64BitOperatingSystem);
 
-            Assert.AreEqual(true, Environment.Is64BitProcess);
+            //Assert.AreEqual(true, Environment.Is64BitProcess);
 
-            Assert.AreEqual(8, IntPtr.Size);
+            //Assert.AreEqual(8, IntPtr.Size);
 
             void RandomInit(SignValue[,] vals)
             {
@@ -2671,7 +2671,7 @@ namespace DynamicMosaicTest
 
             //bb[0, 0] = 1;
 
-            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA)
+            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA, int millisecondsTimeout)
             {
                 bool isExcept = false;
 
@@ -2700,7 +2700,7 @@ namespace DynamicMosaicTest
 
                 thr.Start();
 
-                if (thr.Join(4000))
+                if (thr.Join(millisecondsTimeout))
                     return isExcept;
 
                 thr.Abort();
@@ -2709,42 +2709,60 @@ namespace DynamicMosaicTest
                 return isExcept;
             }
 
-            bool Iteration(int x, int y)
+            int Iteration(int cX, int cY, bool test = false)
             {
-                checked
+                int xHalf = cX / 2;
+                int yHalf = cY / 2;
+
+                Assert.AreEqual(true, xHalf > 0);
+
+                if (yHalf <= 0)
+                    yHalf = cY;
+
+                Processor pA, pMain;
+                DynamicReflex testReflex;
+
+                try
                 {
-                    int xHalf = x / 2;
-                    int yHalf = y / 2;
+                    pA = CreateProcessor(cX, cY, "main");
 
-                    Assert.AreEqual(true, xHalf > 0);
+                    pMain = CreateProcessor(xHalf, yHalf, "a");
 
-                    if (yHalf <= 0)
-                        yHalf = y;
-
-                    Processor pA = CreateProcessor(x, y, "main");
-
-                    Processor pMain = CreateProcessor(xHalf, yHalf, "a");
-
-                    DynamicReflex testReflex = new DynamicReflex(new ProcessorContainer(pMain));
-
-                    if (!TimeFunction(testReflex, (pA, "a")))
-                        return false;
-
-                    CheckReflexValue(testReflex, new[] { pMain }, xHalf, yHalf);
-
-                    return true;
+                    testReflex = new DynamicReflex(new ProcessorContainer(pMain));
                 }
+                catch
+                {
+                    return 1;
+                }
+
+                if (test)
+                    return 2;
+
+                if (!TimeFunction(testReflex, (pA, "a"), 120000))
+                    return 2;
+
+                CheckReflexValue(testReflex, new[] { pMain }, xHalf, yHalf);
+
+                return 0;
             }
 
-            Assert.AreEqual(false, Iteration(2, 1));
+            Assert.AreEqual(2, Iteration(2, 1));
 
-            for (int x = 100; x < 1000; x += 100)//1000?
-                Assert.AreEqual(false, Iteration(x, 1));
+            for (int x = 100; x < 1000; x += 100)
+                Assert.AreEqual(2, Iteration(x, 1));
 
-            for (ulong amount = 13107200 * 100, y = 1; y <= int.MaxValue; y++)//исследовать насчёт количества amount, БАГ в цифре 100!!!!!
-                for (ulong x = amount; x <= int.MaxValue; x += amount)
-                    if (Iteration(Convert.ToInt32(x), Convert.ToInt32(y)))
-                        break;
+            for (ulong amount = 26214400, y = 1; y <= int.MaxValue; y++)
+                for (ulong x = amount + 2; x <= int.MaxValue; x += amount)
+                {
+                    if (Iteration(Convert.ToInt32(x), Convert.ToInt32(y), true) == 2)
+                        continue;
+
+                    x -= amount;
+
+                    Assert.AreEqual(0, Iteration(Convert.ToInt32(x), Convert.ToInt32(y)));
+
+                    return;
+                }
         }
     }
 }
