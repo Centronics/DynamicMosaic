@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using DynamicMosaic;
 using DynamicParser;
@@ -2647,6 +2648,10 @@ namespace DynamicMosaicTest
 
             //byte[] bb13 = new byte[(ulong)int.MaxValue + 0];
 
+            //byte[] bb14 = new byte[(ulong)int.MaxValue + 0, (ulong)int.MaxValue + 1];
+
+            //byte[] bb15 = new byte[(ulong)int.MaxValue + 1, (ulong)int.MaxValue + 0];
+
             //byte[] bb12 = new byte[0x100000000]; 
 
             //byte[,] bb21 = new byte[268435456, 268435456];
@@ -2671,40 +2676,18 @@ namespace DynamicMosaicTest
 
             //bb[0, 0] = 1;
 
-            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA, int millisecondsTimeout)
+            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA)
             {
                 bool isExcept = false;
 
-                void ThreadFindRelation()
+                try
                 {
-                    try
-                    {
-                        reflex.FindRelation(qA);
-                    }
-                    catch (ThreadAbortException)
-                    {
-                        // ignored
-                    }
-                    catch
-                    {
-                        isExcept = true;
-                    }
+                    reflex.FindRelation(qA);
                 }
-
-                Thread thr = new Thread(ThreadFindRelation)
+                catch
                 {
-                    IsBackground = true,
-                    Name = "ThreadFindRelation",
-                    Priority = ThreadPriority.AboveNormal
-                };
-
-                thr.Start();
-
-                if (thr.Join(millisecondsTimeout))
-                    return isExcept;
-
-                thr.Abort();
-                thr.Join();
+                    isExcept = true;
+                }
 
                 return isExcept;
             }
@@ -2738,7 +2721,7 @@ namespace DynamicMosaicTest
                 if (test)
                     return 2;
 
-                if (!TimeFunction(testReflex, (pA, "a"), 120000))
+                if (!TimeFunction(testReflex, (pA, "a")))
                     return 2;
 
                 CheckReflexValue(testReflex, new[] { pMain }, xHalf, yHalf);
@@ -2751,18 +2734,77 @@ namespace DynamicMosaicTest
             for (int x = 100; x < 1000; x += 100)
                 Assert.AreEqual(2, Iteration(x, 1));
 
-            for (ulong amount = 26214400, y = 1; y <= int.MaxValue; y++)
-                for (ulong x = amount + 2; x <= int.MaxValue; x += amount)
+            IEnumerable<(int xs, int ys)> GetSizes()
+            {
+                const ulong amount = 17043521;
+
+                ulong FindDelimiter(ulong n)
                 {
-                    if (Iteration(Convert.ToInt32(x), Convert.ToInt32(y), true) == 2)
-                        continue;
+                    const ulong intMax = 2147483646;
 
-                    x -= amount;
+                    if (n <= intMax)
+                        return n;
 
-                    Assert.AreEqual(0, Iteration(Convert.ToInt32(x), Convert.ToInt32(y)));
+                    checked
+                    {
+                        ulong k = amount;
 
-                    return;
+                        while (k <= intMax)
+                        {
+                            if (n / k <= intMax && n % k == 0)
+                                break;
+
+                            k += amount;
+                        }
+
+                        return k < intMax ? k : intMax;
+                    }
                 }
+
+                for (ulong k = amount, prevK = 0; k <= 4611686009837453316; k += amount)
+                {
+                    checked
+                    {
+                        ulong del = FindDelimiter(k);
+
+                        int xs = Convert.ToInt32(del);
+                        int ys = Convert.ToInt32(k / del);
+
+                        ulong tt = Convert.ToUInt64(xs) * Convert.ToUInt64(ys);
+
+                        bool bx = tt == prevK;
+                        bool bz = tt < prevK;
+                        bool bq = tt != k;
+
+                        if (bx || bz || bq)
+                            continue;
+
+                        prevK = tt;
+
+                        yield return (xs, ys);
+                    }
+                }
+            }
+
+            int pxs = 0, pys = 0;
+
+            foreach ((int xs, int ys) in GetSizes())
+            {
+                int it = Iteration(xs, ys, true);
+
+                if (it == 2)
+                {
+                    pxs = xs;
+                    pys = ys;
+                    continue;
+                }
+
+                Assert.AreEqual(1, it);
+
+                Assert.AreEqual(0, Iteration(pxs, pys));
+
+                return;
+            }
         }
     }
 }
