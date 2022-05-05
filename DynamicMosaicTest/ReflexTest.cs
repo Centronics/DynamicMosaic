@@ -2786,25 +2786,35 @@ namespace DynamicMosaicTest
                 }
             }
 
-            int pxs = 0, pys = 0;
-
-            foreach ((int xs, int ys) in GetSizes())
+            (int xs, int ys) GetMaxSizes()
             {
-                int it = Iteration(xs, ys, true);
+                int pxs = 0, pys = 0;
 
-                if (it == 2)
+                foreach ((int xs, int ys) in GetSizes())
                 {
-                    pxs = xs;
-                    pys = ys;
-                    continue;
+                    int it = Iteration(xs, ys, true);
+
+                    if (it == 2)
+                    {
+                        pxs = xs;
+                        pys = ys;
+                        continue;
+                    }
+
+                    Assert.AreEqual(1, it);
+
+                    break;
                 }
 
-                Assert.AreEqual(1, it);
-
-                Assert.AreEqual(0, Iteration(pxs, pys));
-
-                return;
+                return (pxs, pys);
             }
+
+            (int mX, int mY) = GetMaxSizes();
+
+            Assert.AreNotEqual(0, mX);
+            Assert.AreNotEqual(0, mY);
+
+            Assert.AreEqual(0, Iteration(mX, mY));
         }
     }
 }
