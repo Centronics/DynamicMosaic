@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.Tasks;
 using DynamicMosaic;
 using DynamicParser;
 using DynamicProcessor;
@@ -20,6 +20,29 @@ namespace DynamicMosaicTest
             Assert.AreEqual(true, ThreadPool.SetMinThreads(Environment.ProcessorCount * 3, comPortMin));
             ThreadPool.GetMaxThreads(out _, out int comPortMax);
             Assert.AreEqual(true, ThreadPool.SetMaxThreads(Environment.ProcessorCount * 15, comPortMax));
+        }
+
+        static SignValue[,] InitValues(SignValue[,] values)
+        {
+            Assert.AreNotEqual(null, values);
+
+            Assert.AreEqual(true, values.LongLength > 0);
+
+            Parallel.For(0, values.GetLength(1), (y, yState) =>
+            {
+                if (yState.ShouldExitCurrentIteration)
+                    return;
+
+                Parallel.For(0, values.GetLength(0), (x, xState) =>
+                {
+                    if (xState.ShouldExitCurrentIteration || yState.ShouldExitCurrentIteration)
+                        return;
+
+                    values[x, y] = new SignValue(10);
+                });
+            });
+
+            return values;
         }
 
         static void CheckReflexValue(DynamicReflex actual, IEnumerable<Processor> pcExpected, int widthExpected, int heightExpected)
@@ -45,12 +68,25 @@ namespace DynamicMosaicTest
                     if (heightExpected != pExpected.Height)
                         return false;
 
-                    for (int y = 0; y < pExpected.Height; y++)
-                        for (int x = 0; x < pExpected.Width; x++)
-                            if (pExpected[x, y] != pActual[x, y])
-                                return false;
+                    ParallelLoopResult state = Parallel.For(0, pExpected.Height, (y, yState) =>
+                    {
+                        if (yState.ShouldExitCurrentIteration)
+                            return;
 
-                    return true;
+                        Parallel.For(0, pExpected.Width, (x, xState) =>
+                        {
+                            if (xState.ShouldExitCurrentIteration || yState.ShouldExitCurrentIteration)
+                                return;
+
+                            if (pExpected[x, y] == pActual[x, y])
+                                return;
+
+                            xState.Stop();
+                            yState.Stop();
+                        });
+                    });
+
+                    return state.IsCompleted;
                 });
 
                 Assert.AreNotEqual(null, pFinded);
@@ -2622,199 +2658,74 @@ namespace DynamicMosaicTest
         [TestMethod]
         public void ReflexExceptionTest()
         {
-            //Assert.AreEqual(true, Environment.Is64BitOperatingSystem);
+            SetMinMaxPoolThreads();
 
-            //Assert.AreEqual(true, Environment.Is64BitProcess);
-
-            //Assert.AreEqual(8, IntPtr.Size);
-
-            void RandomInit(SignValue[,] vals)
+            int Iteration(int amount, bool test = false)
             {
-                Random rnd = new Random();
-
-                for (int y = 0; y < vals.GetLength(1); y++)
-                    for (int x = 0; x < vals.GetLength(0); x++)
-                        vals[x, y] = new SignValue(rnd.Next(SignValue.MinValue.Value, SignValue.MaxValue.Value + 1));
-            }
-
-            Processor CreateProcessor(int cX, int cY, string tag)
-            {
-                SignValue[,] values = new SignValue[cX, cY];
-
-                RandomInit(values);
-
-                return new Processor(values, tag);
-            }
-
-            //byte[] bb13 = new byte[(ulong)int.MaxValue + 0];
-
-            //byte[] bb14 = new byte[(ulong)int.MaxValue + 0, (ulong)int.MaxValue + 1];
-
-            //byte[] bb15 = new byte[(ulong)int.MaxValue + 1, (ulong)int.MaxValue + 0];
-
-            //byte[] bb12 = new byte[0x100000000]; 
-
-            //byte[,] bb21 = new byte[268435456, 268435456];
-
-            //byte[,] bb = new byte[268435456, 6];
-
-            //for (int u = 0; u < bb.GetLength(1); u++)
-            //    for (int d = 0; d < bb.GetLength(0); d++)
-            //        bb[d, u] = 0;
-
-            //byte[,] bb1 = new byte[1073741824, 1];
-
-            //for (int u = 0; u < bb1.GetLength(1); u++)
-            //    for (int d = 0; d < bb1.GetLength(0); d++)
-            //        bb1[d, u] = 0;
-
-            //byte[,] bb2 = new byte[1073741824, 1];
-
-            //for (int u = 0; u < bb2.GetLength(1); u++)
-            //    for (int d = 0; d < bb2.GetLength(0); d++)
-            //        bb2[d, u] = 0;
-
-            //bb[0, 0] = 1;
-
-            bool TimeFunction(DynamicReflex reflex, (Processor, string) qA)
-            {
-                bool isExcept = false;
-
-                try
-                {
-                    reflex.FindRelation(qA);
-                }
-                catch
-                {
-                    isExcept = true;
-                }
-
-                return isExcept;
-            }
-
-            int Iteration(int cX, int cY, bool test = false)
-            {
-                int xHalf = cX / 2;
-                int yHalf = cY / 2;
-
-                Assert.AreEqual(true, xHalf > 0);
-
-                if (yHalf <= 0)
-                    yHalf = cY;
-
-                Processor pA, pMain;
-                DynamicReflex testReflex;
-
-                try
-                {
-                    pA = CreateProcessor(cX, cY, "main");
-
-                    pMain = CreateProcessor(xHalf, yHalf, "a");
-
-                    testReflex = new DynamicReflex(new ProcessorContainer(pMain));
-                }
-                catch
-                {
-                    return 1;
-                }
+                Assert.AreNotEqual(0, amount / 2);
 
                 if (test)
-                    return 2;
+                {
+                    try
+                    {
+                        InitValues(new SignValue[amount * 2, amount]);
+                    }
+                    catch
+                    {
+                        return 1;
+                    }
 
-                if (!TimeFunction(testReflex, (pA, "a")))
                     return 2;
+                }
 
-                CheckReflexValue(testReflex, new[] { pMain }, xHalf, yHalf);
+                Processor CreateProcessor(int xy, string tag) => new Processor(InitValues(new SignValue[xy, xy]), tag);
+
+                Processor pA = CreateProcessor(amount, "main");
+
+                Processor pMain = CreateProcessor(amount / 2, "a");
+
+                DynamicReflex testReflex = new DynamicReflex(new ProcessorContainer(pMain));
+
+                try
+                {
+                    testReflex.FindRelation((pA, "a"));
+
+                    return 2;
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                CheckReflexValue(testReflex, new[] { pMain }, amount / 2, amount / 2);
 
                 return 0;
             }
 
-            Assert.AreEqual(2, Iteration(2, 1));
+            Assert.AreEqual(2, Iteration(2));
 
-            for (int x = 100; x < 1000; x += 100)
-                Assert.AreEqual(2, Iteration(x, 1));
+            int pn = 0;
 
-            IEnumerable<(int xs, int ys)> GetSizes()
+            for (double step = 7110873.0, k = step; k <= 4611686009837453316.0; k += step)
             {
-                const ulong amount = 17043521;
+                int n = Convert.ToInt32(Math.Round(Math.Sqrt(k)));
 
-                ulong FindDelimiter(ulong n)
+                int it = Iteration(n, true);
+
+                if (it == 2)
                 {
-                    const ulong intMax = 2147483646;
-
-                    if (n <= intMax)
-                        return n;
-
-                    checked
-                    {
-                        ulong k = amount;
-
-                        while (k <= intMax)
-                        {
-                            if (n / k <= intMax && n % k == 0)
-                                break;
-
-                            k += amount;
-                        }
-
-                        return k < intMax ? k : intMax;
-                    }
+                    pn = n;
+                    continue;
                 }
 
-                for (ulong k = amount, prevK = 0; k <= 4611686009837453316; k += amount)
-                {
-                    checked
-                    {
-                        ulong del = FindDelimiter(k);
+                Assert.AreEqual(1, it);
 
-                        int xs = Convert.ToInt32(del);
-                        int ys = Convert.ToInt32(k / del);
-
-                        ulong tt = Convert.ToUInt64(xs) * Convert.ToUInt64(ys);
-
-                        bool bx = tt == prevK;
-                        bool bz = tt < prevK;
-                        bool bq = tt != k;
-
-                        if (bx || bz || bq)
-                            continue;
-
-                        prevK = tt;
-
-                        yield return (xs, ys);
-                    }
-                }
+                break;
             }
 
-            (int xs, int ys) GetMaxSizes()
-            {
-                int pxs = 0, pys = 0;
+            Assert.AreNotEqual(0, pn);
 
-                foreach ((int xs, int ys) in GetSizes())
-                {
-                    int it = Iteration(xs, ys, true);
-
-                    if (it == 2)
-                    {
-                        pxs = xs;
-                        pys = ys;
-                        continue;
-                    }
-
-                    Assert.AreEqual(1, it);
-
-                    break;
-                }
-
-                return (pxs, pys);
-            }
-
-            (int mX, int mY) = GetMaxSizes();
-
-            Assert.AreNotEqual(0, mX);
-            Assert.AreNotEqual(0, mY);
-
-            Assert.AreEqual(0, Iteration(mX, mY));
+            Assert.AreEqual(0, Iteration(pn));
         }
     }
 }

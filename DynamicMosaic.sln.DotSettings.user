@@ -22,7 +22,9 @@
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=46bdb8b0_002Dbf84_002D4147_002D93d2_002D7a964cc936b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;DynamicMosaicTest&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;MSTest::7FD53189-7927-4A9D-A107-8661A6FFB1D8::.NETFramework,Version=v4.7.2::DynamicMosaicTest.ReflexTest.ReflexExceptionTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::7FD53189-7927-4A9D-A107-8661A6FFB1D8::.NETFramework,Version=v4.7.2::DynamicMosaicTest.ReflexTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::7FD53189-7927-4A9D-A107-8661A6FFB1D8::.NETFramework,Version=v4.7.2::DynamicMosaicTest.ProcessorHandlerTest.PHTestException_12&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::7FD53189-7927-4A9D-A107-8661A6FFB1D8::.NETFramework,Version=v4.7.2::DynamicMosaicTest.ProcessorHandlerTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	

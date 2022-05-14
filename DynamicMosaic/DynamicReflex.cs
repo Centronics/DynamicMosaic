@@ -105,41 +105,29 @@ namespace DynamicMosaic
 
                 return !string.IsNullOrWhiteSpace(t.q);
 
-            }).Select(t => (t.p, new string(new HashSet<char>(t.q.Select(char.ToUpper)).ToArray()))).Where(t => _setChars.IsSupersetOf(t.Item2)).ToArray();//добавить проверку на дубли
+            }).Select(t => (t.p, new string(new HashSet<char>(t.q.Select(char.ToUpper)).ToArray()))).Where(t => _setChars.IsSupersetOf(t.Item2)).ToArray();
 
             if (!queryPairs.Any())
                 return false;
 
             ConcurrentBag<(Processor[] pc, string q)> completedQueries = new ConcurrentBag<(Processor[], string)>();
-            Exception exThrown = null;
 
             Parallel.ForEach(queryPairs, (pq, state) =>
             {
-                try
-                {
-                    Processor[]
-                        pc = FindWord(pq.p, pq.q)
-                            .ToArray(); //как вызвать исключение??? сделать одну супер большую карту, сделав огромное количество запросов на неё (упадёт при копированни новых карт) - лучше ещё одну такую же ОГРОМНУЮ карту, чтобы упал при копированни её - узнать свобоную память одним движком
+                Processor[]
+                    pc = FindWord(pq.p, pq.q)
+                        .ToArray();
 
-                    if (pc.Any())
-                        completedQueries.Add((pc, pq.q));
-                    else
-                        state.Stop();
-                }
-                catch (Exception ex)
-                {
-                    exThrown = ex;
+                if (pc.Any())
+                    completedQueries.Add((pc, pq.q));
+                else
                     state.Stop();
-                }
             });
-
-            if (exThrown != null)
-                throw exThrown;
 
             if (completedQueries.Count != queryPairs.Length)
                 return false;
 
-            HashSet<char> allQueries = new HashSet<char>(Processors.Select(t => char.ToUpper(t.Tag[0])));//оптимизировать
+            HashSet<char> allQueries = new HashSet<char>(_setChars);
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
             IEnumerable<Processor> GetResultContainer()
@@ -149,7 +137,7 @@ namespace DynamicMosaic
 
                 ProcessorHandler ph = new ProcessorHandler();
 
-                foreach (Processor p in completedQueries.SelectMany(t => t.pc))//возможно, можно оптимизировать
+                foreach (Processor p in completedQueries.SelectMany(t => t.pc))
                     ph.Add(p);
 
                 foreach (Processor p in ph.Processors)
@@ -161,7 +149,11 @@ namespace DynamicMosaic
             return true;
         }
 
-        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols) => Processors.Where(p => new HashSet<char>(symbols).Contains(char.ToUpper(p.Tag[0])));//оптимизировать
+        IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
+        {
+            HashSet<char> s = new HashSet<char>(symbols);
+            return Processors.Where(p => s.Contains(char.ToUpper(p.Tag[0])));
+        }
 
         /// <summary>
         ///     Получает список коллекций областей, позволяющих выполнить поиск требуемого слова, т.е. искомое слово можно
