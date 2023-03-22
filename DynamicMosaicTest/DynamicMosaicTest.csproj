@@ -65,7 +65,7 @@
   <ItemGroup>
     <Compile Include="ProcessorHandlerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflexTest.cs" />
+    <Compile Include="DynamicReflexTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DynamicMosaic\DynamicMosaic.csproj">

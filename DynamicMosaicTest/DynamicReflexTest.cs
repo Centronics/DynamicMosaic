@@ -12,7 +12,7 @@ using Processor = DynamicParser.Processor;
 namespace DynamicMosaicTest
 {
     [TestClass]
-    public class ReflexTest
+    public class DynamicReflexTest
     {
         static void SetMinMaxPoolThreads()
         {
@@ -137,7 +137,9 @@ namespace DynamicMosaicTest
 
             Processor p1 = new Processor(new[] { new SignValue(3) }, "A");
 
-            Assert.AreEqual(true, TestFunc(() => new DynamicReflex(new ProcessorContainer(p1)).FindRelation()));
+            DynamicReflex dr = new DynamicReflex(new ProcessorContainer(p1));
+
+            Assert.AreEqual(true, TestFunc(() => dr.FindRelation()));
 
             Assert.AreEqual(false, new DynamicReflex(new ProcessorContainer(p1)).FindRelation((p1, " ")));
 
