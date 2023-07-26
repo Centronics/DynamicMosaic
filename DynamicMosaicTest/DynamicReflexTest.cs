@@ -1445,7 +1445,7 @@ namespace DynamicMosaicTest
 
                 ArgumentExceptionTest();
 
-                Processor[] pMas = GetResults(new[] { p }, cSource).ToArray();
+                Processor[] pMas = GetResults(new[] { p }, char.ToUpper(cSource)).ToArray();
 
                 CheckReflexValue(r, pMas, 1, 1);
 
@@ -1506,18 +1506,18 @@ namespace DynamicMosaicTest
 
                     Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), a), (new Processor(m6, "m6"), b)));
 
-                    CheckReflexValue(reflex, new[] { new Processor(m5, a), new Processor(m6, b) }, 1, 1);
+                    CheckReflexValue(reflex, new[] { new Processor(m5, a.ToUpper()), new Processor(m6, b.ToUpper()) }, 1, 1);
 
                     Assert.AreEqual(true, reflex.FindRelation((new Processor(mapA, a), a), (new Processor(mapB, b), b)));
 
-                    CheckReflexValue(reflex, new[] { new Processor(mapA, a), new Processor(mapB, b) }, 1, 1);
+                    CheckReflexValue(reflex, new[] { new Processor(mapA, a.ToUpper()), new Processor(mapB, b.ToUpper()) }, 1, 1);
                 }
 
                 ResetReflex();
 
                 Assert.AreEqual(false, reflex.FindRelation((null, $@"{a}{b}"), (new Processor(m0, "mm"), string.Empty), (new Processor(m0, "mm"), null), (null, null), (new Processor(m0, "mm"), null), (null, string.Empty)));
 
-                CheckReflexValue(reflex, new[] { new Processor(mapA, a), new Processor(mapB, b) }, 1, 1);
+                CheckReflexValue(reflex, new[] { new Processor(mapA, a.ToUpper()), new Processor(mapB, b.ToUpper()) }, 1, 1);
 
                 #region Test1
 
@@ -1531,10 +1531,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1553,8 +1553,8 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1574,8 +1574,8 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1594,12 +1594,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1618,8 +1618,8 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1644,11 +1644,11 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1685,10 +1685,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1741,7 +1741,7 @@ namespace DynamicMosaicTest
 
                         Assert.AreEqual(true, reflex.FindRelation((tp, a), (tp, b)));
 
-                        CheckReflexValue(reflex, new[] { new Processor(m2, a), new Processor(m2, b) }, 1, 1);
+                        CheckReflexValue(reflex, new[] { new Processor(m2, a.ToUpper()), new Processor(m2, b.ToUpper()) }, 1, 1);
 
                         ResetReflex();
 
@@ -1755,9 +1755,9 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1792,9 +1792,9 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1821,12 +1821,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1853,13 +1853,13 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(11) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1886,9 +1886,9 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs(int signA)
                         {
-                            yield return new Processor(new[] { new SignValue(signA) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(signA) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1931,10 +1931,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -1993,10 +1993,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2047,10 +2047,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2101,10 +2101,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2155,12 +2155,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2211,12 +2211,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2267,10 +2267,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(1) }, a);
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2307,11 +2307,11 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
                         }
 
                         Assert.AreEqual(true,
@@ -2360,11 +2360,11 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2385,11 +2385,11 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(3) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(3) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2410,10 +2410,10 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2434,12 +2434,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2468,13 +2468,13 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2495,12 +2495,12 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2521,14 +2521,14 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2549,13 +2549,13 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, a);
-                            yield return new Processor(new[] { new SignValue(2) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(10) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2576,11 +2576,11 @@ namespace DynamicMosaicTest
 
                         IEnumerable<Processor> GetProcs()
                         {
-                            yield return new Processor(new[] { new SignValue(1) }, a);
-                            yield return new Processor(new[] { new SignValue(4) }, b);
-                            yield return new Processor(new[] { new SignValue(5) }, b);
-                            yield return new Processor(new[] { new SignValue(11) }, b);
-                            yield return new Processor(new[] { new SignValue(13) }, b);
+                            yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                            yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
+                            yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                         }
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2605,14 +2605,14 @@ namespace DynamicMosaicTest
 
                     IEnumerable<Processor> GetProcs()
                     {
-                        yield return new Processor(new[] { new SignValue(2) }, a);
-                        yield return new Processor(new[] { new SignValue(4) }, a);
-                        yield return new Processor(new[] { new SignValue(1) }, a);
-                        yield return new Processor(new[] { new SignValue(4) }, b);
-                        yield return new Processor(new[] { new SignValue(5) }, b);
-                        yield return new Processor(new[] { new SignValue(10) }, b);
-                        yield return new Processor(new[] { new SignValue(11) }, b);
-                        yield return new Processor(new[] { new SignValue(13) }, b);
+                        yield return new Processor(new[] { new SignValue(2) }, a.ToUpper());
+                        yield return new Processor(new[] { new SignValue(4) }, a.ToUpper());
+                        yield return new Processor(new[] { new SignValue(1) }, a.ToUpper());
+                        yield return new Processor(new[] { new SignValue(4) }, b.ToUpper());
+                        yield return new Processor(new[] { new SignValue(5) }, b.ToUpper());
+                        yield return new Processor(new[] { new SignValue(10) }, b.ToUpper());
+                        yield return new Processor(new[] { new SignValue(11) }, b.ToUpper());
+                        yield return new Processor(new[] { new SignValue(13) }, b.ToUpper());
                     }
 
                     CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2636,7 +2636,7 @@ namespace DynamicMosaicTest
                     Assert.AreEqual(true,
                         reflex.FindRelation((new Processor(new[] { new SignValue(4), new SignValue(4) }, "reset"), $@"{a}{b}")));
 
-                    CheckReflexValue(reflex, new[] { new Processor(new[] { new SignValue(4) }, a), new Processor(new[] { new SignValue(4) }, b) }, 1, 1);
+                    CheckReflexValue(reflex, new[] { new Processor(new[] { new SignValue(4) }, a.ToUpper()), new Processor(new[] { new SignValue(4) }, b.ToUpper()) }, 1, 1);
                 }
 
                 for (int k = 0; k < 4; k++)

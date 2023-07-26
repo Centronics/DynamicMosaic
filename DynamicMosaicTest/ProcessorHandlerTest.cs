@@ -22,14 +22,25 @@ namespace DynamicMosaicTest
 
         static List<Processor> CheckProcessorHandler1(ProcessorHandler ph)
         {
-            List<Processor> procs = new List<Processor>(ph.Processors.ToArray());
+            List<Processor> procs = new List<Processor>(ph.Processors);
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(1, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual("A", ph.ToString());
+
+            CheckProcValue(procs, (new SignValue(2), "A"));
+
+            EqualOr(ph.ToString(), "A");
+
             return procs;
+        }
+
+        static List<Processor> ProcessorContainerToList(ProcessorContainer pc)
+        {
+            List<Processor> result = new List<Processor>(pc.Count);
+
+            for (int k = 0; k < pc.Count; k++)
+                result.Add(pc[k]);
+
+            return result;
         }
 
         static void CheckProcessorHandler2(ProcessorHandler ph)
@@ -40,14 +51,41 @@ namespace DynamicMosaicTest
             Assert.AreNotEqual(null, procs);
             Assert.AreEqual(procs.Width, 1);
             Assert.AreEqual(procs.Height, 1);
-            Assert.AreEqual(3, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual("ABC", ph.ToString());
+
+            CheckProcValue(ProcessorContainerToList(procs), (new SignValue(2), "A"), (new SignValue(3), "B"), (new SignValue(4), "C"));
+
+            EqualOr(ph.ToString(), "ABC");
+        }
+
+        static void EqualOr(string needCheck, string checkerChars)
+        {
+            if (string.IsNullOrEmpty(needCheck))
+                throw new ArgumentException($@"{nameof(EqualOr)}: Parameter {nameof(needCheck)} is null or empty.", nameof(needCheck));
+
+            if (string.IsNullOrEmpty(checkerChars))
+                throw new ArgumentException($@"{nameof(EqualOr)}: Parameter {nameof(checkerChars)} is null or empty.", nameof(checkerChars));
+
+            Assert.AreEqual(checkerChars.Length, needCheck.Length);
+
+            Assert.AreEqual(true, needCheck.All(checking => checkerChars.Any(checker => checking == checker)));
+        }
+
+        static void CheckProcValue(IList<Processor> procs, IEnumerable<(SignValue, string)> values)
+        {
+            CheckProcValue(procs, values.ToArray());
+        }
+
+        static void CheckProcValue(IList<Processor> procs, params (SignValue sv, string tag)[] values)
+        {
+            if (procs == null)
+                throw new ArgumentNullException(nameof(procs), $@"{nameof(CheckProcValue)}: Parameter {nameof(procs)} is null.");
+
+            if (values == null)
+                throw new ArgumentNullException(nameof(values), $@"{nameof(CheckProcValue)}: Parameter {nameof(values)} is null.");
+
+            Assert.AreEqual(procs.Count, values.Length);
+
+            Assert.AreEqual(true, procs.All(checking => values.Any(checker => checking[0, 0] == checker.sv && checking.Tag == checker.tag)));
         }
 
         [TestMethod]
@@ -55,7 +93,7 @@ namespace DynamicMosaicTest
         {
             ProcessorHandler ph = new ProcessorHandler();
             Assert.AreEqual(string.Empty, ph.ToString());
-            Assert.AreEqual(0, ph.Processors.ToArray().Length);
+            Assert.AreEqual(0, ph.Processors.Count());
 
             ph.Add(new Processor(new[] { new SignValue(2) }, "A"));
 
@@ -68,12 +106,14 @@ namespace DynamicMosaicTest
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(2, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual("AB", ph.ToString());
+
+            List<(SignValue sv, string tag)> checkList = new List<(SignValue sv, string tag)>(20);
+
+            checkList.AddRange(new[] { (new SignValue(2), "A"), (new SignValue(3), "B") });
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "AB");
 
             ph.Add(new Processor(new[] { new SignValue(4) }, "C"));
 
@@ -120,76 +160,48 @@ namespace DynamicMosaicTest
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(4, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual("ABCB", ph.ToString());
+
+            checkList.AddRange(new[] { (new SignValue(4), "C"), (new SignValue(13), "B0") });
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCB");
 
             ph.Add(new Processor(new[] { new SignValue(14) }, "B1"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(5, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual("ABCBB", ph.ToString());
+
+            checkList.Add((new SignValue(14), "B1"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBB");
 
             ph.Add(new Processor(new[] { new SignValue(15) }, "B"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(6, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual("ABCBBB", ph.ToString());
+
+            checkList.Add((new SignValue(15), "B2"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBB");
 
             ph.Add(new Processor(new[] { new SignValue(16) }, "b"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(7, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual(new SignValue(16), procs[6][0, 0]);
-            Assert.AreEqual("b00", procs[6].Tag);
-            Assert.AreEqual("ABCBBBB", ph.ToString());
+
+            checkList.Add((new SignValue(16), "B3"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBBB");
 
             bool bex = false;
             try
@@ -230,108 +242,48 @@ namespace DynamicMosaicTest
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(8, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual(new SignValue(16), procs[6][0, 0]);
-            Assert.AreEqual("b00", procs[6].Tag);
-            Assert.AreEqual(new SignValue(3), procs[7][0, 0]);
-            Assert.AreEqual("r", procs[7].Tag);
-            Assert.AreEqual("ABCBBBBR", ph.ToString());
+
+            checkList.Add((new SignValue(3), "R"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBBBR");
 
             ph.Add(new Processor(new[] { new SignValue(2) }, "v1"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(9, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual(new SignValue(16), procs[6][0, 0]);
-            Assert.AreEqual("b00", procs[6].Tag);
-            Assert.AreEqual(new SignValue(3), procs[7][0, 0]);
-            Assert.AreEqual("r", procs[7].Tag);
-            Assert.AreEqual(new SignValue(2), procs[8][0, 0]);
-            Assert.AreEqual("v1", procs[8].Tag);
-            Assert.AreEqual("ABCBBBBRV", ph.ToString());
+
+            checkList.Add((new SignValue(2), "V"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBBBRV");
 
             ph.Add(new Processor(new[] { new SignValue(8418982) }, "q"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(10, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual(new SignValue(16), procs[6][0, 0]);
-            Assert.AreEqual("b00", procs[6].Tag);
-            Assert.AreEqual(new SignValue(3), procs[7][0, 0]);
-            Assert.AreEqual("r", procs[7].Tag);
-            Assert.AreEqual(new SignValue(2), procs[8][0, 0]);
-            Assert.AreEqual("v1", procs[8].Tag);
-            Assert.AreEqual(new SignValue(8418982), procs[9][0, 0]);
-            Assert.AreEqual("q", procs[9].Tag);
-            Assert.AreEqual("ABCBBBBRVQ", ph.ToString());
+
+            checkList.Add((new SignValue(8418982), "Q"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBBBRVQ");
 
             ph.Add(new Processor(new[] { new SignValue(12451893) }, "q"));
 
             procs = ph.Processors.ToList();
             Assert.AreNotEqual(null, procs);
             CheckSize(procs);
-            Assert.AreEqual(11, procs.Count);
-            Assert.AreEqual(new SignValue(2), procs[0][0, 0]);
-            Assert.AreEqual("A", procs[0].Tag);
-            Assert.AreEqual(new SignValue(3), procs[1][0, 0]);
-            Assert.AreEqual("b", procs[1].Tag);
-            Assert.AreEqual(new SignValue(4), procs[2][0, 0]);
-            Assert.AreEqual("C", procs[2].Tag);
-            Assert.AreEqual(new SignValue(13), procs[3][0, 0]);
-            Assert.AreEqual("b1", procs[3].Tag);
-            Assert.AreEqual(new SignValue(14), procs[4][0, 0]);
-            Assert.AreEqual("B10", procs[4].Tag);
-            Assert.AreEqual(new SignValue(15), procs[5][0, 0]);
-            Assert.AreEqual("B0", procs[5].Tag);
-            Assert.AreEqual(new SignValue(16), procs[6][0, 0]);
-            Assert.AreEqual("b00", procs[6].Tag);
-            Assert.AreEqual(new SignValue(3), procs[7][0, 0]);
-            Assert.AreEqual("r", procs[7].Tag);
-            Assert.AreEqual(new SignValue(2), procs[8][0, 0]);
-            Assert.AreEqual("v1", procs[8].Tag);
-            Assert.AreEqual(new SignValue(8418982), procs[9][0, 0]);
-            Assert.AreEqual("q", procs[9].Tag);
-            Assert.AreEqual(new SignValue(12451893), procs[10][0, 0]);
-            Assert.AreEqual("q0", procs[10].Tag);
-            Assert.AreEqual("ABCBBBBRVQQ", ph.ToString());
+
+            checkList.Add((new SignValue(12451893), "Q0"));
+
+            CheckProcValue(procs, checkList);
+
+            EqualOr(ph.ToString(), "ABCBBBBRVQQ");
 
             Processor renameProcessor2 = ProcessorHandler.ChangeProcessorTag(new Processor(new[] { SignValue.MaxValue }, "mmM"), "zZz");
             Assert.AreNotEqual(null, renameProcessor2);

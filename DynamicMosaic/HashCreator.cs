@@ -34,18 +34,21 @@ namespace DynamicMosaic
 
         /// <summary>
         ///     Получает хеш заданной карты, без учёта значения свойства <see cref="Processor.Tag"/>.
-        ///     Карта не может быть равна <see langword="null" />.
         /// </summary>
         /// <param name="p">Карта, для которой необходимо вычислить значение хеша.</param>
         /// <returns>Возвращает хеш заданной карты.</returns>
+        /// <remarks>Карта не может быть равна <see langword="null" />.</remarks>
         public static int GetHash(Processor p) => GetProcessorBytes(p).Aggregate(255, (currentValue, currentByte) => Table[unchecked((byte)(currentValue ^ currentByte))]);
 
         /// <summary>
-        ///     Представляет содержимое карты в виде последовательности байт. Поле <see cref="Processor.Tag" /> не учитывается.
-        ///     Перечисление строк карты происходит последовательно: от меньшего индекса к большему.
+        ///     Представляет содержимое карты в виде последовательности байт.
         /// </summary>
         /// <param name="p">Карта, содержимое которой необходимо получить.</param>
         /// <returns>Возвращает содержимое карты в виде последовательности байт.</returns>
+        /// <remarks>
+        ///     Поле <see cref="Processor.Tag" /> не учитывается.
+        ///     Перечисление строк карты происходит последовательно: от меньшего индекса к большему.
+        /// </remarks>
         static IEnumerable<byte> GetProcessorBytes(Processor p)
         {
             if (p == null)
