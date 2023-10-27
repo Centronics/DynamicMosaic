@@ -31,18 +31,19 @@ namespace DynamicMosaic
         /// </summary>
         /// <remarks>
         /// Карты будут с уникальными значениями свойства <see cref="Processor.Tag"/>.
+        /// Свойство НЕ потокобезопасно.
         /// </remarks>
         /// <seealso cref="Processor.Tag"/>
         public IEnumerable<Processor> Processors => _dicProcsWithTag.Select(p => p.Value).SelectMany(s => s);
 
         /// <summary>
-        /// Проверяет пригодность карты вхождения в текущую коллекцию.
+        /// Проверяет пригодность карты для добавления в текущую коллекцию.
         /// </summary>
         /// <param name="p">Проверяемая карта.</param>
         /// <remarks>
         /// Карта не должна быть <see langword="null" />, иначе будет выброшено исключение <see cref="ArgumentNullException"/>.
-        /// В случае, если размер карты не совпадёт с размерами уже добавленных карт, выдаётся исключение <see cref="ArgumentException"/>.
-        /// В случае, если коллекция пуста, проверка проходит с любым размером проверяемой карты.
+        /// В случае, если размер карты не совпадёт с размерами уже добавленных карт, будет выброшено исключение <see cref="ArgumentException"/>.
+        /// В случае, если коллекция пуста, проверка проходит успешно с любым размером проверяемой карты.
         /// </remarks>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException"/>
@@ -52,6 +53,7 @@ namespace DynamicMosaic
                 throw new ArgumentNullException(nameof(p), @"Добавляемая карта не может быть равна null.");
 
             Processor t = Processors.FirstOrDefault();
+
             if (t == null)
                 return;
 
@@ -94,7 +96,12 @@ namespace DynamicMosaic
         /// <param name="p">Добавляемая карта.</param>
         /// <remarks>
         /// Если карта с таким же содержимым и первой буквой (без учёта регистра) в свойстве <see cref="Processor.Tag"/>, уже присутствует в коллекции, вызов будет игнорирован.
+        /// Карта не должна быть <see langword="null" />, иначе будет выброшено исключение <see cref="ArgumentNullException"/>.
+        /// В случае, если размер карты не совпадёт с размерами уже добавленных карт, будет выброшено исключение <see cref="ArgumentException"/>.
+        /// В случае, если коллекция пуста, проверка проходит успешно с любым размером проверяемой карты.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentException"/>
         /// <seealso cref="Processor.Tag"/>
         public void Add(Processor p)
         {
@@ -121,10 +128,10 @@ namespace DynamicMosaic
         /// <param name="p1">Первая карта.</param>
         /// <param name="p2">Вторая карта.</param>
         /// <returns>
-        /// В случае равенства карт по всем признакам, возвращается значение <see langword="true" />, в противном случае - <see langword="false" />.
+        /// В случае равенства карт по всем признакам, метод возвращает значение <see langword="true" />, в противном случае - <see langword="false" />.
         /// </returns>
         /// <remarks>
-        /// Сравнение производится как по содержимому, так и по первым буквам значения свойста <see cref="Processor.Tag"/>, без учёта регистра.
+        /// Метод производит сравнение как по содержимому, так и по первым буквам значения свойста <see cref="Processor.Tag"/>, без учёта регистра.
         /// Если карты различаются только по первой букве значения свойства <see cref="Processor.Tag"/>, они считаются разными.
         /// </remarks>
         /// <seealso cref="Processor.Tag"/>
@@ -142,13 +149,13 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        /// Генерирует карту с указанным новым значением свойства <see cref="Processor.Tag"/>.
+        /// Генерирует карту с указанным значением свойства <see cref="Processor.Tag"/>.
         /// </summary>
-        /// <param name="processor">Карта, значение свойства <see cref="Processor.Tag"/> которой требуется изменить. Не может быть <see langword="null"/>.</param>
+        /// <param name="processor">Карта, значение свойства <see cref="Processor.Tag"/> которой необходимо изменить. Не может быть <see langword="null"/>.</param>
         /// <param name="newTag">Новое значение свойства <see cref="Processor.Tag"/>. Не может быть пустым (<see langword="null"/>, <see cref="string.Empty"/> или состоять из пробелов).</param>
         /// <returns>Карта с новым значением свойства <see cref="Processor.Tag"/>.</returns>
         /// <remarks>
-        /// В случае, если новое и старое значения свойства <see cref="Processor.Tag"/> совпадают (с учётом регистра), то возвращается та же карта, которая была подана на вход.
+        /// В случае, если новое и старое значения свойства <see cref="Processor.Tag"/> совпадают (с учётом регистра), метод возвращает ту же карту, которая была подана на вход.
         /// </remarks>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException"/>

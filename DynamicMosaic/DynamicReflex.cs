@@ -30,8 +30,7 @@ namespace DynamicMosaic
         /// Служит для контроля содержимого поисковых запросов, а так же их выполнения.
         /// </summary>
         /// <remarks>
-        /// Контроль нужен для того, чтобы запросы, которые содержат символы, которые нельзя сопоставить с картами, содержащимися в текущем экземпляре, не были выполнены.
-        /// Так же это поле служит для того, чтобы знать, какие запросы были выполнены, а какие - нет.
+        /// Контроль нужен для того, чтобы запросы, содержащие символы, которые нельзя сопоставить с картами, содержащимися в текущем экземпляре, не были выполнены.
         /// Поле НЕ является потокобезопасным.
         /// </remarks>
         readonly HashSet<char> _setChars = new HashSet<char>();
@@ -42,7 +41,9 @@ namespace DynamicMosaic
         /// <param name="processors">Карты, которые будут использованы при выполнении первого поискового запроса.</param>
         /// <remarks>
         ///     Внутри класса будет создана полная копия указанной коллекции карт.
+        ///     В случае, если аргумент <paramref name="processors"/> равен <see langword="null"/>, будет выдано исключение <see cref="ArgumentNullException"/>.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"/>
         /// <seealso cref="ProcessorContainer"/>
         public DynamicReflex(ProcessorContainer processors)
         {
@@ -110,16 +111,16 @@ namespace DynamicMosaic
         /// Процесс выполнения поискового запроса использует только первую букву названия каждой искомой карты (хранящейся внутри текущего экземпляра), остальные буквы названия карты предназначены для случая, когда необходимо искать несколько карт с одним названием, но разным содержимым.
         /// Таким образом, этот класс <see cref="DynamicReflex"/> представляет собой "перекрестие" вертикальной и горизонтальной моделей.
         /// Он являет собой "снимок" выбранного момента времени. Следовательно, он позволяет осуществлять переход из состояния в состояние посредством осуществления количественно-качественного перехода содержимого текущего экземпляра.
-        /// Таким образом, он может "накапливать" "заряд" (набирать карты с одним названием, т.е. первой буквой), а так же сбрасывать его посредством задания соответствующего запроса, содержащего только одну карту из всех существующих "дублей" (когда первая буква совпадает).
+        /// Таким образом, он может "накапливать" "заряд" (набирать карты с одним названием, т.е. первой буквой), а так же сбрасывать его посредством задания соответствующего запроса, содержащего одну или несколько карт из всех существующих "дублей" (когда первая буква совпадает).
         /// Таким же образом, есть возможность "переименовывать" карту, т.е. можно дать запрос, где есть карта, которая подходит двум и более картам из текущего экземпляра.
         /// Задав им соответствующие названия в соответствующих запросах, можно получить эффект "переименовывания" карт.
-        /// Если какой-либо запрос содержит "недопустимые" символы, т.е. те, которые отсутствуют в текущем экземпляре, эти запросы будут игнорированы.
+        /// Если какой-либо запрос (или запросы) содержит "недопустимые" символы, т.е. те, которые отсутствуют в текущем экземпляре, эти запросы будут игнорированы.
         /// В случае, если такими окажутся все запросы, метод вернёт значение <see langword="false"/>.
-        /// Карты будут сохранены в текущий экземпляр при условии отсутствия наложений одной карты на другую, и при условии, что из них можно составить искомое слово (запрос), дубликаты карт (карты с одинаковой первой буквой в названии и идентичные по содержимому) будут исключены при помощи класса <see cref="ProcessorHandler"/>.
+        /// Карты будут сохранены в текущий экземпляр при условии отсутствия наложений одной карты на другую, и при условии, что из них можно составить искомое слово (запрос), дубликаты карт (карты с одинаковой первой буквой в названии и идентичные по содержимому) будут исключены, при помощи класса <see cref="ProcessorHandler"/>.
         /// Если содержимое карт(ы), на которых выполняется поиск, полностью идентично содержимому текущего экземпляра, то, после выполнения запроса, содержимое текущего экземпляра не будет изменено.
         /// Регистр символов запросов и названий карт не важен.
         /// Метод НЕ потокобезопасен.
-        /// <paramref name="queryPairs"/> не может быть равен <see langword="null"/>, в этом случае будет выброшено исключение <see cref="ArgumentNullException"/>.
+        /// <paramref name="queryPairs"/> не может быть равен <see langword="null"/>, т.к. в этом случае будет выброшено исключение <see cref="ArgumentNullException"/>.
         /// Если <paramref name="queryPairs"/> не содержит запросы, будет выброшено исключение <see cref="ArgumentException"/>.
         /// </remarks>
         /// <exception cref="ArgumentNullException"/>
@@ -191,11 +192,11 @@ namespace DynamicMosaic
         /// <summary>
         /// Получает карты, соответствующие по первой букве названия <see cref="Processor.Tag"/> заданным символам <paramref name="symbols"/>.
         /// </summary>
-        /// <param name="symbols">Набор символов, карты которых нужно получить. Регистр символов не имеет значения.</param>
+        /// <param name="symbols">Набор символов, карты которых нужно получить. Регистр символов должен быть UPPER.</param>
         /// <returns>Возвращает набор карт, сопоставленный с указанными символами <paramref name="symbols"/>.</returns>
         /// <remarks>
         /// Возвращает карты "как есть", не создавая копий.
-        /// Карты получает из свойства <see cref="Processors"/>.
+        /// Метод получает карты из свойства <see cref="Processors"/>.
         /// Метод НЕ потокобезопасен.
         /// </remarks>
         IEnumerable<Processor> GetProcessorsBySymbols(IEnumerable<char> symbols)
@@ -212,6 +213,7 @@ namespace DynamicMosaic
         /// <returns>Возвращает карты, позволяющие выполнить поиск требуемого слова.</returns>
         /// <remarks>
         ///     Искомое слово можно составить из первых букв свойств <see cref="Processor.Tag" /> карт, при условии отсутствия наложений одной карты на другую.
+        ///     Метод потокобезопасен.
         /// </remarks>
         IEnumerable<Processor> FindWord(Processor p, string word)
         {
@@ -223,17 +225,20 @@ namespace DynamicMosaic
             int[] counting = null;
             Reg[] regsCounting = new Reg[word.Length];
             Region region = new Region(p.Width, p.Height);
-            StringBuilder mapString = new StringBuilder(word.Length);
-            TagSearcher mapSearcher = new TagSearcher(word);
+            StringBuilder tagString = new StringBuilder(word.Length);
+            TagSearcher tagSearcher = new TagSearcher(word);
 
             while (ChangeCount(ref counting, word.Length, regs.Count) >= 0)
             {
                 bool result = true;
+
                 for (int k = 0; k < counting.Length; k++)
                     regsCounting[k] = regs[counting[k]];
+
                 foreach (Reg pp in regsCounting)
                 {
                     Rectangle rect = new Rectangle(pp.Position, new Size(_seaProcessors.Width, _seaProcessors.Height));
+
                     if (region.IsConflict(rect))
                     {
                         result = false;
@@ -241,73 +246,86 @@ namespace DynamicMosaic
                     }
 
                     region.Add(rect, pp.SelectedProcessor, pp.Percent);
-                    mapString.Append(pp.SelectedProcessor.Tag[0]);
+                    tagString.Append(pp.SelectedProcessor.Tag[0]);
                 }
 
-                if (result && mapSearcher.IsEqual(mapString.ToString()))
+                if (result && tagSearcher.IsEqual(tagString.ToString()))
                     foreach (Registered r in region.Elements)
                         yield return GetProcessorFromField(p, r);
 
                 region.Clear();
-                mapString.Clear();
+                tagString.Clear();
             }
         }
 
         /// <summary>
-        ///     Увеличивает значение младших разрядов счётчика, если это возможно.
+        ///     Генерирует уникальную комбинацию значений элементов указанного массива.
         /// </summary>
-        /// <param name="count">Массив, представляющий состояние разрядов счётчика.</param>
+        /// <param name="count">Массив, представляющий комбинацию разрядов. Допускает значение <see langword="null"/>.</param>
         /// <param name="counter">Количество элементов в массиве <paramref name="count"/>.</param>
-        /// <param name="maxCount">Максимальное значение каждого разряда.</param>
+        /// <param name="maxCount">Максимальное значение каждого разряда. Не может быть меньше значения параметра <paramref name="counter"/>.</param>
         /// <returns>Возвращает номер позиции, на которой произошло изменение, в противном случае -1.</returns>
         /// <remarks>
-        ///     Возвращает только случаи без совпадающих значений в разрядах.
-        ///     Если увеличение было произведено, метод возвращает номер позиции, на которой произошло изменение, в противном случае -1.
+        ///     Если для параметра <paramref name="count"/> указать значение <see langword="null"/>, будет создан и инициализирован новый массив разрядов.
+        ///     Это рекомендуется сделать для инициализации массива первоначальной комбинацией значений перед использованием.
+        ///     Параметр <paramref name="counter"/> необходим только для создания и инициализации массива.
+        ///     Метод возвращает только случаи без совпадающих значений в разрядах.
+        ///     Метод потокобезопасен.
         /// </remarks>
         static int ChangeCount(ref int[] count, int counter, int maxCount)
         {
             if (count == null)
             {
                 count = new int[counter];
+
                 for (int k = 1; k < count.Length; k++)
                     count[k] = k;
+
                 return counter - 1;
             }
 
             int? j = count.Length - 1;
+
             for (; j >= 0; j--)
             {
                 int h = maxCount - count[j.Value];
+
                 if (h > count.Length - j && h > 1)
                     break;
+
                 if (j > 0)
                     continue;
+
                 j = null;
+
                 break;
             }
 
             if (j == null)
                 return -1;
+
             int x = j.Value;
             count[x++]++;
+
             for (; x < count.Length; x++)
                 count[x] = count[x - 1] + 1;
+
             return j.Value;
         }
 
         /// <summary>
-        ///     Находит карты в <see cref="SearchResults" />, свойства <see cref="Processor.Tag" /> которых по первому символу
-        ///     соответствуют указанному символу, а так же позволяет составить слово из указанных символов, задействуя коллекцию в полном объёме.
+        ///     Находит карты в <see cref="SearchResults" />, свойства <see cref="Processor.Tag" /> которых по первому символу соответствуют указанным символам.
         /// </summary>
-        /// <param name="procName">Искомое название карты.</param>
+        /// <param name="symbols">Искомые карты.</param>
         /// <param name="searchResults">Результаты поиска, в которых необходимо найти указанные карты.</param>
         /// <returns>Возвращает сведения о найденных картах.</returns>
         /// <remarks>
         /// Поиск производится без учёта регистра.
+        /// Метод потокобезопасен.
         /// </remarks>
-        static List<Reg> FindSymbols(IEnumerable<char> procName, SearchResults searchResults)
+        static List<Reg> FindSymbols(IEnumerable<char> symbols, SearchResults searchResults)
         {
-            HashSet<char> pNames = new HashSet<char>(procName);
+            HashSet<char> pNames = new HashSet<char>(symbols);
             HashSet<char> pNameEx = new HashSet<char>(pNames);
             List<Reg> lstResult = new List<Reg>(pNames.Count);
 
