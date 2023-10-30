@@ -50,7 +50,7 @@ namespace DynamicMosaic
         void CheckProcessorSizes(Processor p)
         {
             if (p == null)
-                throw new ArgumentNullException(nameof(p), @"Добавляемая карта не может быть равна null.");
+                throw new ArgumentNullException(nameof(p), "Добавляемая карта не может быть равна null.");
 
             Processor t = Processors.FirstOrDefault();
 
@@ -82,7 +82,7 @@ namespace DynamicMosaic
             {
                 _procNumbers[c] = checked(number + 1);
 
-                return ChangeProcessorTag(p, $@"{c}{number}");
+                return ChangeProcessorTag(p, $"{c}{number}");
             }
 
             _procNumbers.Add(c, 0);
@@ -163,7 +163,7 @@ namespace DynamicMosaic
         public static Processor ChangeProcessorTag(Processor processor, string newTag)
         {
             if (processor == null)
-                throw new ArgumentNullException(nameof(processor), $@"{nameof(ChangeProcessorTag)}: карта равна null.");
+                throw new ArgumentNullException(nameof(processor), $"{nameof(ChangeProcessorTag)}: карта равна null.");
 
             if (processor.Tag == newTag)
                 return processor;

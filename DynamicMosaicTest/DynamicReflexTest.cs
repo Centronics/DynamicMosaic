@@ -157,72 +157,6 @@ namespace DynamicMosaicTest
         {
             SetMinMaxPoolThreads();
 
-            IEnumerable<Processor> Procs()
-            {
-                SignValue[,] mapA = new SignValue[2, 2];
-                mapA[0, 0] = SignValue.MaxValue;
-                mapA[0, 1] = SignValue.MaxValue;
-                SignValue[,] mapB = new SignValue[2, 2];
-                mapB[1, 1] = SignValue.MaxValue;
-                SignValue[,] mapC = new SignValue[2, 2];
-                mapC[0, 0] = SignValue.MaxValue;
-                mapC[1, 0] = SignValue.MaxValue;
-                SignValue[,] mapD = new SignValue[2, 2];
-                mapD[0, 0] = SignValue.MaxValue;
-                mapD[0, 1] = SignValue.MaxValue;
-                mapD[1, 0] = SignValue.MaxValue;
-                mapD[1, 1] = SignValue.MaxValue;
-                SignValue[,] mapE = new SignValue[2, 2];
-
-                yield return new Processor(mapA, "A");
-                yield return new Processor(mapB, "B");
-                yield return new Processor(mapC, "C");
-                yield return new Processor(mapD, "D");
-                yield return new Processor(mapE, "E");
-            }
-
-            Processor[] GetProcessors(params Processor[] procs)
-            {
-                List<Processor> result = procs.ToList();
-                HashSet<char> chs = new HashSet<char>(procs.Select(p => char.ToUpper(p.Tag[0])));
-
-                result.AddRange(Procs().Where(p => !chs.Contains(char.ToUpper(p.Tag[0]))));
-
-                return result.ToArray();
-            }
-
-            Processor Main(int index)
-            {
-                switch (index)
-                {
-                    case 0:
-                        {
-                            SignValue[,] map = new SignValue[4, 4];
-                            map[0, 0] = SignValue.MaxValue;
-                            map[2, 0] = SignValue.MaxValue;
-                            map[1, 1] = SignValue.MaxValue;
-                            map[2, 1] = SignValue.MaxValue;
-                            map[0, 2] = SignValue.MaxValue;
-                            map[2, 2] = SignValue.MaxValue;
-                            map[3, 3] = SignValue.MaxValue;
-
-                            return new Processor(map, "main");
-                        }
-                    case 1:
-                        return new Processor(new SignValue[1, 1], "main");
-                    case 2:
-                        return new Processor(new SignValue[1, 2], "main");
-                    case 3:
-                        return new Processor(new SignValue[1, 4], "main");
-                    case 4:
-                        return new Processor(new SignValue[2, 1], "main");
-                    case 5:
-                        return new Processor(new SignValue[4, 1], "main");
-                }
-
-                throw new ArgumentException($@"{nameof(index)} value = {index}", nameof(index));
-            }
-
             #region Иллюстрация
 
             /*
@@ -340,68 +274,30 @@ namespace DynamicMosaicTest
 
             Processor checkProcE2 = new Processor(checkE2, "E2");
 
-            Processor[] pA = GetProcessors(checkProcA, checkProcA1, checkProcA2);
-            Processor[] pB = GetProcessors(checkProcB);
-            Processor[] pC = GetProcessors(checkProcC, checkProcC1, checkProcC2, checkProcC3);
-            Processor[] pD = GetProcessors(checkProcD, checkProcD1, checkProcD2);
-            Processor[] pE = GetProcessors(checkProcE, checkProcE1, checkProcE2);
+            Processor[] pA = GetExpectedProcessors(checkProcA, checkProcA1, checkProcA2);
+            Processor[] pB = GetExpectedProcessors(checkProcB);
+            Processor[] pC = GetExpectedProcessors(checkProcC, checkProcC1, checkProcC2, checkProcC3);
+            Processor[] pD = GetExpectedProcessors(checkProcD, checkProcD1, checkProcD2);
+            Processor[] pE = GetExpectedProcessors(checkProcE, checkProcE1, checkProcE2);
 
-            Processor[] pAB = GetProcessors(checkProcA, checkProcA1, checkProcA2, checkProcB);
-            Processor[] pAC = GetProcessors(checkProcA, checkProcC, checkProcC1, checkProcC3);
-            Processor[] pAD = GetProcessors(checkProcA, checkProcA2, checkProcD, checkProcD1);
-            Processor[] pAE = GetProcessors(checkProcA, checkProcE, checkProcE1, checkProcE2);
+            Processor[] pAB = GetExpectedProcessors(checkProcA, checkProcA1, checkProcA2, checkProcB);
+            Processor[] pAC = GetExpectedProcessors(checkProcA, checkProcC, checkProcC1, checkProcC3);
+            Processor[] pAD = GetExpectedProcessors(checkProcA, checkProcA2, checkProcD, checkProcD1);
+            Processor[] pAE = GetExpectedProcessors(checkProcA, checkProcE, checkProcE1, checkProcE2);
 
-            Processor[] pBC = GetProcessors(checkProcB, checkProcC, checkProcC1, checkProcC3);
-            Processor[] pBD = GetProcessors(checkProcB, checkProcD, checkProcD1);
-            Processor[] pBE = GetProcessors(checkProcB, checkProcE, checkProcE1, checkProcE2);
+            Processor[] pBC = GetExpectedProcessors(checkProcB, checkProcC, checkProcC1, checkProcC3);
+            Processor[] pBD = GetExpectedProcessors(checkProcB, checkProcD, checkProcD1);
+            Processor[] pBE = GetExpectedProcessors(checkProcB, checkProcE, checkProcE1, checkProcE2);
 
-            Processor[] pCD = GetProcessors(checkProcC, checkProcC3, checkProcD);
+            Processor[] pCD = GetExpectedProcessors(checkProcC, checkProcC3, checkProcD);
 
-            Processor[] pDE = GetProcessors(checkProcD, checkProcE1, checkProcE2);
-
-            #endregion
-
-            #region Тестовая процедура
-
-            DynamicReflex stReflex = null;
-
-            void Scenario(string q = "CE", params Processor[] desiredResult)
-            {
-                void TestBody(int k, string qx = null)
-                {
-                    void TestProc(DynamicReflex reflex)
-                    {
-                        CheckReflexValue(reflex, Procs(), 2, 2);
-
-                        bool isNormal = k == 0 && !string.IsNullOrEmpty(qx);
-
-                        Assert.AreEqual(isNormal && desiredResult.Length > 0, reflex?.FindRelation((Main(k), qx)));
-
-                        CheckReflexValue(reflex, isNormal && desiredResult.Length > 0 ? desiredResult : GetProcessors(), 2, 2);
-
-                        Assert.AreEqual(true, reflex?.FindRelation(Procs().Select(p => (p, p.Tag[0].ToString())).ToArray()));
-
-                        CheckReflexValue(reflex, Procs(), 2, 2);
-                    }
-
-                    if (stReflex == null)
-                        stReflex = new DynamicReflex(new ProcessorContainer(Procs().ToArray()));
-
-                    TestProc(new DynamicReflex(new ProcessorContainer(Procs().ToArray())));
-                    TestProc(stReflex);
-                }
-
-                for (int k = 0; k < 6; k++)
-                {
-                    TestBody(k, q);
-                    TestBody(k, string.Empty);
-                    TestBody(k);
-                }
-            }
+            Processor[] pDE = GetExpectedProcessors(checkProcD, checkProcE1, checkProcE2);
 
             #endregion
 
             #region Тестовые сценарии
+
+            DynamicReflex stReflex = null;
 
             Scenario("A", pA);
             Scenario("B", pB);
@@ -470,6 +366,119 @@ namespace DynamicMosaicTest
             Scenario("EE", pE);
 
             Scenario();
+
+            #endregion
+
+            return;
+
+            #region Тестовая процедура
+
+            void Scenario(string q = "CE", params Processor[] desiredResult)
+            {
+                for (int k = 0; k < 6; k++)
+                {
+                    TestBody(k, q);
+                    TestBody(k, string.Empty);
+                    TestBody(k);
+                }
+
+                return;
+
+                void TestBody(int k, string qx = null)
+                {
+                    if (stReflex == null)
+                        stReflex = new DynamicReflex(new ProcessorContainer(GetTestProcessors().ToArray()));
+
+                    TestProc(new DynamicReflex(new ProcessorContainer(GetTestProcessors().ToArray())));
+                    TestProc(stReflex);
+                    return;
+
+                    void TestProc(DynamicReflex reflex)
+                    {
+                        CheckReflexValue(reflex, GetTestProcessors(), 2, 2);
+
+                        bool isNormal = k == 0 && !string.IsNullOrEmpty(qx);
+
+                        Assert.AreEqual(isNormal && desiredResult.Length > 0, reflex?.FindRelation((GetProcessorByIndex(k), qx)));
+
+                        CheckReflexValue(reflex, isNormal && desiredResult.Length > 0 ? desiredResult : GetExpectedProcessors(), 2, 2);
+
+                        Assert.AreEqual(true, reflex?.FindRelation(GetTestProcessors().Select(p => (p, p.Tag[0].ToString())).ToArray()));
+
+                        CheckReflexValue(reflex, GetTestProcessors(), 2, 2);
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Вспомогательные методы
+
+            Processor[] GetExpectedProcessors(params Processor[] procs)
+            {
+                List<Processor> result = procs.ToList();
+                HashSet<char> chs = new HashSet<char>(procs.Select(p => char.ToUpper(p.Tag[0])));
+
+                result.AddRange(GetTestProcessors().Where(p => !chs.Contains(char.ToUpper(p.Tag[0]))));
+
+                return result.ToArray();
+            }
+
+            IEnumerable<Processor> GetTestProcessors()
+            {
+                SignValue[,] mapA = new SignValue[2, 2];
+                mapA[0, 0] = SignValue.MaxValue;
+                mapA[0, 1] = SignValue.MaxValue;
+                SignValue[,] mapB = new SignValue[2, 2];
+                mapB[1, 1] = SignValue.MaxValue;
+                SignValue[,] mapC = new SignValue[2, 2];
+                mapC[0, 0] = SignValue.MaxValue;
+                mapC[1, 0] = SignValue.MaxValue;
+                SignValue[,] mapD = new SignValue[2, 2];
+                mapD[0, 0] = SignValue.MaxValue;
+                mapD[0, 1] = SignValue.MaxValue;
+                mapD[1, 0] = SignValue.MaxValue;
+                mapD[1, 1] = SignValue.MaxValue;
+                SignValue[,] mapE = new SignValue[2, 2];
+
+                yield return new Processor(mapA, "A");
+                yield return new Processor(mapB, "B");
+                yield return new Processor(mapC, "C");
+                yield return new Processor(mapD, "D");
+                yield return new Processor(mapE, "E");
+            }
+
+            Processor GetProcessorByIndex(int index)
+            {
+                switch (index)
+                {
+                    case 0:
+                    {
+                        SignValue[,] map = new SignValue[4, 4];
+                        map[0, 0] = SignValue.MaxValue;
+                        map[2, 0] = SignValue.MaxValue;
+                        map[1, 1] = SignValue.MaxValue;
+                        map[2, 1] = SignValue.MaxValue;
+                        map[0, 2] = SignValue.MaxValue;
+                        map[2, 2] = SignValue.MaxValue;
+                        map[3, 3] = SignValue.MaxValue;
+
+                        return new Processor(map, "main");
+                    }
+                    case 1:
+                        return new Processor(new SignValue[1, 1], "main");
+                    case 2:
+                        return new Processor(new SignValue[1, 2], "main");
+                    case 3:
+                        return new Processor(new SignValue[1, 4], "main");
+                    case 4:
+                        return new Processor(new SignValue[2, 1], "main");
+                    case 5:
+                        return new Processor(new SignValue[4, 1], "main");
+                }
+
+                throw new ArgumentException($"{nameof(index)} value = {index}", nameof(index));
+            }
 
             #endregion
         }
@@ -891,99 +900,155 @@ namespace DynamicMosaicTest
             ProcessorContainer pc = new ProcessorContainer(pA, pB);
             DynamicReflex reflex = new DynamicReflex(pc);
 
-            bool ExceptionFunc(Action act)
-            {
-                try
-                {
-                    act();
-                }
-                catch (ArgumentException)
-                {
-                    return true;
-                }
+            CheckReflexState();
 
-                return false;
-            }
-
-            void CheckReflexState() => CheckReflexValue(reflex, new[] { pA, pB }, 1, 1);
-
-            void ResetReflex(int k, int t)
-            {
-                SignValue[,] m5 = new SignValue[2, 1];
-                m5[0, 0] = new SignValue(3);
-                m5[1, 0] = new SignValue(5);
-
-                for (int j = 0; j < 2; j++)
+            for (int t = 0; t < 4; t++)
+                for (int k = 0, kMax = 10; k < kMax; k++)
                 {
 
-                    Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), @"AB")));
+                    ZeroTest(k, t);
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(true,
-                        k % 2 == 0
-                            ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
-                            : reflex.FindRelation((pA, @"A"), (pB, @"B")));
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(true,
-                        k % 2 == 0
-                            ? reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B"))
-                            : reflex.FindRelation((pA, @"A"), (pB, @"B")));
+                    ZeroTest(k, t);
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(true,
-                        k % 2 == 0
-                            ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
-                            : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(true,
-                        k % 2 == 0
-                            ? reflex.FindRelation((pA, @"A"), (pB, @"B"))
-                            : reflex.FindRelation((new Processor(mapA, "A"), @"A"), (new Processor(mapB, "B"), @"B")));
+                    ZeroTest(k, t);
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(false,
-                        k % 2 == 0
-                            ? reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D"))
-                            : reflex.FindRelation((pA, @"C"), (pB, @"D")));
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(false,
-                        k % 2 == 0
-                            ? reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D"))
-                            : reflex.FindRelation((pA, @"C"), (pB, @"D")));
+                    ZeroTest(k, t);
 
-                    if (k < 5 && t % 2 == 0)
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(false,
-                        k % 2 == 0
-                            ? reflex.FindRelation((pA, @"C"), (pB, @"D"))
-                            : reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D")));
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
 
-                    if (k < 5 && t % 2 == 0)
+                    pc.Add(k == 0 && t == 0 ? pC : new Processor(mapC, $"C{t * kMax + k}"));
+
+                    if (t == 0)
                         CheckReflexState();
 
-                    Assert.AreEqual(false,
-                        k % 2 == 0
-                            ? reflex.FindRelation((pA, @"C"), (pB, @"D"))
-                            : reflex.FindRelation((new Processor(mapA, "A"), @"C"), (new Processor(mapB, "B"), @"D")));
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+
+                    pc.Add(k == 0 && t == 0 ? pD : new Processor(mapD, $"D{t * kMax + k}"));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false, reflex.FindRelation((null, "D")));
+
+                    if (t == 0)
+                        CheckReflexState();
+
+                    ZeroTest(k, t);
+
+                    if (t == 0)
+                        CheckReflexState();
 
                 }
-            }
+
+            CheckReflexState();
+            return;
 
             void ZeroTest(int k, int t)
             {
@@ -1070,154 +1135,99 @@ namespace DynamicMosaicTest
                 NullTest(new Processor(mapD, "D"));
             }
 
-            CheckReflexState();
-
-            for (int t = 0; t < 4; t++)
-                for (int k = 0, kMax = 10; k < kMax; k++)
+            bool ExceptionFunc(Action act)
+            {
+                try
                 {
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
-
-                    pc.Add(k == 0 && t == 0 ? pC : new Processor(mapC, $@"C{t * kMax + k}"));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
-
-                    pc.Add(k == 0 && t == 0 ? pD : new Processor(mapD, $@"D{t * kMax + k}"));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapC, "C"), "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pC, "C")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((pD, "D")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((new Processor(mapD, "D"), "D")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    Assert.AreEqual(false, reflex.FindRelation((null, "D")));
-
-                    if (t == 0)
-                        CheckReflexState();
-
-                    ZeroTest(k, t);
-
-                    if (t == 0)
-                        CheckReflexState();
-
+                    act();
+                }
+                catch (ArgumentException)
+                {
+                    return true;
                 }
 
-            CheckReflexState();
+                return false;
+            }
+
+            void ResetReflex(int k, int t)
+            {
+                SignValue[,] m5 = new SignValue[2, 1];
+                m5[0, 0] = new SignValue(3);
+                m5[1, 0] = new SignValue(5);
+
+                for (int j = 0; j < 2; j++)
+                {
+
+                    Assert.AreEqual(true, reflex.FindRelation((new Processor(m5, "m5"), "AB")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), "A"), (new Processor(mapB, "B"), "B"))
+                            : reflex.FindRelation((pA, "A"), (pB, "B")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), "A"), (new Processor(mapB, "B"), "B"))
+                            : reflex.FindRelation((pA, "A"), (pB, "B")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, "A"), (pB, "B"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), "A"), (new Processor(mapB, "B"), "B")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(true,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, "A"), (pB, "B"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), "A"), (new Processor(mapB, "B"), "B")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), "C"), (new Processor(mapB, "B"), "D"))
+                            : reflex.FindRelation((pA, "C"), (pB, "D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((new Processor(mapA, "A"), "C"), (new Processor(mapB, "B"), "D"))
+                            : reflex.FindRelation((pA, "C"), (pB, "D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, "C"), (pB, "D"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), "C"), (new Processor(mapB, "B"), "D")));
+
+                    if (k < 5 && t % 2 == 0)
+                        CheckReflexState();
+
+                    Assert.AreEqual(false,
+                        k % 2 == 0
+                            ? reflex.FindRelation((pA, "C"), (pB, "D"))
+                            : reflex.FindRelation((new Processor(mapA, "A"), "C"), (new Processor(mapB, "B"), "D")));
+
+                }
+            }
+
+            void CheckReflexState() => CheckReflexValue(reflex, new[] { pA, pB }, 1, 1);
         }
 
         [TestMethod]
@@ -1515,7 +1525,7 @@ namespace DynamicMosaicTest
 
                 ResetReflex();
 
-                Assert.AreEqual(false, reflex.FindRelation((null, $@"{a}{b}"), (new Processor(m0, "mm"), string.Empty), (new Processor(m0, "mm"), null), (null, null), (new Processor(m0, "mm"), null), (null, string.Empty)));
+                Assert.AreEqual(false, reflex.FindRelation((null, $"{a}{b}"), (new Processor(m0, "mm"), string.Empty), (new Processor(m0, "mm"), null), (null, null), (new Processor(m0, "mm"), null), (null, string.Empty)));
 
                 CheckReflexValue(reflex, new[] { new Processor(mapA, a.ToUpper()), new Processor(mapB, b.ToUpper()) }, 1, 1);
 
@@ -1527,7 +1537,7 @@ namespace DynamicMosaicTest
 
                     {
 
-                        Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}")));
+                        Assert.AreEqual(true, reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}")));
 
                         IEnumerable<Processor> GetProcs()
                         {
@@ -1590,7 +1600,7 @@ namespace DynamicMosaicTest
 
                     {
 
-                        Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), $@"{a}{b}")));
+                        Assert.AreEqual(true, reflex.FindRelation((new Processor(m3, "m3"), $"{a}{b}")));
 
                         IEnumerable<Processor> GetProcs()
                         {
@@ -1652,15 +1662,15 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m1, "m1"), b)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m1, "m1"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"),
-                                (new Processor(m0, "m0"), $@"{a}{b}"),
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"),
+                                (new Processor(m0, "m0"), $"{a}{b}"),
                                 (new Processor(m1, "m1"), b), (new Processor(m0, "m0"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1692,14 +1702,14 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m2, "m2"), b)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m2, "m2"), b),
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m2, "m2"), b),
                                 (new Processor(m2, "m2"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1707,30 +1717,30 @@ namespace DynamicMosaicTest
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $@"{a}{b}"),
-                                (new Processor(m0, "m0"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $"{a}{b}"),
+                                (new Processor(m0, "m0"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m2, "m2"), b),
-                                (new Processor(m0, "m0"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m2, "m2"), b),
+                                (new Processor(m0, "m0"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m0, "m0"), $@"{a}{b}"),
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m0, "m0"), $"{a}{b}"),
                                 (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -1761,22 +1771,22 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{b}{b}"), (new Processor(m2, "m2"), b)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{b}{b}"), (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{b}{b}"), (new Processor(m2, "m2"), b),
-                                (new Processor(m2, "m2"), $@"{b}{b}"), (new Processor(m2, "m2"), b)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{b}{b}"), (new Processor(m2, "m2"), b),
+                                (new Processor(m2, "m2"), $"{b}{b}"), (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $@"{b}{b}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m0, "m0"), $"{b}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -1798,14 +1808,14 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{a}"), (new Processor(m2, "m2"), a)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{a}"), (new Processor(m2, "m2"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m0, "m0"), $@"{a}{a}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m0, "m0"), $"{a}{a}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -1830,14 +1840,14 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m3, "m3"), b)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m3, "m3"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m3, "m3"), b), (new Processor(m0, "m0"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m3, "m3"), b), (new Processor(m0, "m0"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -1863,14 +1873,14 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m1, "m1"), b), (new Processor(m3, "m3"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m1, "m1"), b), (new Processor(m3, "m3"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m3, "m3"), $@"{a}{b}"), (new Processor(m1, "m1"), b)));
+                            reflex.FindRelation((new Processor(m3, "m3"), $"{a}{b}"), (new Processor(m1, "m1"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2164,15 +2174,15 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $@"{a}{b}"),
-                                (new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $@"{b}{a}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $"{a}{b}"),
+                                (new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $"{b}{a}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2180,14 +2190,14 @@ namespace DynamicMosaicTest
 
                         Assert.AreEqual(true,
                             reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m2, "m2"), a),
-                                (new Processor(m3, "m3"), $@"{a}{b}")));
+                                (new Processor(m3, "m3"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $@"{b}{a}"),
+                            reflex.FindRelation((new Processor(m2, "m2"), a), (new Processor(m3, "m3"), $"{b}{a}"),
                                 (new Processor(m2, "m2"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2195,7 +2205,7 @@ namespace DynamicMosaicTest
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m3, "m3"), $@"{a}{b}"), (new Processor(m2, "m2"), a)));
+                            reflex.FindRelation((new Processor(m3, "m3"), $"{a}{b}"), (new Processor(m2, "m2"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2220,15 +2230,15 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $@"{a}{b}"),
-                                (new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $@"{b}{a}")));
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $"{a}{b}"),
+                                (new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $"{b}{a}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2236,14 +2246,14 @@ namespace DynamicMosaicTest
 
                         Assert.AreEqual(true,
                             reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m2, "m2"), b),
-                                (new Processor(m3, "m3"), $@"{a}{b}")));
+                                (new Processor(m3, "m3"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $@"{b}{a}"),
+                            reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), $"{b}{a}"),
                                 (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2251,7 +2261,7 @@ namespace DynamicMosaicTest
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m3, "m3"), $@"{a}{b}"), (new Processor(m2, "m2"), b)));
+                            reflex.FindRelation((new Processor(m3, "m3"), $"{a}{b}"), (new Processor(m2, "m2"), b)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2315,17 +2325,17 @@ namespace DynamicMosaicTest
                         }
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $@"{a}{b}")));
+                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $"{a}{b}")));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $@"{a}{b}"),
-                                (new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m4, "m4"), a),
+                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $"{a}{b}"),
+                                (new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m4, "m4"), a),
                                 (new Processor(m4, "m4"), a),
-                                (new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m0, "m0"), $@"{a}{b}"),
+                                (new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m0, "m0"), $"{a}{b}"),
                                 (new Processor(m4, "m4"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
@@ -2333,7 +2343,7 @@ namespace DynamicMosaicTest
                         ResetReflex();
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m4, "m4"), a)));
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m4, "m4"), a)));
 
                         CheckReflexValue(reflex, GetProcs(), 1, 1);
 
@@ -2355,7 +2365,7 @@ namespace DynamicMosaicTest
                     {
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m1, "m1"), b),
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m1, "m1"), b),
                                 (new Processor(m2, "m2"), b)));
 
                         IEnumerable<Processor> GetProcs()
@@ -2429,7 +2439,7 @@ namespace DynamicMosaicTest
                     {
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $@"{a}{b}"),
+                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $"{a}{b}"),
                                 (new Processor(m1, "m1"), b)));
 
                         IEnumerable<Processor> GetProcs()
@@ -2463,7 +2473,7 @@ namespace DynamicMosaicTest
                     {
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m1, "m1"), b),
+                            reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m1, "m1"), b),
                                 (new Processor(m2, "m2"), b), (new Processor(m3, "m3"), b)));
 
                         IEnumerable<Processor> GetProcs()
@@ -2490,7 +2500,7 @@ namespace DynamicMosaicTest
                     {
 
                         Assert.AreEqual(true,
-                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $@"{a}{b}"),
+                            reflex.FindRelation((new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $"{a}{b}"),
                                 (new Processor(m1, "m1"), b), (new Processor(m2, "m2"), b)));
 
                         IEnumerable<Processor> GetProcs()
@@ -2517,7 +2527,7 @@ namespace DynamicMosaicTest
 
                         Assert.AreEqual(true,
                             reflex.FindRelation((new Processor(m3, "m3"), b), (new Processor(m4, "m4"), a),
-                                (new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m1, "m1"), b)));
+                                (new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m1, "m1"), b)));
 
                         IEnumerable<Processor> GetProcs()
                         {
@@ -2545,7 +2555,7 @@ namespace DynamicMosaicTest
 
                         Assert.AreEqual(true,
                             reflex.FindRelation((new Processor(m2, "m2"), b), (new Processor(m3, "m3"), b),
-                                (new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $@"{a}{b}")));
+                                (new Processor(m4, "m4"), a), (new Processor(m0, "m0"), $"{a}{b}")));
 
                         IEnumerable<Processor> GetProcs()
                         {
@@ -2600,7 +2610,7 @@ namespace DynamicMosaicTest
                 {
 
                     Assert.AreEqual(true,
-                        reflex.FindRelation((new Processor(m0, "m0"), $@"{a}{b}"), (new Processor(m1, "m1"), b),
+                        reflex.FindRelation((new Processor(m0, "m0"), $"{a}{b}"), (new Processor(m1, "m1"), b),
                             (new Processor(m2, "m2"), b), (new Processor(m3, "m3"), b), (new Processor(m4, "m4"), a)));
 
                     IEnumerable<Processor> GetProcs()
@@ -2634,7 +2644,7 @@ namespace DynamicMosaicTest
                 void ResetReflex()
                 {
                     Assert.AreEqual(true,
-                        reflex.FindRelation((new Processor(new[] { new SignValue(4), new SignValue(4) }, "reset"), $@"{a}{b}")));
+                        reflex.FindRelation((new Processor(new[] { new SignValue(4), new SignValue(4) }, "reset"), $"{a}{b}")));
 
                     CheckReflexValue(reflex, new[] { new Processor(new[] { new SignValue(4) }, a.ToUpper()), new Processor(new[] { new SignValue(4) }, b.ToUpper()) }, 1, 1);
                 }

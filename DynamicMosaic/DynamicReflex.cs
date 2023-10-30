@@ -128,9 +128,9 @@ namespace DynamicMosaic
         public bool FindRelation(params (Processor p, string q)[] queryPairs)
         {
             if (queryPairs == null)
-                throw new ArgumentNullException(nameof(queryPairs), $@"{nameof(FindRelation)}: Должен быть задан хотя бы один запрос (null).");
+                throw new ArgumentNullException(nameof(queryPairs), $"{nameof(FindRelation)}: Должен быть задан хотя бы один запрос (null).");
             if (!queryPairs.Any())
-                throw new ArgumentException($@"{nameof(FindRelation)}: Должен быть задан хотя бы один запрос (<пусто>).", nameof(queryPairs));
+                throw new ArgumentException($"{nameof(FindRelation)}: Должен быть задан хотя бы один запрос (<пусто>).", nameof(queryPairs));
 
             queryPairs = queryPairs.Where(t =>
             {
@@ -170,6 +170,10 @@ namespace DynamicMosaic
             HashSet<char> allQueries = new HashSet<char>(_setChars);
             allQueries.ExceptWith(completedQueries.SelectMany(t => t.q));
 
+            _seaProcessors = new ProcessorContainer(GetResultContainer().ToArray());
+
+            return true;
+
             IEnumerable<Processor> GetResultContainer()
             {
                 foreach (Processor p in GetProcessorsBySymbols(allQueries))
@@ -183,10 +187,6 @@ namespace DynamicMosaic
                 foreach (Processor p in ph.Processors)
                     yield return p;
             }
-
-            _seaProcessors = new ProcessorContainer(GetResultContainer().ToArray());
-
-            return true;
         }
 
         /// <summary>

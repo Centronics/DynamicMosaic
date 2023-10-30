@@ -60,10 +60,10 @@ namespace DynamicMosaicTest
         static void EqualOr(string needCheck, string checkerChars)
         {
             if (string.IsNullOrEmpty(needCheck))
-                throw new ArgumentException($@"{nameof(EqualOr)}: Parameter {nameof(needCheck)} is null or empty.", nameof(needCheck));
+                throw new ArgumentException($"{nameof(EqualOr)}: Parameter {nameof(needCheck)} is null or empty.", nameof(needCheck));
 
             if (string.IsNullOrEmpty(checkerChars))
-                throw new ArgumentException($@"{nameof(EqualOr)}: Parameter {nameof(checkerChars)} is null or empty.", nameof(checkerChars));
+                throw new ArgumentException($"{nameof(EqualOr)}: Parameter {nameof(checkerChars)} is null or empty.", nameof(checkerChars));
 
             Assert.AreEqual(checkerChars.Length, needCheck.Length);
 
@@ -78,10 +78,10 @@ namespace DynamicMosaicTest
         static void CheckProcValue(IList<Processor> procs, params (SignValue sv, string tag)[] values)
         {
             if (procs == null)
-                throw new ArgumentNullException(nameof(procs), $@"{nameof(CheckProcValue)}: Parameter {nameof(procs)} is null.");
+                throw new ArgumentNullException(nameof(procs), $"{nameof(CheckProcValue)}: Parameter {nameof(procs)} is null.");
 
             if (values == null)
-                throw new ArgumentNullException(nameof(values), $@"{nameof(CheckProcValue)}: Parameter {nameof(values)} is null.");
+                throw new ArgumentNullException(nameof(values), $"{nameof(CheckProcValue)}: Parameter {nameof(values)} is null.");
 
             Assert.AreEqual(procs.Count, values.Length);
 
