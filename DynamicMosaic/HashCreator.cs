@@ -6,7 +6,7 @@ using DynamicParser;
 namespace DynamicMosaic
 {
     /// <summary>
-    ///     Генерирует хеш-код указанной карты <see cref="Processor"/>.
+    ///     Генерирует хеш-код указанной карты <see cref="Processor" />.
     /// </summary>
     public static class HashCreator
     {
@@ -35,13 +35,19 @@ namespace DynamicMosaic
         }
 
         /// <summary>
-        ///     Получает хеш-код указанной карты, без учёта значения свойства <see cref="Processor.Tag"/>.
+        ///     Получает хеш-код указанной карты, без учёта значения свойства <see cref="Processor.Tag" />.
         /// </summary>
         /// <param name="p">Карта, для которой необходимо вычислить хеш.</param>
         /// <returns>Возвращает хеш-код указанной карты.</returns>
-        /// <remarks>Карта не может быть равна <see langword="null" />, иначе будет выброшено исключение <see cref="ArgumentNullException"/>.</remarks>
-        /// <exception cref="ArgumentNullException"/>
-        public static int GetHash(Processor p) => GetProcessorBytes(p).Aggregate(255, (currentValue, currentByte) => Table[unchecked((byte)(currentValue ^ currentByte))]);
+        /// <remarks>
+        ///     Карта не может быть равна <see langword="null" />, иначе будет выброшено исключение <see cref="ArgumentNullException" />.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException" />
+        public static int GetHash(Processor p)
+        {
+            return GetProcessorBytes(p).Aggregate(255,
+                (currentValue, currentByte) => Table[unchecked((byte)(currentValue ^ currentByte))]);
+        }
 
         /// <summary>
         ///     Представляет содержимое указанной карты в виде последовательности байт.
@@ -52,16 +58,16 @@ namespace DynamicMosaic
         ///     Поле <see cref="Processor.Tag" /> не учитывается.
         ///     Перечисление строк карты происходит последовательно: от меньшего индекса к большему.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentNullException" />
         static IEnumerable<byte> GetProcessorBytes(Processor p)
         {
             if (p == null)
                 throw new ArgumentNullException(nameof(p), $"{nameof(GetProcessorBytes)}: Карта равна значению null.");
 
             for (int y = 0; y < p.Height; y++)
-                for (int x = 0; x < p.Width; x++)
-                    foreach (byte r in BitConverter.GetBytes(p[x, y].Value))
-                        yield return r;
+            for (int x = 0; x < p.Width; x++)
+                foreach (byte r in BitConverter.GetBytes(p[x, y].Value))
+                    yield return r;
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("DynamicMosaic")]
-[assembly: AssemblyDescription("Основан на DynamicParser. Является продолжением этого проекта с поддержкой функции анализа поступающих данных с учётом предыдущих запросов.")]
+[assembly:
+    AssemblyDescription(
+        "Основан на DynamicParser. Является продолжением этого проекта с поддержкой функции анализа поступающих данных, с учётом предыдущих запросов.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Home")]
 [assembly: AssemblyProduct("DynamicMosaic")]
