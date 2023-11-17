@@ -9,18 +9,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicMosaicTest", "Dynami
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Debug|x64.ActiveCfg = Debug|x64
-		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Debug|x64.Build.0 = Debug|x64
-		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Release|x64.ActiveCfg = Release|x64
-		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Release|x64.Build.0 = Release|x64
-		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Debug|x64.ActiveCfg = Debug|x64
-		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Debug|x64.Build.0 = Debug|x64
-		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Release|x64.ActiveCfg = Release|x64
-		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Release|x64.Build.0 = Release|x64
+		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83DDA58C-9F2E-4747-B32B-FB727C43AC71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FD53189-7927-4A9D-A107-8661A6FFB1D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

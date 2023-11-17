@@ -23,7 +23,7 @@ namespace DynamicMosaic
         readonly Dictionary<int, List<Processor>> _dicProcsWithTag = new Dictionary<int, List<Processor>>();
 
         /// <summary>
-        ///     Хранит номера добавленных карт, для того, чтобы сгенерировать новое название добавляемой карты.
+        ///     Хранит номера добавленных карт для генерации названия добавляемой карты.
         /// </summary>
         readonly Dictionary<char, ulong> _procNumbers = new Dictionary<char, ulong>();
 
